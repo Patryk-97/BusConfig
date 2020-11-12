@@ -1,0 +1,3 @@
+LIBRARY BusConfigDll
+EXPORTS
+   CanBusConfigInstanceCreate @1

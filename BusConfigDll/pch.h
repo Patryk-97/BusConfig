@@ -7,6 +7,11 @@
 #ifndef PCH_H
 #define PCH_H
 
+#include <stdint.h>
+#include <string>
+#include <vector>
+#include <memory>
+
 // w tym miejscu dodaj nagłówki, które mają być wstępnie kompilowane
 #include "framework.h"
 
