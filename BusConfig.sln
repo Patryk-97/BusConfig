@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigDll", "BusConfigDll\BusConfigDll.vcxproj", "{7EBA0119-D3D3-4273-9B7C-346D1458C34E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigUI", "BusConfigUI\BusConfigUI.vcxproj", "{150FBD63-4F45-4707-B346-62C321CCAB62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,12 @@ Global
 		{7EBA0119-D3D3-4273-9B7C-346D1458C34E}.Release|x64.Build.0 = Release|x64
 		{7EBA0119-D3D3-4273-9B7C-346D1458C34E}.Release|x86.ActiveCfg = Release|Win32
 		{7EBA0119-D3D3-4273-9B7C-346D1458C34E}.Release|x86.Build.0 = Release|Win32
+		{150FBD63-4F45-4707-B346-62C321CCAB62}.Debug|x64.ActiveCfg = Debug|x64
+		{150FBD63-4F45-4707-B346-62C321CCAB62}.Debug|x64.Build.0 = Debug|x64
+		{150FBD63-4F45-4707-B346-62C321CCAB62}.Debug|x86.ActiveCfg = Debug|x64
+		{150FBD63-4F45-4707-B346-62C321CCAB62}.Release|x64.ActiveCfg = Release|x64
+		{150FBD63-4F45-4707-B346-62C321CCAB62}.Release|x64.Build.0 = Release|x64
+		{150FBD63-4F45-4707-B346-62C321CCAB62}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,3 +1,6 @@
 /.vs/*
 /BusConfigDll/Release/*
 /Release/*
+/BusConfigUI/x64/Debug/*
+/BusConfigUI/x64/Release/*
+/x64/Release/*
