@@ -1,3 +1,4 @@
 LIBRARY BusConfigDll
 EXPORTS
    CanBusConfigInstanceCreate @1
+   CanBusConfigInstanceDelete @2

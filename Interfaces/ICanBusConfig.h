@@ -5,6 +5,7 @@ class ICanBusConfig;
 
 // Dll functions
 ICanBusConfig* CanBusConfigInstanceCreate(void);
+bool CanBusConfigInstanceDelete(ICanBusConfig* canBusConfig);
 
 class ICanBusConfig
 {

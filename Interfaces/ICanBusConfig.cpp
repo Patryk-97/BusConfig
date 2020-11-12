@@ -7,3 +7,8 @@ ICanBusConfig* CanBusConfigInstanceCreate(void)
 {
    return &canBusConfig;
 }
+
+bool CanBusConfigInstanceDelete(ICanBusConfig* canBusConfig)
+{
+   return true;
+}

@@ -4,3 +4,6 @@
 /BusConfigUI/x64/Debug/*
 /BusConfigUI/x64/Release/*
 /x64/Release/*
+/BusConfigDll/x64/Debug/*
+/BusConfigDll/x64/Release/*
+/x64/Debug/*
