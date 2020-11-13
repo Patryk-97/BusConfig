@@ -1,11 +1,15 @@
 #pragma once
 
-#include <stdint.h>
+#include "ICanMessage.h"
+
 #include <string>
 
-class CanMessage
+class CanMessage : public ICanMessage
 {
-   CanMessage();
+public:
+   CanMessage() = default;
+   CanMessage(uint32_t id, const char* name, uint32_t size, const char* mainTransmitter) :
+      id(id), name(name), size(size), mainTransmitter(mainTransmitter) {}
    ~CanMessage();
 
    void Clear(void);
@@ -16,8 +20,8 @@ class CanMessage
    const char* GetName(void) const;
    void SetName(const char* messageName);
 
-   uint8_t GetSize(void) const;
-   void SetSize(uint8_t messageSize);
+   uint32_t GetSize(void) const;
+   void SetSize(uint32_t messageSize);
 
    const char* GetMainTransmitter(void) const;
    void SetMainTransmitter(const char* mainTransmitter);
@@ -27,10 +31,13 @@ class CanMessage
    //CanSignal* GetCanSignalByName(const char* signalName) const;
    //void AddCanSignal(CanSignal* dbcSignal);
 
+   const char* ToString(void) override;
+
 private:
-   uint32_t id;
+   uint32_t id {};
    std::string name;
-   uint8_t size;
+   uint32_t size {};
    std::string mainTransmitter;
    //std::vector<std::unique_ptr<CanSignal>> signals;
+   std::string stringRepresentation;
 };

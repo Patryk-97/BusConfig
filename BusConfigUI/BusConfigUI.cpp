@@ -5,13 +5,13 @@
 
 DllLoader<ICanBusConfig, bool> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
-bool LoadBusConfigDLL(void)
+bool LoadBusConfigDll(void)
 {
    // local variables
    bool rV = false;
    ICanBusConfig* busConfig = nullptr;
 
-   if (dllLoader.LoadDll())
+   if (dllLoader.Load())
    {
       busConfig = dllLoader.pfCreate();
 
@@ -28,6 +28,6 @@ BusConfigUI::BusConfigUI(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
-    bool rV = LoadBusConfigDLL();
+    bool rV = LoadBusConfigDll();
     QMessageBox::information(this, "..", (rV ? "Successfully loaded BusConfigDll.dll" : "Loading BusConfigDll.dll failed"));
 }

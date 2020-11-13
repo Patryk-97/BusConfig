@@ -1,104 +1,90 @@
 #pragma once
-#include <string>
 #include <Windows.h>
-#include <filesystem>
-template <typename IClass, typename ptrFnc_Delete_rV_t = bool>
+
+template <typename IClass, typename pfDelete_rV_t = bool>
 class DllLoader
 {
 private:
 
-   const char* dllName;
-   //function names from dll
-   const char* ptrFnc_Cname;
-   const char* ptrFnc_Dname;
-
-   // Handle to DLL
-   HINSTANCE hSPoDoFoDLL = NULL;
-
    // Create function type definition
-   using ptrFnc_Create_t = IClass* (*) (void);
+   using pfCreate_t = IClass * (*) (void);
 
    // Delete function type definition
-   using ptrFnc_Delete_t = ptrFnc_Delete_rV_t (*) (IClass*);
+   using pfDelete_t = pfDelete_rV_t(*) (IClass*);
 
 public:
    // Pointer to create function
-   ptrFnc_Create_t pfCreate = NULL;
+   pfCreate_t pfCreate { NULL };
 
    // Pointer to delete function
-   ptrFnc_Delete_t pfDelete = NULL;
+   pfDelete_t pfDelete { NULL };
 
-   DllLoader() {};
-   DllLoader(const char* Name, const char* Cname, const char* Dname)
+   DllLoader() = delete;
+   DllLoader(const char* dllName, const char* pfCreateName, const char* pfDeleteName) :
+      dllName(dllName), pfCreateName(pfCreateName), pfDeleteName(pfDeleteName) {}
+   ~DllLoader()
    {
-      this->dllName = Name;
-      this->ptrFnc_Cname = Cname;
-      this->ptrFnc_Dname = Dname;
+      this->Clear();
    };
-   ~DllLoader() {};
 
-   bool LoadDll()
+   bool Load()
    {
-      //////////////////// load the DLL
-      // local varaibles
-      bool retVal = false;
-      PCSTR pszModuleName = this->dllName;
+      // locals
+      bool rV = false;
+      PCSTR hDllModule = this->dllName;
+
       // DLL not loaded?
-      if(this->hSPoDoFoDLL == NULL)
+      if(this->dllHandler == NULL)
       {
          // Is DLL loaded?
-         if(GetModuleHandleA(pszModuleName) == NULL)
+         if(GetModuleHandleA(hDllModule) == NULL)
          {
             // not loaded, so load DLL
-            this->hSPoDoFoDLL = LoadLibraryA(pszModuleName);
+            this->dllHandler = LoadLibraryA(hDllModule);
             // check if DLL loaded successful
-            if(this->hSPoDoFoDLL != NULL)
+            if(this->dllHandler != NULL)
             {
                // requested module name exists?
-               if(GetModuleHandleA(pszModuleName) != NULL)
+               if(GetModuleHandleA(hDllModule) != NULL)
                {
                   // apply function pointer
-                  this->pfCreate = (ptrFnc_Create_t)GetProcAddress(hSPoDoFoDLL, this->ptrFnc_Cname);
+                  this->pfCreate = (pfCreate_t)GetProcAddress(this->dllHandler, this->pfCreateName);
                   // apply function pointer
-                  this->pfDelete = (ptrFnc_Delete_t)GetProcAddress(hSPoDoFoDLL, this->ptrFnc_Dname);
+                  this->pfDelete = (pfDelete_t)GetProcAddress(this->dllHandler, this->pfDeleteName);
                   // function exists?
                   if((this->pfCreate != NULL) && (this->pfDelete != NULL))
                   {
                      // success
-                     retVal = true;
+                     rV = true;
                   }
                }
             }
          }
       }
-      return(retVal);
+      return rV;
    };
 
-   bool UnLoadDll()
+   bool Clear()
    {
-      bool rV = false;
-      //resetting local values
       this->pfCreate = NULL;
       this->pfDelete = NULL;
-      this->hSPoDoFoDLL = NULL;
-      PCSTR pszModuleName = this->dllName;
-
-      //Check if freeing library succeseded
-      if(FreeLibrary(GetModuleHandleA(pszModuleName)) != 0)
-      {
-         rV = true;
-      }
-      return rV;
+      this->dllHandler = NULL;
+      PCSTR hDllModule = this->dllName;
+      return FreeLibrary(GetModuleHandleA(hDllModule)) != 0;
    }
 
    bool IsLoaded()
    {
-      bool rV = false;
-      // pointer fo functions still exists?
-      if((this->pfCreate != NULL) && (this->pfDelete != NULL))
-      {
-         rV = true;
-      }
-      return rV;
+      return (this->pfCreate != NULL) && (this->pfDelete != NULL);
    }
+
+private:
+
+   const char* dllName { nullptr };
+   //function names from dll
+   const char* pfCreateName { nullptr };
+   const char* pfDeleteName { nullptr };
+
+   // Handle to DLL
+   HINSTANCE dllHandler { NULL };
 };

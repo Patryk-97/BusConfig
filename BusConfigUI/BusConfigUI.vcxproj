@@ -104,6 +104,14 @@
     <ClCompile Include="BusConfigUI.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Utils\DllLoader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BusConfigDll\BusConfigDll.vcxproj">
+      <Project>{7eba0119-d3d3-4273-9b7c-346d1458c34e}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

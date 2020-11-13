@@ -7,3 +7,9 @@
 /BusConfigDll/x64/Debug/*
 /BusConfigDll/x64/Release/*
 /x64/Debug/*
+/BusConfigConsole/Debug/*
+/BusConfigConsole/x64/Debug/*
+/BusConfigDll/Debug/*
+/BusConfigConsole/x64/Release/*
+/Debug/*
+/BusConfigConsole/Release/*

@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigDll", "BusConfigDl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigUI", "BusConfigUI\BusConfigUI.vcxproj", "{150FBD63-4F45-4707-B346-62C321CCAB62}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigConsole", "BusConfigConsole\BusConfigConsole.vcxproj", "{16614571-4E8E-4FB2-A763-63D35D7241A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,6 +31,14 @@ Global
 		{150FBD63-4F45-4707-B346-62C321CCAB62}.Release|x64.ActiveCfg = Release|x64
 		{150FBD63-4F45-4707-B346-62C321CCAB62}.Release|x64.Build.0 = Release|x64
 		{150FBD63-4F45-4707-B346-62C321CCAB62}.Release|x86.ActiveCfg = Release|x64
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Debug|x64.ActiveCfg = Debug|x64
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Debug|x64.Build.0 = Debug|x64
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Debug|x86.Build.0 = Debug|Win32
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Release|x64.ActiveCfg = Release|x64
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Release|x64.Build.0 = Release|x64
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Release|x86.ActiveCfg = Release|Win32
+		{16614571-4E8E-4FB2-A763-63D35D7241A7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

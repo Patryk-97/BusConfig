@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{430afae3-f561-47f5-ace2-6f51e9657334}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,8 +30,11 @@
     <ClInclude Include="CanBusConfig\CanMessage.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanMessage.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
     <ClInclude Include="..\Interfaces\ICanBusConfig.h">
-      <Filter>Pliki nagłówkowe</Filter>
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +51,7 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="..\Interfaces\ICanBusConfig.cpp">
-      <Filter>Pliki źródłowe</Filter>
+      <Filter>Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
