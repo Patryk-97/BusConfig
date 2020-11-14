@@ -22,4 +22,6 @@ public:
    virtual ICanMessage* GetMessageById(uint32_t id) const = 0;
    virtual ICanMessage* GetMessageByName(const char* name) const = 0;
    virtual ICanMessage* GetMessageByIndex(size_t index) const = 0;
+   virtual ICanMessage* GetMessageFront(void) const = 0;
+   virtual ICanMessage* GetMessageBack(void) const = 0;
 };

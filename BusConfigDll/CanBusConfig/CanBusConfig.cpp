@@ -1,5 +1,6 @@
 #include "CanBusConfig.h"
 #include <boost/tokenizer.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -22,7 +23,7 @@ CanBusConfig::~CanBusConfig()
 void CanBusConfig::Clear()
 {
    this->log = "";
-   for (const auto& message : this->messages) { delete message; }
+   for (auto& message : this->messages) { delete message; message = nullptr; }
    this->messages.clear();
 }
 
@@ -44,9 +45,14 @@ bool CanBusConfig::Load(const char* filename)
 
       while (std::getline(file, line))
       {
+         boost::algorithm::trim(line);
          if (line.starts_with(CanBusConfig::MESSAGE_DEFINITION_HEADER))
          {
             this->ParseMessageDefinition(file, lineData);
+         }
+         if (line.starts_with(CanBusConfig::SIGNAL_DEFINITION_HEADER))
+         {
+            this->ParseSignalDefinition(file, lineData);
          }
          lineNr++;
       }
@@ -75,6 +81,16 @@ ICanMessage* CanBusConfig::GetMessageByName(const char* name) const
 ICanMessage* CanBusConfig::GetMessageByIndex(size_t index) const
 {
    return (index < this->messages.size() ? this->messages[index] : nullptr);
+}
+
+ICanMessage* CanBusConfig::GetMessageFront(void) const
+{
+   return (this->messages.size() > 0 ? this->messages.front() : nullptr);
+}
+
+ICanMessage* CanBusConfig::GetMessageBack(void) const
+{
+   return (this->messages.size() > 0 ? this->messages.back() : nullptr);
 }
 
 void CanBusConfig::AddMessage(CanMessage* message)
@@ -170,6 +186,106 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
    else
    {
       this->log += "Message definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   CanMessage* message = this->messages.back();
+   if (message == nullptr) { return false; }
+
+   // locals
+   bool rV { true };
+
+   if (line.starts_with(CanBusConfig::SIGNAL_DEFINITION_HEADER))
+   {
+      boost::escaped_list_separator<char> sep("\\", " ", "\"");
+      boost::tokenizer<boost::escaped_list_separator<char>> tokenizer { line, sep };
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) == SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         uint8_t pos{};
+         CanSignal* signal = message->CreateAndAddSignal();
+         for (const auto& token : tokenizer)
+         {
+            std::cout << token << ", ";
+            /*if (pos == SIGNAL_MULTIPLEXED_INDICATOR_POS && !token.starts_with("m") && !token.starts_with("M"))
+            {
+               pos++;
+            }
+
+            switch (pos)
+            {
+               case SIGNAL_DEFINITION_HEADER_POS:
+               {
+                  // do nothing
+                  break;
+               }
+               case SIGNAL_NAME_POS:
+               {
+                  signal->SetName(token.c_str());
+                  break;
+               }
+               case SIGNAL_MULTIPLEXED_INDICATOR_POS:
+               {
+                  signal->SetMuxIndicator(token.c_str());
+                  break;
+               }
+               case SIGNAL_START_BIT_POS:
+               {
+                  try
+                  {
+                     signal->SetStartBit(std::stoul(token));
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Signal start bit conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case SIGNAL_SIZE_POS:
+               {
+                  try
+                  {
+                     signal->SetSize(std::stoul(token));
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Signal size conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case SIGNAL_BYTE_ORDER_POS:
+               {
+                  signal->SetByteOrder(static_cast<ICanSignal::IByteOrder_e>(token[0] - '0'));
+                  break;
+               }
+            }
+
+            // If something went wrong
+            if (!rV)
+            {
+               break;
+            }
+            ++pos;
+            */
+         }
+         std::cout << "\n";
+      }
+      else
+      {
+         this->log += "Invalid signal definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Signal definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 

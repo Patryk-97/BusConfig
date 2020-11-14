@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ICanMessage.h"
+#include "CanSignal.h"
 
 #include <string>
 
@@ -26,10 +27,11 @@ public:
    const char* GetMainTransmitter(void) const;
    void SetMainTransmitter(const char* mainTransmitter);
 
-   size_t GetCanSignalsCount(void) const;
-   //CanSignal* GetCanSignalByIndex(size_t index) const;
-   //CanSignal* GetCanSignalByName(const char* signalName) const;
-   //void AddCanSignal(CanSignal* dbcSignal);
+   size_t GetSignalsCount(void) const override;
+   ICanSignal* GetSignalByName(const char* name) const override;
+   ICanSignal* GetSignalByIndex(size_t index) const override;
+   void AddSignal(CanSignal* signal);
+   CanSignal* CreateAndAddSignal(void);
 
    const char* ToString(void) override;
 
@@ -38,6 +40,6 @@ private:
    std::string name;
    uint32_t size {};
    std::string mainTransmitter;
-   //std::vector<std::unique_ptr<CanSignal>> signals;
+   std::vector<CanSignal*> signals;
    std::string stringRepresentation;
 };

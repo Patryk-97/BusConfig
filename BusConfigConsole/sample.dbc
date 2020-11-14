@@ -36,7 +36,7 @@ BU_: Airbag BAP_Tester ICAS1_Gateway ICAS1_KommunikationsServer LE1 LE2 Motor_BE
 
 
 BO_ 333 ACC_18: 32 ICAS1_Gateway
- SG_ ACC_18_CRC : 0|8@1+ (1,0) [0|255] ""  Motor_BEV
+ SG_ ACC_18_CRC : 0|8@1+ (1,0) [0|255] "mietek ooo"  Motor_BEV
  SG_ ACC_18_BZ : 8|4@1+ (1,0) [0|15] ""  Motor_BEV
  SG_ ACC_limitierte_Anfahrdyn : 12|1@1+ (1.0,0.0) [0.0|1] ""  Motor_BEV
  SG_ ACC_nachtr_Stopp_Anf : 13|1@1+ (1.0,0.0) [0.0|1] ""  Vector__XXX
@@ -1715,7 +1715,7 @@ BO_ 1648 Motor_18: 8 Motor_BEV
  SG_ MO_obere_Drehzahlgrenze : 56|8@1+ (50,0) [50|12750] "Unit_MinutInver"  ICAS1_Gateway
 
 BO_ 967 Motor_26: 8 Motor_BEV
- SG_ MO_Kuehlerluefter_MUX M  : 0|1@1+ (1.0,0.0) [0.0|1] ""  ICAS1_Gateway
+ SG_ MO_Kuehlerluefter_MUX M  : 0|1@1+ (1.0,0.0) [0.0|1] "siema ooo"  ICAS1_Gateway
  SG_ MO_Kuehlerluefter_1 m0  : 1|7@1+ (1,0) [0|100] "Unit_PerCent"  ICAS1_Gateway
  SG_ MO_Kuehlerluefter_2 m1  : 1|7@1+ (1,0) [0|100] "Unit_PerCent"  ICAS1_Gateway
  SG_ MO_EFLEX_Lampe : 8|2@1+ (1.0,0.0) [0.0|3] ""  ICAS1_Gateway

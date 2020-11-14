@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-DllLoader<ICanBusConfig, bool> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
+DllLoader<ICanBusConfig, bool> dllLoader { "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
 bool LoadBusConfigDll(void)
 {

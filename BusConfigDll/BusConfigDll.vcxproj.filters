@@ -36,6 +36,12 @@
     <ClInclude Include="..\Interfaces\ICanBusConfig.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="CanBusConfig\CanSignal.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanSignal.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -52,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="..\Interfaces\ICanBusConfig.cpp">
       <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanSignal.cpp">
+      <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

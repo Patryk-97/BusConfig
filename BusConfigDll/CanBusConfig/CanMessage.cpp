@@ -1,4 +1,7 @@
 #include "CanMessage.h"
+#include <algorithm>
+
+namespace ranges = std::ranges;
 
 CanMessage::~CanMessage()
 {
@@ -11,6 +14,8 @@ void CanMessage::Clear(void)
    this->name = "";
    this->size = 0;
    this->mainTransmitter = "";
+   for (auto& signal : this->signals) { delete signal; signal = nullptr; }
+   this->signals.clear();
 }
 
 uint32_t CanMessage::GetId(void) const
@@ -51,6 +56,37 @@ const char* CanMessage::GetMainTransmitter(void) const
 void CanMessage::SetMainTransmitter(const char* mainTransmitter)
 {
    this->mainTransmitter = mainTransmitter;
+}
+
+size_t CanMessage::GetSignalsCount(void) const
+{
+   return this->signals.size();
+}
+
+ICanSignal* CanMessage::GetSignalByName(const char* name) const
+{
+   auto it = ranges::find_if(this->signals, [&name] (const CanSignal* signal) { return !std::strcmp(name, signal->GetName()); });
+   return (it != this->signals.end() ? *it : nullptr);
+}
+
+ICanSignal* CanMessage::GetSignalByIndex(size_t index) const
+{
+   return (index < this->signals.size() ? this->signals[index] : nullptr);
+}
+
+void CanMessage::AddSignal(CanSignal* signal)
+{
+   if (signal)
+   {
+      this->signals.push_back(signal);
+   }
+}
+
+CanSignal* CanMessage::CreateAndAddSignal(void)
+{
+   CanSignal* signal = new CanSignal {};
+   this->signals.push_back(signal);
+   return signal;
 }
 
 const char* CanMessage::ToString(void)
