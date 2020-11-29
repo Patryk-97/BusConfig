@@ -1,5 +1,7 @@
 #include "CanSignal.h"
 
+using namespace std::string_literals;
+
 CanSignal::~CanSignal()
 {
    this->Clear();
@@ -16,16 +18,15 @@ void CanSignal::Clear(void)
    this->size = 0;
    this->byteOrderSymbol = ICanSignal::UNDEFINED_BYTE_ORDER_SYMBOL;
    this->byteOrder = IByteOrder_e::UNDEFINED;
-   this->byteOrderStr = "";
    this->valueTypeSymbol = ICanSignal::UNDEFINED_VALUE_TYPE_SYMBOL;
    this->valueType = IValueType_e::UNDEFINED_TYPE;
-   this->valueTypeStr = "";
    this->factor = 0.0;
    this->offset = 0.0;
    this->minimum = 0.0;
    this->maximum = 0.0;
    this->unit = "";
    this->receivers.clear();
+   this->stringRepresentation = "";
 }
 
 const char* CanSignal::GetName(void) const
@@ -126,14 +127,28 @@ ICanSignal::IByteOrder_e CanSignal::GetByteOrder(void) const
    return this->byteOrder;
 }
 
-const char* CanSignal::GetByteOrderStr(void) const
+uint8_t CanSignal::GetByteOrderSymbol(void) const
 {
-   return this->byteOrderStr.c_str();
+   return this->byteOrderSymbol;
 }
 
-void CanSignal::SetByteOrder(IByteOrder_e byteOrder)
+void CanSignal::SetByteOrderSymbol(uint8_t byteOrderSymbol)
 {
-   this->byteOrder = byteOrder;
+   this->byteOrderSymbol = byteOrderSymbol;
+   byteOrderSymbol -= '0';
+   if (byteOrderSymbol < 1)
+   {
+      this->byteOrder = static_cast<ICanSignal::IByteOrder_e>(byteOrderSymbol);
+   }
+   else
+   {
+      this->byteOrder = ICanSignal::IByteOrder_e::UNDEFINED;
+   }
+}
+
+ICanSignal::IValueType_e CanSignal::GetValueType(void) const
+{
+   return this->valueType;
 }
 
 uint8_t CanSignal::GetValueTypeSymbol(void) const
@@ -144,25 +159,24 @@ uint8_t CanSignal::GetValueTypeSymbol(void) const
 void CanSignal::SetValueTypeSymbol(uint8_t valueTypeSymbol)
 {
    this->valueTypeSymbol = valueTypeSymbol;
-}
-
-ICanSignal::IValueType_e CanSignal::GetValueType(void) const
-{
-   return this->valueType;
-}
-
-void CanSignal::SetValueType(IValueType_e valueType)
-{
-   this->valueType = valueType;
-}
-
-const char* CanSignal::GetValueTypeStr(void) const
-{
-   return this->valueTypeStr.c_str();
-}
-void CanSignal::SetValueTypeStr(const char* valueTypeStr)
-{
-   this->valueTypeStr = valueTypeStr;
+   switch (valueTypeSymbol)
+   {
+      case '+':
+      {
+         this->valueType = ICanSignal::IValueType_e::UNSIGNED_TYPE;
+         break;
+      }
+      case '-':
+      {
+         this->valueType = ICanSignal::IValueType_e::SIGNED_TYPE;
+         break;
+      }
+      default:
+      {
+         this->valueType = ICanSignal::IValueType_e::UNDEFINED_TYPE;
+         break;
+      }
+   }
 }
 
 double CanSignal::GetFactor(void) const
@@ -231,4 +245,23 @@ void CanSignal::AddReceiver(const char* receiver)
    {
       this->receivers.push_back(receiver);
    }
+}
+
+const char* CanSignal::ToString(void)
+{
+   this->stringRepresentation += "Signal { name: " + this->name + ", muxType: " + this->muxTypeStr;
+   this->stringRepresentation += ", start bit: " + std::to_string(this->startBit) + ", size: " + std::to_string(this->size);
+   this->stringRepresentation += ", byte order: "s;
+   this->stringRepresentation += this->byteOrderSymbol;
+   this->stringRepresentation += ", value type: "s;
+   this->stringRepresentation += this->valueTypeSymbol;
+   this->stringRepresentation += ", factor: " + std::to_string(this->factor) + ", offset: " + std::to_string(this->offset);
+   this->stringRepresentation += ", min: " + std::to_string(this->minimum) + ", max: " + std::to_string(this->maximum);
+   this->stringRepresentation += " unit: " + this->unit + ", receivers: ";
+   for (const auto& receiver : this->receivers)
+   {
+      this->stringRepresentation += receiver + ", ";
+   }
+   this->stringRepresentation += "}";
+   return this->stringRepresentation.c_str();
 }

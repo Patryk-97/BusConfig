@@ -18,9 +18,9 @@ public:
 
    enum class IByteOrder_e
    {
-      UNDEFINED = 0,
-      BIG_ENDIAN = 1,
-      LITTLE_ENDIAN = 2
+      UNDEFINED = -1,
+      BIG_ENDIAN = 0,
+      LITTLE_ENDIAN = 1
    };
 
    enum class IValueType_e
@@ -42,10 +42,9 @@ public:
    virtual uint32_t GetStartBit(void) const = 0;
    virtual uint32_t GetSize(void) const = 0;
    virtual IByteOrder_e GetByteOrder(void) const = 0;
-   virtual const char* GetByteOrderStr(void) const = 0;
-   virtual uint8_t GetValueTypeSymbol(void) const = 0;
+   virtual uint8_t GetByteOrderSymbol(void) const = 0;
    virtual IValueType_e GetValueType(void) const = 0;
-   virtual const char* GetValueTypeStr(void) const = 0;
+   virtual uint8_t GetValueTypeSymbol(void) const = 0;
    virtual double GetFactor(void) const = 0;
    virtual double GetOffset(void) const = 0;
    virtual double GetMinimum(void) const = 0;
@@ -53,6 +52,7 @@ public:
    virtual const char* GetUnit(void) const = 0;
    virtual size_t GetReceiversCount(void) const = 0;
    virtual const char* GetReceiver(size_t index) const = 0;
+   virtual const char* ToString(void) = 0;
 
    // static variables
    static constexpr uint32_t NOT_MULTIPLEX_VALUE = 0xFFFFFFFF;

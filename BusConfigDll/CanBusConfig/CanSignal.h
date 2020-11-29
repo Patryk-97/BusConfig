@@ -37,17 +37,12 @@ public:
    void SetSize(uint32_t size);
 
    IByteOrder_e GetByteOrder(void) const override;
-   const char* GetByteOrderStr(void) const override;
-   void SetByteOrder(IByteOrder_e byteOrder);
-
-   uint8_t GetValueTypeSymbol(void) const override;
-   void SetValueTypeSymbol(uint8_t valueTypeSymbol);
+   uint8_t GetByteOrderSymbol(void) const override;
+   void SetByteOrderSymbol(uint8_t byteOrderSymbol);
 
    IValueType_e GetValueType(void) const override;
-   void SetValueType(IValueType_e valueType);
-
-   const char* GetValueTypeStr(void) const override;
-   void SetValueTypeStr(const char* valueTypeStr);
+   uint8_t GetValueTypeSymbol(void) const override;
+   void SetValueTypeSymbol(uint8_t valueTypeSymbol);
 
    double GetFactor(void) const override;
    void SetFactor(double factor);
@@ -68,6 +63,8 @@ public:
    const char* GetReceiver(size_t index) const override;
    void AddReceiver(const char* receiver);
 
+   const char* ToString(void) override;
+
 private:
    std::string name;
 
@@ -81,11 +78,9 @@ private:
 
    uint8_t byteOrderSymbol = ICanSignal::UNDEFINED_BYTE_ORDER_SYMBOL;  // 1 = little-endian, Intel; 0 = big-endian, Motorola
    IByteOrder_e byteOrder = IByteOrder_e::UNDEFINED;
-   std::string byteOrderStr;
 
    uint8_t valueTypeSymbol = ICanSignal::UNDEFINED_VALUE_TYPE_SYMBOL; //The value_type defines the signal as being of type unsigned (+) or signed (-). 
    IValueType_e valueType = IValueType_e::UNDEFINED_TYPE;
-   std::string valueTypeStr;
 
    double factor {};
    double offset {};
@@ -97,4 +92,6 @@ private:
    std::string unit;
 
    std::vector<std::string> receivers; //  nodes_names | 'Vector__XXX'
+
+   std::string stringRepresentation;
 };

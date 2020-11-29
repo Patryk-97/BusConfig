@@ -165,9 +165,11 @@
   <ItemGroup>
     <ClInclude Include="..\Interfaces\ICanBusConfig.h" />
     <ClInclude Include="..\Interfaces\ICanMessage.h" />
+    <ClInclude Include="..\Interfaces\ICanNode.h" />
     <ClInclude Include="..\Interfaces\ICanSignal.h" />
     <ClInclude Include="CanBusConfig\CanBusConfig.h" />
     <ClInclude Include="CanBusConfig\CanMessage.h" />
+    <ClInclude Include="CanBusConfig\CanNode.h" />
     <ClInclude Include="CanBusConfig\CanSignal.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -176,6 +178,7 @@
     <ClCompile Include="..\Interfaces\ICanBusConfig.cpp" />
     <ClCompile Include="CanBusConfig\CanBusConfig.cpp" />
     <ClCompile Include="CanBusConfig\CanMessage.cpp" />
+    <ClCompile Include="CanBusConfig\CanNode.cpp" />
     <ClCompile Include="CanBusConfig\CanSignal.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

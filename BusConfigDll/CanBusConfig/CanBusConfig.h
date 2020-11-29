@@ -2,6 +2,7 @@
 
 #include "ICanBusConfig.h"
 #include "CanMessage.h"
+#include "CanNode.h"
 #include <string>
 #include <vector>
 #include <utility>
@@ -20,6 +21,12 @@ public:
 
    bool Load(const char* filename) override;
 
+   size_t GetNodesCount(void) const override;
+   ICanNode* GetNodeByIndex(size_t index) const override;
+   ICanNode* GetNodeByName(const char* name) const override;
+   void AddNode(CanNode* node);
+   CanNode* CreateAndAddNode(void);
+
    size_t GetMessagesCount(void) const override;
    ICanMessage* GetMessageById(uint32_t id) const override;
    ICanMessage* GetMessageByName(const char* name) const override;
@@ -32,15 +39,18 @@ public:
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseSignalDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseNodeDefinition(std::ifstream& file, LineData_t& lineData);
 
 
    // member variables
    std::string log;
    std::vector<CanMessage*> messages;
+   std::vector<CanNode*> nodes;
 
    // static variables
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";
    static constexpr std::string_view SIGNAL_DEFINITION_HEADER = "SG_ ";
+   static constexpr std::string_view NODE_DEFINITION_HEADER = "BU_: ";
 
    // message definition
    static constexpr uint8_t MESSAGE_DEFINITION_ELEMENTS_COUNT = 5;
@@ -65,4 +75,7 @@ private:
    static constexpr uint8_t SIGNAL_MAXIMUM_POS = 10;
    static constexpr uint8_t SIGNAL_UNIT_POS = 11;
    static constexpr uint8_t SIGNAL_RECEIVER_POS = 12;
+
+   // node definition
+   static constexpr uint8_t NODE_DEFINITION_ELEMENTS_MIN_COUNT = 2;
 };

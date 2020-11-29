@@ -13,6 +13,11 @@
 #define lineNr lineData.second
 #endif
 
+using boost_escaped_separator = boost::escaped_list_separator<char>;
+using boost_char_separator = boost::char_separator<char>;
+using boost_escaped_separator_tokenizer = boost::tokenizer<boost_escaped_separator>;
+using boost_char_separator_tokenizer = boost::tokenizer<boost_char_separator>;
+
 namespace ranges = std::ranges;
 
 CanBusConfig::~CanBusConfig()
@@ -25,6 +30,8 @@ void CanBusConfig::Clear()
    this->log = "";
    for (auto& message : this->messages) { delete message; message = nullptr; }
    this->messages.clear();
+   for (auto& node : this->nodes) { delete node; node = nullptr; }
+   this->nodes.clear();
 }
 
 const char* CanBusConfig::GetLog(void) const
@@ -50,15 +57,50 @@ bool CanBusConfig::Load(const char* filename)
          {
             this->ParseMessageDefinition(file, lineData);
          }
-         if (line.starts_with(CanBusConfig::SIGNAL_DEFINITION_HEADER))
+         else if (line.starts_with(CanBusConfig::SIGNAL_DEFINITION_HEADER))
          {
             this->ParseSignalDefinition(file, lineData);
+         }
+         else if (line.starts_with(CanBusConfig::NODE_DEFINITION_HEADER))
+         {
+            this->ParseNodeDefinition(file, lineData);
          }
          lineNr++;
       }
    }
 
    return rV;
+}
+
+size_t CanBusConfig::GetNodesCount(void) const
+{
+   return this->nodes.size();
+}
+
+ICanNode* CanBusConfig::GetNodeByIndex(size_t index) const
+{
+   return (index < this->nodes.size() ? this->nodes[index] : nullptr);
+}
+
+ICanNode* CanBusConfig::GetNodeByName(const char* name) const
+{
+   auto it = ranges::find_if(this->nodes, [&name](CanNode* node) { return !std::strcmp(node->GetName(), name); });
+   return (it != this->nodes.end() ? *it : nullptr);
+}
+
+void CanBusConfig::AddNode(CanNode* node)
+{
+   if (node)
+   {
+      this->nodes.push_back(node);
+   }
+}
+
+CanNode* CanBusConfig::CreateAndAddNode(void)
+{
+   CanNode* node = new CanNode{};
+   this->nodes.push_back(node);
+   return node;
 }
 
 size_t CanBusConfig::GetMessagesCount(void) const
@@ -115,15 +157,14 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
 
    if (line.starts_with(CanBusConfig::MESSAGE_DEFINITION_HEADER))
    {
-      boost::char_separator<char> sep(" :");
-      boost::tokenizer<boost::char_separator<char>> tokenizer { line, sep };
+      boost_char_separator sep(" :");
+      boost_char_separator_tokenizer tokenizer { line, sep };
       
       // If everything's okay
       if (ranges::distance(tokenizer) == MESSAGE_DEFINITION_ELEMENTS_COUNT)
       {
-         uint8_t pos {};
          CanMessage* message = this->CreateAndAddMessage();
-         for (const auto& token : tokenizer)
+         for (uint8_t pos{}; const auto& token : tokenizer)
          {
             switch (pos)
             {
@@ -166,6 +207,10 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
                case MESSAGE_TRANSMITTER_POS:
                {
                   message->SetMainTransmitter(token.c_str());
+                  if (CanNode* node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
+                  {
+                     node->AddTxMessage(message);
+                  }
                   break;
                }
             }
@@ -202,18 +247,32 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
 
    if (line.starts_with(CanBusConfig::SIGNAL_DEFINITION_HEADER))
    {
-      boost::escaped_list_separator<char> sep("\\", " ", "\"");
-      boost::tokenizer<boost::escaped_list_separator<char>> tokenizer { line, sep };
+      boost_escaped_separator sep("\\", " :|@(,)[]", "\"");
+      boost_escaped_separator_tokenizer tokenizer { line, sep }; // remains empty tokens
+      std::vector<std::string> tokens;
+      for (const auto& token : tokenizer)
+      {
+         if (token != "")
+         {
+            if (token.size() == 2 && token.ends_with("+"))
+            {
+               tokens.push_back(std::string(1, token[0]));
+               tokens.push_back(std::string(1, token[1]));
+            }
+            else
+            {
+               tokens.push_back(token);
+            }
+         }
+      }
 
       // If everything's okay
-      if (ranges::distance(tokenizer) == SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
+      if (ranges::distance(tokens) >= SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         uint8_t pos{};
          CanSignal* signal = message->CreateAndAddSignal();
-         for (const auto& token : tokenizer)
+         for (uint8_t pos{}; const auto& token : tokens)
          {
-            std::cout << token << ", ";
-            /*if (pos == SIGNAL_MULTIPLEXED_INDICATOR_POS && !token.starts_with("m") && !token.starts_with("M"))
+            if (pos == SIGNAL_MULTIPLEXED_INDICATOR_POS && !token.starts_with("m") && !token.starts_with("M"))
             {
                pos++;
             }
@@ -263,7 +322,78 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                }
                case SIGNAL_BYTE_ORDER_POS:
                {
-                  signal->SetByteOrder(static_cast<ICanSignal::IByteOrder_e>(token[0] - '0'));
+                  signal->SetByteOrderSymbol(token[0]);
+                  break;
+               }
+               case SIGNAL_VALUE_TYPE_POS:
+               {
+                  signal->SetValueTypeSymbol(token[0]);
+                  break;
+               }
+               case SIGNAL_FACTOR_POS:
+               {
+                  try
+                  {
+                     signal->SetFactor(std::stod(token));
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Signal factor conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case SIGNAL_OFFSET_POS:
+               {
+                  try
+                  {
+                     signal->SetOffset(std::stod(token));
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Signal offset conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case SIGNAL_MINIMUM_POS:
+               {
+                  try
+                  {
+                     signal->SetMinimum(std::stod(token));
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Signal minimum conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case SIGNAL_MAXIMUM_POS:
+               {
+                  try
+                  {
+                     signal->SetMaximum(std::stod(token));
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Signal maximum conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case SIGNAL_UNIT_POS:
+               {
+                  signal->SetUnit(token.c_str());
+                  break;
+               }
+               default:
+               {
+                  signal->AddReceiver(token.c_str());
+                  if (CanNode* node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
+                  {
+                     node->AddRxSignal(signal);
+                  }
                   break;
                }
             }
@@ -274,9 +404,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                break;
             }
             ++pos;
-            */
          }
-         std::cout << "\n";
       }
       else
       {
@@ -286,6 +414,44 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
    else
    {
       this->log += "Signal definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   if (line.starts_with(CanBusConfig::NODE_DEFINITION_HEADER))
+   {
+      boost_char_separator sep(" ");
+      boost_char_separator_tokenizer tokenizer{ line, sep };
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) >= NODE_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         for (uint8_t pos{}; const auto& token : tokenizer)
+         {
+            if (pos == 0)
+            {
+               ++pos;
+               continue;
+            }
+            CanNode* node = this->CreateAndAddNode();
+            node->SetName(token.c_str());
+         }
+      }
+      else
+      {
+         this->log += "Invalid node definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Node definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 
