@@ -16,6 +16,7 @@ void CanMessage::Clear(void)
    this->mainTransmitter = "";
    for (auto& signal : this->signals) { delete signal; signal = nullptr; }
    this->signals.clear();
+   this->stringRepresentation = "";
 }
 
 uint32_t CanMessage::GetId(void) const
@@ -91,7 +92,7 @@ CanSignal* CanMessage::CreateAndAddSignal(void)
 
 const char* CanMessage::ToString(void)
 {
-   this->stringRepresentation += ("Message { id: " + std::to_string(this->id) + ", name: " + this->name);
+   this->stringRepresentation += "Message { id: " + std::to_string(this->id) + ", name: " + this->name;
    this->stringRepresentation += ", size: " + std::to_string(this->size) + ", transmitter: " + this->mainTransmitter + " }";
    return this->stringRepresentation.c_str();
 }
