@@ -250,33 +250,53 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
       boost_escaped_separator sep("\\", " :|@(,)[]", "\"");
       boost_escaped_separator_tokenizer tokenizer { line, sep }; // remains empty tokens
       std::vector<std::string> tokens;
-      for (const auto& token : tokenizer)
+
+      // prepare signal definition tokens
+      std::invoke([&tokenizer, &tokens, this]
       {
-         if (token != "")
+         for (size_t pos{}; const auto& token : tokenizer)
          {
-            if (token.size() == 2 && token.ends_with("+"))
+            if (token != "")
             {
-               tokens.push_back(std::string(1, token[0]));
-               tokens.push_back(std::string(1, token[1]));
+               if (pos == SIGNAL_MULTIPLEXED_INDICATOR_POS && !token.starts_with("m") && !token.starts_with("M"))
+               {
+                  tokens.push_back("");
+                  tokens.push_back(token);
+                  pos += 2;
+               }
+               else if (pos == SIGNAL_UNIT_POS && this->GetNodeByName(token.c_str()) != nullptr) // if "" - for unit element
+               {
+                  tokens.push_back("");
+                  tokens.push_back(token);
+                  pos += 2;
+               }
+               else if (token.size() == 2 && token.ends_with("+")) // split byte order and value type
+               {
+                  tokens.push_back(std::string{ 1, token[0] });
+                  tokens.push_back(std::string{ 1, token[1] });
+                  pos += 2;
+               }
+               else
+               {
+                  tokens.push_back(token);
+                  pos++;
+               }
             }
-            else
-            {
-               tokens.push_back(token);
-            }
-         }
-      }
+         }  
+      });
 
       // If everything's okay
       if (ranges::distance(tokens) >= SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
       {
          CanSignal* signal = message->CreateAndAddSignal();
+         signal->SetMessage(message);
+         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(this->GetNodeByName(message->GetMainTransmitter())); transmitterNode != nullptr)
+         {
+            transmitterNode->AddMappedTxSignal(signal);
+         }
+
          for (uint8_t pos{}; const auto& token : tokens)
          {
-            if (pos == SIGNAL_MULTIPLEXED_INDICATOR_POS && !token.starts_with("m") && !token.starts_with("M"))
-            {
-               pos++;
-            }
-
             switch (pos)
             {
                case SIGNAL_DEFINITION_HEADER_POS:
@@ -291,7 +311,10 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                }
                case SIGNAL_MULTIPLEXED_INDICATOR_POS:
                {
-                  signal->SetMuxIndicator(token.c_str());
+                  if (token != "")
+                  {
+                     signal->SetMuxIndicator(token.c_str());
+                  }
                   break;
                }
                case SIGNAL_START_BIT_POS:
@@ -392,7 +415,8 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                   signal->AddReceiver(token.c_str());
                   if (CanNode* node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
                   {
-                     node->AddRxSignal(signal);
+                     node->AddMappedRxSignal(signal);
+                     node->AddRxMessage(dynamic_cast<CanMessage*>(signal->GetMessage()));
                   }
                   break;
                }

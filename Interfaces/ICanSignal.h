@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+class ICanMessage;
+
 class ICanSignal
 {
 protected:
@@ -52,6 +54,7 @@ public:
    virtual const char* GetUnit(void) const = 0;
    virtual size_t GetReceiversCount(void) const = 0;
    virtual const char* GetReceiver(size_t index) const = 0;
+   virtual ICanMessage* GetMessage(void) const = 0;
    virtual const char* ToString(void) = 0;
 
    // static variables

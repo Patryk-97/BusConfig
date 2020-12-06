@@ -1,4 +1,5 @@
 #include "CanSignal.h"
+#include "CanMessage.h"
 
 using namespace std::string_literals;
 
@@ -26,6 +27,7 @@ void CanSignal::Clear(void)
    this->maximum = 0.0;
    this->unit = "";
    this->receivers.clear();
+   this->message = nullptr;
    this->stringRepresentation = "";
 }
 
@@ -245,6 +247,16 @@ void CanSignal::AddReceiver(const char* receiver)
    {
       this->receivers.push_back(receiver);
    }
+}
+
+ICanMessage* CanSignal::GetMessage(void) const
+{
+   return this->message;
+}
+
+void CanSignal::SetMessage(CanMessage* message)
+{
+   this->message = message;
 }
 
 const char* CanSignal::ToString(void)

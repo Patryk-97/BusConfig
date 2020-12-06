@@ -17,8 +17,11 @@ private slots:
 private:
 
    bool LoadFile(const QString& fileName);
+   bool LoadDbcFile(const QString& fileName);
+   void AddLog(const QString& log);
+   void BuildTree(void);
 
    // member variables
     Ui::BusConfigUIClass ui;
-    ICanBusConfig* canBusConfig;
+    ICanBusConfig* canBusConfig { nullptr };
 };

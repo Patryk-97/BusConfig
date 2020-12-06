@@ -3,6 +3,7 @@
 #include "ICanNode.h"
 #include "CanMessage.h"
 #include <string>
+#include <set>
 
 class CanNode : public ICanNode
 {
@@ -18,12 +19,32 @@ public:
    ICanMessage* GetTxMessageByIndex(size_t index) const override;
    void AddTxMessage(CanMessage* txMessage);
 
-   size_t GetRxSignalsCount(void) const override;
-   ICanSignal* GetRxSignalByIndex(size_t index) const override;
-   void AddRxSignal(CanSignal* rxSignal);
+   size_t GetRxMessagesCount(void) const override;
+   ICanMessage* GetRxMessageByIndex(size_t index) const override;
+   void AddRxMessage(CanMessage* rxMessage);
+
+   size_t GetMappedTxSignalsCount(void) const override;
+   ICanSignal* GetMappedTxSignalByIndex(size_t index) const override;
+   void AddMappedTxSignal(CanSignal* mappedTxSignal);
+
+   size_t GetMappedRxSignalsCount(void) const override;
+   ICanSignal* GetMappedRxSignalByIndex(size_t index) const override;
+   void AddMappedRxSignal(CanSignal* mappedRxSignal);
 
 private:
+
+   template <typename T>
+   struct Comparator
+   {
+      bool operator() (const T* t1, const T* t2) const
+      {
+         return std::strcmp(t1->GetName(), t2->GetName()) < 0;
+      }
+   };
+
    std::string name;
-   std::vector<CanMessage*> txMessages;
-   std::vector<CanSignal*> rxSignals;
+   std::set<CanMessage*, Comparator<CanMessage>> txMessages;
+   std::set<CanMessage*, Comparator<CanMessage>> rxMessages;
+   std::set<CanSignal*, Comparator<CanSignal>> mappedTxSignals;
+   std::set<CanSignal*, Comparator<CanSignal>> mappedRxSignals;
 };

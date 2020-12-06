@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+class CanMessage;
+
 class CanSignal : public ICanSignal
 {
 public:
@@ -63,6 +65,9 @@ public:
    const char* GetReceiver(size_t index) const override;
    void AddReceiver(const char* receiver);
 
+   ICanMessage* GetMessage(void) const override;
+   void SetMessage(CanMessage* message);
+
    const char* ToString(void) override;
 
 private:
@@ -92,6 +97,8 @@ private:
    std::string unit;
 
    std::vector<std::string> receivers; //  nodes_names | 'Vector__XXX'
+
+   CanMessage* message { nullptr };
 
    std::string stringRepresentation;
 };

@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>729</height>
+    <width>1159</width>
+    <height>757</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>BusConfigUI</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -30,7 +33,10 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QTreeWidget" name="treeWidget">
+          <widget class="QTreeWidget" name="treeWidget_MainView">
+           <property name="headerHidden">
+            <bool>true</bool>
+           </property>
            <column>
             <property name="text">
              <string notr="true">1</string>
@@ -51,7 +57,7 @@
          <widget class="QWidget" name="widget" native="true">
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0">
-            <widget class="QTextBrowser" name="textBrowser"/>
+            <widget class="QTextBrowser" name="textBrowser_Log"/>
            </item>
           </layout>
          </widget>
@@ -64,8 +70,18 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="pushButton_Find">
+        <property name="mouseTracking">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
         <property name="text">
          <string>Find</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>icons/search.png</normaloff>icons/search.png</iconset>
         </property>
        </widget>
       </item>
@@ -81,17 +97,17 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>876</width>
+     <width>1159</width>
      <height>26</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menusiema">
+   <widget class="QMenu" name="menu_Main">
     <property name="title">
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
    </widget>
-   <addaction name="menusiema"/>
+   <addaction name="menu_Main"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
