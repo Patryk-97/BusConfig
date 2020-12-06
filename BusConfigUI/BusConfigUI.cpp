@@ -42,6 +42,12 @@ BusConfigUI::BusConfigUI(QWidget *parent)
     }
 }
 
+void BusConfigUI::on_actionClear_triggered()
+{
+   this->Clear();
+   this->AddLog("Database cleaned");
+}
+
 void BusConfigUI::on_actionOpen_triggered()
 {
    QFileDialog dlgOpen(this);
@@ -53,6 +59,16 @@ void BusConfigUI::on_actionOpen_triggered()
    {
       fileName = dlgOpen.selectedFiles();
       this->LoadFile(fileName[0]);
+   }
+}
+
+void BusConfigUI::on_actionExit_triggered()
+{
+   const auto buttonResult = QMessageBox::question(this, "BusConfigUI", tr("Are you sure to close application?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+   if (buttonResult == QMessageBox::Yes)
+   {
+      this->Clear();
+      QApplication::quit();
    }
 }
 
@@ -82,12 +98,12 @@ bool BusConfigUI::LoadDbcFile(const QString& fileName)
    this->canBusConfig->Clear();
    if (this->canBusConfig->Load(fileName.toUtf8()))
    {
-      this->AddLog(QString("Successfully loaded file: ") + fileName + QString("\r\n"));
+      this->AddLog(QString{ "Successfully loaded file: " } + fileName);
       this->BuildTree();
    }
    else
    {
-      this->AddLog(QString("Loading file: ") + fileName + QString(" failed\r\n"));
+      this->AddLog(QString{ "Loading file: " } + fileName + QString{ " failed" });
    }
 
    return rV;
@@ -191,4 +207,10 @@ void BusConfigUI::BuildTree(void)
          }
       }
    }
+}
+
+void BusConfigUI::Clear(void)
+{
+   this->canBusConfig->Clear();
+   this->ui.treeWidget_MainView->clear();
 }

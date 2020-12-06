@@ -13,13 +13,16 @@ public:
 
 
 private slots:
+   void on_actionClear_triggered();
    void on_actionOpen_triggered();
+   void on_actionExit_triggered();
 private:
 
    bool LoadFile(const QString& fileName);
    bool LoadDbcFile(const QString& fileName);
    void AddLog(const QString& log);
    void BuildTree(void);
+   void Clear(void);
 
    // member variables
     Ui::BusConfigUIClass ui;

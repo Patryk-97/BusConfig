@@ -1,4 +1,9 @@
 <RCC>
-    <qresource prefix="BusConfigUI">
-    </qresource>
+  <qresource prefix="BusConfigUI">
+    <file>Icons/add.png</file>
+    <file>Icons/clear.png</file>
+    <file>Icons/exit.png</file>
+    <file>Icons/find.png</file>
+    <file>Icons/open.png</file>
+  </qresource>
 </RCC>

@@ -80,8 +80,8 @@
          <string>Find</string>
         </property>
         <property name="icon">
-         <iconset>
-          <normaloff>icons/search.png</normaloff>icons/search.png</iconset>
+         <iconset resource="BusConfigUI.qrc">
+          <normaloff>:/BusConfigUI/Icons/find.png</normaloff>:/BusConfigUI/Icons/find.png</iconset>
         </property>
        </widget>
       </item>
@@ -105,22 +105,64 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionClear"/>
     <addaction name="actionOpen"/>
+    <addaction name="actionAdd"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menu_Main"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="separator"/>
+   <addaction name="actionClear"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionAdd"/>
+   <addaction name="actionExit"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/open.png</normaloff>:/BusConfigUI/Icons/open.png</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/add.png</normaloff>:/BusConfigUI/Icons/add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/exit.png</normaloff>:/BusConfigUI/Icons/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/clear.png</normaloff>:/BusConfigUI/Icons/clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
    </property>
   </action>
  </widget>
