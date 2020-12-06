@@ -35,6 +35,11 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->AddLog("Successfully loaded BusConfigDll.dll");
        this->setWindowState(Qt::WindowMaximized);
        this->canBusConfig = dllLoader.pfCreate();
+
+       this->icons[Icon_e::MESSAGE] = QIcon(QString("icons/message.png"));
+       this->icons[Icon_e::SIGNAL] = QIcon(QString("icons/signal.png"));
+       this->icons[Icon_e::NETWORK_NODE] = QIcon(QString("icons/network-node.png"));
+       this->icons[Icon_e::NETWORK] = QIcon(QString("icons/network.png"));
     }
     else
     {
@@ -99,6 +104,7 @@ bool BusConfigUI::LoadDbcFile(const QString& fileName)
    if (this->canBusConfig->Load(fileName.toUtf8()))
    {
       this->AddLog(QString{ "Successfully loaded file: " } + fileName);
+      this->AddLog(this->canBusConfig->GetLog());
       this->BuildTree();
    }
    else
@@ -119,9 +125,11 @@ void BusConfigUI::BuildTree(void)
    auto networkTreeItem = new QTreeWidgetItem{ this->ui.treeWidget_MainView };
    this->ui.treeWidget_MainView->addTopLevelItem(networkTreeItem);
    networkTreeItem->setText(0, "Network");
+   networkTreeItem->setIcon(0, this->icons[Icon_e::NETWORK]);
 
    auto networkNodesTreeItem = new QTreeWidgetItem{ networkTreeItem };
    networkNodesTreeItem->setText(0, "Network nodes");
+   networkNodesTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
    size_t canNodesCount = this->canBusConfig->GetNodesCount();
    for (size_t i = 0; i < canNodesCount; i++)
    {
@@ -129,10 +137,12 @@ void BusConfigUI::BuildTree(void)
       {
          auto canNodeTreeItem = new QTreeWidgetItem{ networkNodesTreeItem };
          canNodeTreeItem->setText(0, canNode->GetName());
+         canNodeTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
 
          // Tx Messages
          auto txMessagesTreeItem = new QTreeWidgetItem{ canNodeTreeItem };
          txMessagesTreeItem->setText(0, "Tx Messages");
+         txMessagesTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
          size_t txMessagesCount = canNode->GetTxMessagesCount();
          for (size_t j = 0; j < txMessagesCount; j++)
          {
@@ -140,12 +150,14 @@ void BusConfigUI::BuildTree(void)
             {
                auto txMessageTreeItem = new QTreeWidgetItem{ txMessagesTreeItem };
                txMessageTreeItem->setText(0, txMessage->GetName());
+               txMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
             }
          }
 
          // Rx Messages
          auto rxMessagesTreeItem = new QTreeWidgetItem{ canNodeTreeItem };
          rxMessagesTreeItem->setText(0, "Rx Messages");
+         rxMessagesTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
          size_t rxMessagesCount = canNode->GetRxMessagesCount();
          for (size_t j = 0; j < rxMessagesCount; j++)
          {
@@ -153,12 +165,14 @@ void BusConfigUI::BuildTree(void)
             {
                auto rxMessageTreeItem = new QTreeWidgetItem{ rxMessagesTreeItem };
                rxMessageTreeItem->setText(0, rxMessage->GetName());
+               rxMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
             }
          }
 
          // Mapped Tx Signals
          auto txSignalsTreeItem = new QTreeWidgetItem{ canNodeTreeItem };
          txSignalsTreeItem->setText(0, "Mapped Tx Signals");
+         txSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
          size_t txSignalsCount = canNode->GetMappedTxSignalsCount();
          for (size_t j = 0; j < txSignalsCount; j++)
          {
@@ -166,12 +180,14 @@ void BusConfigUI::BuildTree(void)
             {
                auto txSignalTreeItem = new QTreeWidgetItem{ txSignalsTreeItem };
                txSignalTreeItem->setText(0, txSignal->GetName());
+               txSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
             }
          }
 
          // Mapped Rx Signals
          auto rxSignalsTreeItem = new QTreeWidgetItem { canNodeTreeItem };
          rxSignalsTreeItem->setText(0, "Mapped Rx Signals");
+         rxSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
          size_t rxSignalsCount = canNode->GetMappedRxSignalsCount();
          for (size_t j = 0; j < rxSignalsCount; j++)
          {
@@ -179,6 +195,7 @@ void BusConfigUI::BuildTree(void)
             {
                auto rxSignalTreeItem = new QTreeWidgetItem{ rxSignalsTreeItem };
                rxSignalTreeItem->setText(0, rxSignal->GetName());
+               rxSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
             }
          }
       }
@@ -186,8 +203,10 @@ void BusConfigUI::BuildTree(void)
 
    auto canMessagesTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canMessagesTreeItem->setText(0, "Messages");
+   canMessagesTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
    auto canSignalsTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canSignalsTreeItem->setText(0, "Signals");
+   canSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
    size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
    for (size_t i = 0; i < canMessagesCount; i++)
    {
@@ -195,6 +214,7 @@ void BusConfigUI::BuildTree(void)
       {
          auto canMessageTreeItem = new QTreeWidgetItem{ canMessagesTreeItem };
          canMessageTreeItem->setText(0, canMessage->GetName());
+         canMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
 
          size_t canSignalsCount = canMessage->GetSignalsCount();
          for (size_t j = 0; j < canSignalsCount; j++)
@@ -203,6 +223,7 @@ void BusConfigUI::BuildTree(void)
             {
                auto canSignalTreeItem = new QTreeWidgetItem{ canSignalsTreeItem };
                canSignalTreeItem->setText(0, canSignal->GetName());
+               canSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
             }
          }
       }

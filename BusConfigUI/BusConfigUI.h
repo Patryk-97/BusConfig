@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_BusConfigUI.h"
 #include "ICanBusConfig.h"
+#include <qmap.h>
 
 class BusConfigUI : public QMainWindow
 {
@@ -27,4 +28,15 @@ private:
    // member variables
     Ui::BusConfigUIClass ui;
     ICanBusConfig* canBusConfig { nullptr };
+
+
+    enum class Icon_e
+    {
+       MESSAGE = 0,
+       SIGNAL = 1,
+       NETWORK_NODE = 2,
+       NETWORK = 3
+    };
+
+    QMap<Icon_e, QIcon> icons;
 };
