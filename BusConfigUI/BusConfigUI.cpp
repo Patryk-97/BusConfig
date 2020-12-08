@@ -46,6 +46,9 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->icons[Icon_e::SIGNAL] = QIcon(QString("icons/signal.png"));
        this->icons[Icon_e::NETWORK_NODE] = QIcon(QString("icons/network-node.png"));
        this->icons[Icon_e::NETWORK] = QIcon(QString("icons/network.png"));
+
+       // golden ratio proportion in splitter
+       this->ui.splitter->setSizes({ static_cast<int>(10000 - 10000 / 1.618), static_cast<int>(10000 / 1.618) });
     }
     else
     {

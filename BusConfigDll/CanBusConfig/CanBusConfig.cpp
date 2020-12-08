@@ -540,7 +540,7 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
       // prepare value table definition tokens
       std::invoke([&tokenizer, &tokens, this]
       {
-         for (const auto & token : tokenizer)
+         for (const auto& token : tokenizer)
          {
             if (token != "")
             {
@@ -550,9 +550,9 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
       });
 
       // If everything's okay
-      if (ranges::distance(tokenizer) >= VALUE_TABLE_DEFINITION_ELEMENTS_MIN_COUNT)
+      if (ranges::distance(tokens) >= VALUE_TABLE_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         for (uint8_t pos{}; const auto & token : tokenizer)
+         for (uint8_t pos{}; const auto& token : tokens)
          {
             switch (pos)
             {
@@ -620,7 +620,8 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                         catch (...)
                         {
                            rV = false;
-                           this->log += "Value conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           this->log += "Value conversion failed, value: " + token;
+                           this->log += " [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
                         }
                      }
                      // description
