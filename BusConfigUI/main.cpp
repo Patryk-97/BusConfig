@@ -1,7 +1,5 @@
 #include "BusConfigUI.h"
 #include <QtWidgets/QApplication>
-#include <qstylefactory.h>
-#include <qsplashscreen.h>
 
 int main(int argc, char *argv[])
 {

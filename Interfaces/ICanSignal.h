@@ -1,8 +1,9 @@
 #pragma once
 
 #include <stdint.h>
+#include "ICanValueTable.h"
 
-class ICanMessage;
+class ICanMessage; // circular dependency
 
 class ICanSignal
 {
@@ -55,6 +56,7 @@ public:
    virtual size_t GetReceiversCount(void) const = 0;
    virtual const char* GetReceiver(size_t index) const = 0;
    virtual ICanMessage* GetMessage(void) const = 0;
+   virtual ICanValueTable* GetValueTable(void) const = 0;
    virtual const char* ToString(void) = 0;
 
    // static variables

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "ICanSignal.h"
+#include "CanValueTable.h"
 
 #include <string>
 #include <vector>
 
-class CanMessage;
+class CanMessage; // circular dependency
 
 class CanSignal : public ICanSignal
 {
@@ -68,6 +69,9 @@ public:
    ICanMessage* GetMessage(void) const override;
    void SetMessage(CanMessage* message);
 
+   ICanValueTable* GetValueTable(void) const override;
+   void SetValueTable(CanValueTable* valueTable);
+
    const char* ToString(void) override;
 
 private:
@@ -99,6 +103,8 @@ private:
    std::vector<std::string> receivers; //  nodes_names | 'Vector__XXX'
 
    CanMessage* message { nullptr };
+
+   CanValueTable* valueTable { nullptr };
 
    std::string stringRepresentation;
 };

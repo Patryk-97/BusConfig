@@ -1,5 +1,6 @@
 #include "CanSignal.h"
-#include "CanMessage.h"
+#include "CanMessage.h" // circular dependency
+#include "helpers.h"
 
 using namespace std::string_literals;
 
@@ -28,6 +29,7 @@ void CanSignal::Clear(void)
    this->unit = "";
    this->receivers.clear();
    this->message = nullptr;
+   helpers::ClearPtr(this->valueTable);
    this->stringRepresentation = "";
 }
 
@@ -257,6 +259,16 @@ ICanMessage* CanSignal::GetMessage(void) const
 void CanSignal::SetMessage(CanMessage* message)
 {
    this->message = message;
+}
+
+ICanValueTable* CanSignal::GetValueTable(void) const
+{
+   return this->valueTable;
+}
+
+void CanSignal::SetValueTable(CanValueTable* valueTable)
+{
+   this->valueTable = valueTable;
 }
 
 const char* CanSignal::ToString(void)

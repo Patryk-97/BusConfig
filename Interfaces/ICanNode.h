@@ -18,4 +18,7 @@ public:
    virtual ICanSignal* GetMappedTxSignalByIndex(size_t index) const = 0;
    virtual size_t GetMappedRxSignalsCount(void) const = 0;
    virtual ICanSignal* GetMappedRxSignalByIndex(size_t index) const = 0;
+
+   // static variables
+   constexpr static const char * PSEUDO_NODE_NAME = "Vector__XXX";
 };

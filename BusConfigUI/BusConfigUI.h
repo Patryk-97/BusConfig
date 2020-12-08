@@ -17,6 +17,7 @@ private slots:
    void on_actionClear_triggered();
    void on_actionOpen_triggered();
    void on_actionExit_triggered();
+   void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 private:
 
    bool LoadFile(const QString& fileName);

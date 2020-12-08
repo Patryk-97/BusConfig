@@ -36,7 +36,7 @@ BU_: Airbag BAP_Tester ICAS1_Gateway ICAS1_KommunikationsServer LE1 LE2 Motor_BE
 
 
 BO_ 333 ACC_18: 32 ICAS1_Gateway
- SG_ ACC_18_CRC : 0|8@1+ (1,0) [0|255] "mietek ooo"  Motor_BEV
+ SG_ ACC_18_CRC : 0|8@1+ (1,0) [0|255] ""  Motor_BEV
  SG_ ACC_18_BZ : 8|4@1+ (1,0) [0|15] ""  Motor_BEV
  SG_ ACC_limitierte_Anfahrdyn : 12|1@1+ (1.0,0.0) [0.0|1] ""  Motor_BEV
  SG_ ACC_nachtr_Stopp_Anf : 13|1@1+ (1.0,0.0) [0.0|1] ""  Vector__XXX

@@ -2,6 +2,7 @@
 
 #include "ICanMessage.h"
 #include "ICanNode.h"
+#include "ICanEnvVar.h"
 
 // Classes
 class ICanBusConfig;
@@ -30,4 +31,8 @@ public:
    virtual ICanMessage* GetMessageByIndex(size_t index) const = 0;
    virtual ICanMessage* GetMessageFront(void) const = 0;
    virtual ICanMessage* GetMessageBack(void) const = 0;
+
+   virtual size_t GetEnvVarsCount(void) const = 0;
+   virtual ICanEnvVar* GetEnvVarByIndex(size_t index) const = 0;
+   virtual ICanEnvVar* GetEnvVarByName(const char* name) const = 0;
 };

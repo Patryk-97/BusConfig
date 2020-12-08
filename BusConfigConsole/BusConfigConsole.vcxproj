@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
+    <ClInclude Include="..\Utils\helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusConfigDll\BusConfigDll.vcxproj">

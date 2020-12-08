@@ -91,7 +91,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;../Utils;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,7 +111,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;../Utils;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,7 +130,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;../Utils;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -150,7 +150,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interfaces;CanBusConfig;../Utils;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -164,22 +164,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Interfaces\ICanBusConfig.h" />
+    <ClInclude Include="..\Interfaces\ICanEnvVar.h" />
     <ClInclude Include="..\Interfaces\ICanMessage.h" />
     <ClInclude Include="..\Interfaces\ICanNode.h" />
     <ClInclude Include="..\Interfaces\ICanSignal.h" />
+    <ClInclude Include="..\Interfaces\ICanValueDescription.h" />
+    <ClInclude Include="..\Interfaces\ICanValueTable.h" />
+    <ClInclude Include="..\Utils\helpers.h" />
     <ClInclude Include="CanBusConfig\CanBusConfig.h" />
+    <ClInclude Include="CanBusConfig\CanEnvVar.h" />
     <ClInclude Include="CanBusConfig\CanMessage.h" />
     <ClInclude Include="CanBusConfig\CanNode.h" />
     <ClInclude Include="CanBusConfig\CanSignal.h" />
+    <ClInclude Include="CanBusConfig\CanValueDescription.h" />
+    <ClInclude Include="CanBusConfig\CanValueTable.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Interfaces\ICanBusConfig.cpp" />
     <ClCompile Include="CanBusConfig\CanBusConfig.cpp" />
+    <ClCompile Include="CanBusConfig\CanEnvVar.cpp" />
     <ClCompile Include="CanBusConfig\CanMessage.cpp" />
     <ClCompile Include="CanBusConfig\CanNode.cpp" />
     <ClCompile Include="CanBusConfig\CanSignal.cpp" />
+    <ClCompile Include="CanBusConfig\CanValueDescription.cpp" />
+    <ClCompile Include="CanBusConfig\CanValueTable.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

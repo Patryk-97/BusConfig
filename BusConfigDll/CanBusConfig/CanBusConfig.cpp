@@ -1,6 +1,7 @@
 #include "CanBusConfig.h"
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include "helpers.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -28,10 +29,9 @@ CanBusConfig::~CanBusConfig()
 void CanBusConfig::Clear()
 {
    this->log = "";
-   for (auto& message : this->messages) { delete message; message = nullptr; }
-   this->messages.clear();
-   for (auto& node : this->nodes) { delete node; node = nullptr; }
-   this->nodes.clear();
+   helpers::ClearContainer(this->messages);
+   helpers::ClearContainer(this->nodes);
+   helpers::ClearContainer(this->envVars);
 }
 
 const char* CanBusConfig::GetLog(void) const
@@ -64,6 +64,10 @@ bool CanBusConfig::Load(const char* filename)
          else if (line.starts_with(CanBusConfig::NODE_DEFINITION_HEADER))
          {
             this->ParseNodeDefinition(file, lineData);
+         }
+         else if (line.starts_with(CanBusConfig::VALUE_TABLE_DEFINITION_HEADER))
+         {
+            this->ParseValueTableDefinition(file, lineData);
          }
          lineNr++;
       }
@@ -150,6 +154,37 @@ CanMessage* CanBusConfig::CreateAndAddMessage(void)
    return message;
 }
 
+size_t CanBusConfig::GetEnvVarsCount(void) const
+{
+   return this->envVars.size();
+}
+
+ICanEnvVar* CanBusConfig::GetEnvVarByIndex(size_t index) const
+{
+   return (index < this->envVars.size() ? this->envVars[index] : nullptr);
+}
+
+ICanEnvVar* CanBusConfig::GetEnvVarByName(const char* name) const
+{
+   auto it = ranges::find_if(this->envVars, [&name](CanEnvVar* envVar) { return !std::strcmp(envVar->GetName(), name); });
+   return (it != this->envVars.end() ? *it : nullptr);
+}
+
+void CanBusConfig::AddEnvVarByName(CanEnvVar* envVar)
+{
+   if (envVar)
+   {
+      this->envVars.push_back(envVar);
+   }
+}
+
+CanEnvVar* CanBusConfig::CreateAndAddEnvVar(void)
+{
+   CanEnvVar* envVar = new CanEnvVar {};
+   this->envVars.push_back(envVar);
+   return envVar;
+}
+
 bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)
 {
    // locals
@@ -225,6 +260,7 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
       }
       else
       {
+         rV = false;
          this->log += "Invalid message definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       }
    }
@@ -264,7 +300,8 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                   tokens.push_back(token);
                   pos += 2;
                }
-               else if (pos == SIGNAL_UNIT_POS && this->GetNodeByName(token.c_str()) != nullptr) // if "" - for unit element
+               else if (pos == SIGNAL_UNIT_POS &&
+                  (this->GetNodeByName(token.c_str()) != nullptr || token == ICanNode::PSEUDO_NODE_NAME)) // if "" - for unit element
                {
                   tokens.push_back("");
                   tokens.push_back(token);
@@ -286,7 +323,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
       });
 
       // If everything's okay
-      if (ranges::distance(tokens) >= SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
+      if (const auto elementsCount = ranges::distance(tokens); elementsCount >= SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
       {
          CanSignal* signal = message->CreateAndAddSignal();
          signal->SetMessage(message);
@@ -432,7 +469,9 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
       }
       else
       {
-         this->log += "Invalid signal definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         rV = false;
+         this->log += "Invalid signal definition elements count: " + std::to_string(elementsCount);
+         this->log += " [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       }
    }
    else
@@ -470,12 +509,150 @@ bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData
       }
       else
       {
+         rV = false;
          this->log += "Invalid node definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       }
    }
    else
    {
       this->log += "Node definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   ICanMessage* message { nullptr }; // only if signal is value owner
+   CanValueTable* valueTable { nullptr };
+   CanValueDescription* valueDescription { nullptr };
+
+   if (line.starts_with(CanBusConfig::VALUE_TABLE_DEFINITION_HEADER))
+   {
+      boost_escaped_separator sep("\\", " ;", "\"");
+      boost_escaped_separator_tokenizer tokenizer{ line, sep }; // remains empty tokens
+      std::vector<std::string> tokens;
+
+      // prepare value table definition tokens
+      std::invoke([&tokenizer, &tokens, this]
+      {
+         for (const auto & token : tokenizer)
+         {
+            if (token != "")
+            {
+               tokens.push_back(token);
+            }
+         }
+      });
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) >= VALUE_TABLE_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         for (uint8_t pos{}; const auto & token : tokenizer)
+         {
+            switch (pos)
+            {
+               case VALUE_TABLE_DEFINITION_HEADER_POS:
+               {
+                  // do nothing
+                  break;
+               }
+               case VALUE_TABLE_ENV_VAR_NAME_POS:
+               {
+                  try
+                  {
+                     message = this->GetMessageById(std::stoul(token));
+                     if (message == nullptr)
+                     {
+                        rV = false;
+                        this->log += "Not found message [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                  }
+                  catch (...)
+                  {
+                     if (CanEnvVar* envVar = dynamic_cast<CanEnvVar*>(this->GetEnvVarByName(token.c_str())); envVar != nullptr)
+                     {
+                        valueTable = new CanValueTable {};
+                        envVar->SetValueTable(valueTable);
+                        pos++;
+                     }
+                     else
+                     {
+                        rV = false;
+                        this->log += "Not found value owner [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                  }
+                  break;
+               }
+               case VALUE_TABLE_SIGNAL_NAME_POS:
+               {
+                  if (message != nullptr)
+                  {
+                     if (CanSignal* signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
+                     {
+                        valueTable = new CanValueTable {};
+                        signal->SetValueTable(valueTable);
+                     }
+                     else
+                     {
+                        rV = false;
+                        this->log += "Not found value owner [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                  }
+                  break;
+               }
+               default:
+               {
+                  if (valueTable)
+                  {
+                     // value
+                     if (pos % 2 == 1)
+                     {
+                        valueDescription = valueTable->CreateAndAddValueDescription();
+                        try
+                        {
+                           valueDescription->SetValue(std::stoul(token));
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Value conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     }
+                     // description
+                     else
+                     {
+                        if (valueDescription)
+                        {
+                           valueDescription->SetDescription(token.c_str());
+                        }
+                     }
+                  }
+                  break;
+               }
+            }
+
+            // If something went wrong
+            if (!rV)
+            {
+               break;
+            }
+            ++pos;
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid value table definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Value table definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 

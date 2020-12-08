@@ -3,6 +3,7 @@
 #include "ICanBusConfig.h"
 #include "CanMessage.h"
 #include "CanNode.h"
+#include "CanEnvVar.h"
 #include <string>
 #include <vector>
 #include <utility>
@@ -36,21 +37,30 @@ public:
    void AddMessage(CanMessage* message);
    CanMessage* CreateAndAddMessage(void);
 
+   size_t GetEnvVarsCount(void) const override;
+   ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
+   ICanEnvVar* GetEnvVarByName(const char* name) const override;
+   void AddEnvVarByName(CanEnvVar* envVar);
+   CanEnvVar* CreateAndAddEnvVar(void);
+
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseSignalDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseNodeDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData);
 
 
    // member variables
    std::string log;
    std::vector<CanMessage*> messages;
    std::vector<CanNode*> nodes;
+   std::vector<CanEnvVar*> envVars;
 
    // static variables
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";
    static constexpr std::string_view SIGNAL_DEFINITION_HEADER = "SG_ ";
    static constexpr std::string_view NODE_DEFINITION_HEADER = "BU_: ";
+   static constexpr std::string_view VALUE_TABLE_DEFINITION_HEADER = "VAL_ ";
 
    // message definition
    static constexpr uint8_t MESSAGE_DEFINITION_ELEMENTS_COUNT = 5;
@@ -61,7 +71,7 @@ private:
    static constexpr uint8_t MESSAGE_TRANSMITTER_POS = 4;
 
    // signal definition
-   static constexpr uint8_t SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT = 11;
+   static constexpr uint8_t SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT = 13;
    static constexpr uint8_t SIGNAL_DEFINITION_HEADER_POS = 0;
    static constexpr uint8_t SIGNAL_NAME_POS = 1;
    static constexpr uint8_t SIGNAL_MULTIPLEXED_INDICATOR_POS = 2;
@@ -78,4 +88,11 @@ private:
 
    // node definition
    static constexpr uint8_t NODE_DEFINITION_ELEMENTS_MIN_COUNT = 2;
+
+   // value table definition
+   static constexpr uint8_t VALUE_TABLE_DEFINITION_ELEMENTS_MIN_COUNT = 4;
+   static constexpr uint8_t VALUE_TABLE_DEFINITION_HEADER_POS = 0;
+   static constexpr uint8_t VALUE_TABLE_ENV_VAR_NAME_POS = 1;
+   static constexpr uint8_t VALUE_TABLE_MESSAGE_ID_POS = 1;
+   static constexpr uint8_t VALUE_TABLE_SIGNAL_NAME_POS = 2;
 };

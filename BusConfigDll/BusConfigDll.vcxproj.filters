@@ -16,6 +16,9 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{430afae3-f561-47f5-ace2-6f51e9657334}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{d8253de9-ea8d-4d7f-9548-818af9dc0557}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -48,6 +51,27 @@
     <ClInclude Include="CanBusConfig\CanNode.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanValueDescription.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanValueTable.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanValueTable.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanValueDescription.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utils\helpers.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanEnvVar.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanEnvVar.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -69,6 +93,15 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanNode.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanValueTable.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanValueDescription.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanEnvVar.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>

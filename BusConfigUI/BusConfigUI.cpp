@@ -6,6 +6,12 @@
 
 DllLoader<ICanBusConfig, bool> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
+template <typename T>
+inline QString toQString(const T& parameter)
+{
+   return QStringLiteral("%1").arg(parameter);
+}
+
 bool LoadBusConfigDll(void)
 {
    // local variables
@@ -77,6 +83,52 @@ void BusConfigUI::on_actionExit_triggered()
    }
 }
 
+void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+{
+   size_t itemIndex = (size_t)-1;
+   this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+   if (current != nullptr)
+   {
+      const QString text = current->text(0);
+      const QString itemType = current->whatsThis(0);
+      if (itemType == "CanMessage")
+      {
+         if (const auto message = this->canBusConfig->GetMessageByName(text.toUtf8()); message != nullptr)
+         {
+            QStringList headerLabels;
+            headerLabels << "Name" << "ID" << "Size";
+            this->ui.tableWidget_Properties->setRowCount(1);
+            this->ui.tableWidget_Properties->setColumnCount(3);
+            this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+            this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem { message->GetName() });
+            this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem { toQString(message->GetId()) });
+            this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem { toQString(message->GetSize()) });
+            this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+         }
+      }
+      else if (itemType == "CanMessages")
+      {
+         size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
+         QStringList headerLabels;
+         headerLabels << "Name" << "ID" << "Size";
+         this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
+         this->ui.tableWidget_Properties->setColumnCount(3);
+         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+         for (size_t i = 0; i < canMessagesCount; i++)
+         {
+            if (const auto message = this->canBusConfig->GetMessageByIndex(i); message != nullptr)
+            {
+               this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ message->GetName() });
+               this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(message->GetId()) });
+               this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
+            }
+         }
+      }
+   }
+}
+
 bool BusConfigUI::LoadFile(const QString& fileName)
 {
    // locals
@@ -88,7 +140,7 @@ bool BusConfigUI::LoadFile(const QString& fileName)
    }
    else if (fileName.endsWith(".ldf"))
    {
-      this->AddLog(QString("Ldf bus configuration file has not supported yet.\r\n"));
+      this->AddLog(QString{ "Ldf bus configuration file has not supported yet." });
    }
 
 
@@ -204,6 +256,8 @@ void BusConfigUI::BuildTree(void)
    auto canMessagesTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canMessagesTreeItem->setText(0, "Messages");
    canMessagesTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
+   canMessagesTreeItem->setWhatsThis(0, "CanMessages");
+   canMessagesTreeItem->setToolTip(0, "Can messages");
    auto canSignalsTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canSignalsTreeItem->setText(0, "Signals");
    canSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
@@ -215,6 +269,8 @@ void BusConfigUI::BuildTree(void)
          auto canMessageTreeItem = new QTreeWidgetItem{ canMessagesTreeItem };
          canMessageTreeItem->setText(0, canMessage->GetName());
          canMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
+         canMessageTreeItem->setWhatsThis(0, "CanMessage");
+         canMessageTreeItem->setToolTip(0, "Can message");
 
          size_t canSignalsCount = canMessage->GetSignalsCount();
          for (size_t j = 0; j < canSignalsCount; j++)

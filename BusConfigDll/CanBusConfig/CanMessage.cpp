@@ -1,5 +1,6 @@
 #include "CanMessage.h"
 #include <algorithm>
+#include "helpers.h"
 
 namespace ranges = std::ranges;
 
@@ -14,8 +15,7 @@ void CanMessage::Clear(void)
    this->name = "";
    this->size = 0;
    this->mainTransmitter = "";
-   for (auto& signal : this->signals) { delete signal; signal = nullptr; }
-   this->signals.clear();
+   helpers::ClearContainer(this->signals);
    this->stringRepresentation = "";
 }
 
