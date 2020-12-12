@@ -1,4 +1,7 @@
 #include "CanNode.h"
+#include <algorithm>
+
+namespace ranges = std::ranges;
 
 CanNode::~CanNode()
 {
@@ -12,6 +15,7 @@ void CanNode::Clear(void)
    this->rxMessages.clear();
    this->mappedRxSignals.clear();
    this->mappedTxSignals.clear();
+   this->attributes.clear();
 }
 
 const char* CanNode::GetName(void) const
@@ -93,5 +97,29 @@ void CanNode::AddMappedRxSignal(CanSignal* mappedRxSignal)
    if (mappedRxSignal)
    {
       this->mappedRxSignals.insert(mappedRxSignal);
+   }
+}
+
+size_t CanNode::GetAttributesCount(void) const
+{
+   return this->attributes.size();
+}
+
+ICanAttribute* CanNode::GetAttributeByIndex(size_t index) const
+{
+   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+}
+
+ICanAttribute* CanNode::GetAttributeByName(const char* name) const
+{
+   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
+   return (it != this->attributes.end() ? *it : nullptr);
+}
+
+void CanNode::AddAttribute(CanAttribute* attribute)
+{
+   if (attribute && attribute->GetObjectType() == ICanAttribute::IObjectType_e::NODE)
+   {
+      this->attributes.push_back(attribute);
    }
 }

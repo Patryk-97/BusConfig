@@ -2,6 +2,7 @@
 
 #include "ICanNode.h"
 #include "CanMessage.h"
+#include "CanAttribute.h"
 #include <string>
 #include <set>
 
@@ -31,6 +32,11 @@ public:
    ICanSignal* GetMappedRxSignalByIndex(size_t index) const override;
    void AddMappedRxSignal(CanSignal* mappedRxSignal);
 
+   size_t GetAttributesCount(void) const override;
+   ICanAttribute* GetAttributeByIndex(size_t index) const override;
+   ICanAttribute* GetAttributeByName(const char* name) const override;
+   void AddAttribute(CanAttribute* attribute);
+
 private:
 
    template <typename T>
@@ -47,4 +53,5 @@ private:
    std::set<CanMessage*, Comparator<CanMessage>> rxMessages;
    std::set<CanSignal*, Comparator<CanSignal>> mappedTxSignals;
    std::set<CanSignal*, Comparator<CanSignal>> mappedRxSignals;
+   std::vector<CanAttribute*> attributes;
 };

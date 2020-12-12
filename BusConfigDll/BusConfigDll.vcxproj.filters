@@ -19,6 +19,15 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{d8253de9-ea8d-4d7f-9548-818af9dc0557}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\CanAttributes">
+      <UniqueIdentifier>{ebafb87d-e0b8-4283-887a-81d32f4262d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\CanAttributes">
+      <UniqueIdentifier>{6d0756ba-fd8c-4df9-942b-ab4938374328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\CanAttributes">
+      <UniqueIdentifier>{7d99acf4-8289-4540-8d53-4029200431d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -72,6 +81,42 @@
     <ClInclude Include="CanBusConfig\CanEnvVar.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanAttribute.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanIntAttribute.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanHexAttribute.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanFloatAttribute.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanEnumAttribute.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanStringAttribute.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanAttribute.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanIntAttribute.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanHexAttribute.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanFloatAttribute.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanStringAttribute.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanEnumAttribute.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -103,6 +148,24 @@
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanEnvVar.cpp">
       <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanAttribute.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanIntAttribute.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanHexAttribute.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanFloatAttribute.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanStringAttribute.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanEnumAttribute.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

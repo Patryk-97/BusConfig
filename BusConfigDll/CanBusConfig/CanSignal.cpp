@@ -1,7 +1,9 @@
 #include "CanSignal.h"
 #include "CanMessage.h" // circular dependency
 #include "helpers.h"
+#include <algorithm>
 
+namespace ranges = std::ranges;
 using namespace std::string_literals;
 
 CanSignal::~CanSignal()
@@ -30,6 +32,7 @@ void CanSignal::Clear(void)
    this->receivers.clear();
    this->message = nullptr;
    helpers::ClearPtr(this->valueTable);
+   this->attributes.clear();
    this->stringRepresentation = "";
 }
 
@@ -269,6 +272,30 @@ ICanValueTable* CanSignal::GetValueTable(void) const
 void CanSignal::SetValueTable(CanValueTable* valueTable)
 {
    this->valueTable = valueTable;
+}
+
+size_t CanSignal::GetAttributesCount(void) const
+{
+   return this->attributes.size();
+}
+
+ICanAttribute* CanSignal::GetAttributeByIndex(size_t index) const
+{
+   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+}
+
+ICanAttribute* CanSignal::GetAttributeByName(const char* name) const
+{
+   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
+   return (it != this->attributes.end() ? *it : nullptr);
+}
+
+void CanSignal::AddAttribute(CanAttribute* attribute)
+{
+   if (attribute && attribute->GetObjectType() == ICanAttribute::IObjectType_e::SIGNAL)
+   {
+      this->attributes.push_back(attribute);
+   }
 }
 
 const char* CanSignal::ToString(void)

@@ -3,6 +3,7 @@
 #include "ICanMessage.h"
 #include "ICanNode.h"
 #include "ICanEnvVar.h"
+#include "ICanAttribute.h"
 
 // Classes
 class ICanBusConfig;
@@ -32,7 +33,15 @@ public:
    virtual ICanMessage* GetMessageFront(void) const = 0;
    virtual ICanMessage* GetMessageBack(void) const = 0;
 
+   virtual size_t GetSignalsCount(void) const = 0;
+   virtual ICanSignal* GetSignalByIndex(size_t index) const = 0;
+   virtual ICanSignal* GetSignalByName(const char* name) const = 0;
+
    virtual size_t GetEnvVarsCount(void) const = 0;
    virtual ICanEnvVar* GetEnvVarByIndex(size_t index) const = 0;
    virtual ICanEnvVar* GetEnvVarByName(const char* name) const = 0;
+
+   virtual size_t GetAttributesCount(void) const = 0;
+   virtual ICanAttribute* GetAttributeByIndex(size_t index) const = 0;
+   virtual ICanAttribute* GetAttributeByName(const char* name) const = 0;
 };

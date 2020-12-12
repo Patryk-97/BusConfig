@@ -163,19 +163,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Interfaces\ICanAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanBusConfig.h" />
+    <ClInclude Include="..\Interfaces\ICanEnumAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanEnvVar.h" />
+    <ClInclude Include="..\Interfaces\ICanFloatAttribute.h" />
+    <ClInclude Include="..\Interfaces\ICanHexAttribute.h" />
+    <ClInclude Include="..\Interfaces\ICanIntAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanMessage.h" />
     <ClInclude Include="..\Interfaces\ICanNode.h" />
     <ClInclude Include="..\Interfaces\ICanSignal.h" />
+    <ClInclude Include="..\Interfaces\ICanStringAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanValueDescription.h" />
     <ClInclude Include="..\Interfaces\ICanValueTable.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <ClInclude Include="CanBusConfig\CanAttribute.h" />
     <ClInclude Include="CanBusConfig\CanBusConfig.h" />
+    <ClInclude Include="CanBusConfig\CanEnumAttribute.h" />
     <ClInclude Include="CanBusConfig\CanEnvVar.h" />
+    <ClInclude Include="CanBusConfig\CanFloatAttribute.h" />
+    <ClInclude Include="CanBusConfig\CanHexAttribute.h" />
+    <ClInclude Include="CanBusConfig\CanIntAttribute.h" />
     <ClInclude Include="CanBusConfig\CanMessage.h" />
     <ClInclude Include="CanBusConfig\CanNode.h" />
     <ClInclude Include="CanBusConfig\CanSignal.h" />
+    <ClInclude Include="CanBusConfig\CanStringAttribute.h" />
     <ClInclude Include="CanBusConfig\CanValueDescription.h" />
     <ClInclude Include="CanBusConfig\CanValueTable.h" />
     <ClInclude Include="framework.h" />
@@ -183,11 +195,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Interfaces\ICanBusConfig.cpp" />
+    <ClCompile Include="CanBusConfig\CanAttribute.cpp" />
     <ClCompile Include="CanBusConfig\CanBusConfig.cpp" />
+    <ClCompile Include="CanBusConfig\CanEnumAttribute.cpp" />
     <ClCompile Include="CanBusConfig\CanEnvVar.cpp" />
+    <ClCompile Include="CanBusConfig\CanFloatAttribute.cpp" />
+    <ClCompile Include="CanBusConfig\CanHexAttribute.cpp" />
+    <ClCompile Include="CanBusConfig\CanIntAttribute.cpp" />
     <ClCompile Include="CanBusConfig\CanMessage.cpp" />
     <ClCompile Include="CanBusConfig\CanNode.cpp" />
     <ClCompile Include="CanBusConfig\CanSignal.cpp" />
+    <ClCompile Include="CanBusConfig\CanStringAttribute.cpp" />
     <ClCompile Include="CanBusConfig\CanValueDescription.cpp" />
     <ClCompile Include="CanBusConfig\CanValueTable.cpp" />
     <ClCompile Include="dllmain.cpp" />

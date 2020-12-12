@@ -4,6 +4,7 @@
 #include "CanMessage.h"
 #include "CanNode.h"
 #include "CanEnvVar.h"
+#include "CanAttribute.h"
 #include <string>
 #include <vector>
 #include <utility>
@@ -37,11 +38,23 @@ public:
    void AddMessage(CanMessage* message);
    CanMessage* CreateAndAddMessage(void);
 
+   size_t GetSignalsCount(void) const override;
+   ICanSignal* GetSignalByIndex(size_t index) const override;
+   ICanSignal* GetSignalByName(const char* name) const override;
+   void AddSignal(CanSignal* signal);
+   CanSignal* CreateAndAddSignal(void);
+
    size_t GetEnvVarsCount(void) const override;
    ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
    ICanEnvVar* GetEnvVarByName(const char* name) const override;
-   void AddEnvVarByName(CanEnvVar* envVar);
+   void AddEnvVar(CanEnvVar* envVar);
    CanEnvVar* CreateAndAddEnvVar(void);
+
+   size_t GetAttributesCount(void) const override;
+   ICanAttribute* GetAttributeByIndex(size_t index) const override;
+   ICanAttribute* GetAttributeByName(const char* name) const override;
+   void AddAttribute(CanAttribute* attribute);
+   CanAttribute* CreateAndAddAttribute(void);
 
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
@@ -54,7 +67,9 @@ private:
    std::string log;
    std::vector<CanMessage*> messages;
    std::vector<CanNode*> nodes;
+   std::vector<CanSignal*> signals;
    std::vector<CanEnvVar*> envVars;
+   std::vector<CanAttribute*> attributes;
 
    // static variables
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";

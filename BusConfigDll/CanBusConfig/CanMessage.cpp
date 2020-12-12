@@ -15,7 +15,8 @@ void CanMessage::Clear(void)
    this->name = "";
    this->size = 0;
    this->mainTransmitter = "";
-   helpers::ClearContainer(this->signals);
+   this->signals.clear();
+   this->attributes.clear();
    this->stringRepresentation = "";
 }
 
@@ -83,11 +84,28 @@ void CanMessage::AddSignal(CanSignal* signal)
    }
 }
 
-CanSignal* CanMessage::CreateAndAddSignal(void)
+size_t CanMessage::GetAttributesCount(void) const
 {
-   CanSignal* signal = new CanSignal {};
-   this->signals.push_back(signal);
-   return signal;
+   return this->attributes.size();
+}
+
+ICanAttribute* CanMessage::GetAttributeByIndex(size_t index) const
+{
+   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+}
+
+ICanAttribute* CanMessage::GetAttributeByName(const char* name) const
+{
+   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
+   return (it != this->attributes.end() ? *it : nullptr);
+}
+
+void CanMessage::AddAttribute(CanAttribute* attribute)
+{
+   if (attribute && attribute->GetObjectType() == ICanAttribute::IObjectType_e::MESSAGE)
+   {
+      this->attributes.push_back(attribute);
+   }
 }
 
 const char* CanMessage::ToString(void)

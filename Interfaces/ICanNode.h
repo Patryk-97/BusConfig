@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ICanMessage.h"
+#include "ICanAttribute.h"
 
 class ICanNode
 {
@@ -18,6 +19,10 @@ public:
    virtual ICanSignal* GetMappedTxSignalByIndex(size_t index) const = 0;
    virtual size_t GetMappedRxSignalsCount(void) const = 0;
    virtual ICanSignal* GetMappedRxSignalByIndex(size_t index) const = 0;
+
+   virtual size_t GetAttributesCount(void) const = 0;
+   virtual ICanAttribute* GetAttributeByIndex(size_t index) const = 0;
+   virtual ICanAttribute* GetAttributeByName(const char* name) const = 0;
 
    // static variables
    constexpr static const char * PSEUDO_NODE_NAME = "Vector__XXX";

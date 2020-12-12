@@ -2,6 +2,7 @@
 
 #include "ICanMessage.h"
 #include "CanSignal.h"
+#include "CanAttribute.h"
 
 #include <string>
 
@@ -31,7 +32,11 @@ public:
    ICanSignal* GetSignalByName(const char* name) const override;
    ICanSignal* GetSignalByIndex(size_t index) const override;
    void AddSignal(CanSignal* signal);
-   CanSignal* CreateAndAddSignal(void);
+
+   size_t GetAttributesCount(void) const override;
+   ICanAttribute* GetAttributeByIndex(size_t index) const override;
+   ICanAttribute* GetAttributeByName(const char* name) const override;
+   void AddAttribute(CanAttribute* attribute);
 
    const char* ToString(void) override;
 
@@ -41,5 +46,6 @@ private:
    uint32_t size {};
    std::string mainTransmitter;
    std::vector<CanSignal*> signals;
+   std::vector<CanAttribute*> attributes;
    std::string stringRepresentation;
 };

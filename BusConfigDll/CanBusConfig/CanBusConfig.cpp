@@ -20,6 +20,7 @@ using boost_escaped_separator_tokenizer = boost::tokenizer<boost_escaped_separat
 using boost_char_separator_tokenizer = boost::tokenizer<boost_char_separator>;
 
 namespace ranges = std::ranges;
+using namespace std::string_literals;
 
 CanBusConfig::~CanBusConfig()
 {
@@ -31,7 +32,9 @@ void CanBusConfig::Clear()
    this->log = "";
    helpers::ClearContainer(this->messages);
    helpers::ClearContainer(this->nodes);
+   helpers::ClearContainer(this->signals);
    helpers::ClearContainer(this->envVars);
+   helpers::ClearContainer(this->attributes);
 }
 
 const char* CanBusConfig::GetLog(void) const
@@ -139,6 +142,37 @@ ICanMessage* CanBusConfig::GetMessageBack(void) const
    return (this->messages.size() > 0 ? this->messages.back() : nullptr);
 }
 
+size_t CanBusConfig::GetSignalsCount(void) const
+{
+   return this->signals.size();
+}
+
+ICanSignal* CanBusConfig::GetSignalByIndex(size_t index) const
+{
+   return (index < this->signals.size() ? this->signals[index] : nullptr);
+}
+
+ICanSignal* CanBusConfig::GetSignalByName(const char* name) const
+{
+   auto it = ranges::find_if(this->signals, [&name](CanSignal* signal) { return !std::strcmp(signal->GetName(), name); });
+   return (it != this->signals.end() ? *it : nullptr);
+}
+
+void CanBusConfig::AddSignal(CanSignal* signal)
+{
+   if (signal)
+   {
+      this->signals.push_back(signal);
+   }
+}
+
+CanSignal* CanBusConfig::CreateAndAddSignal(void)
+{
+   CanSignal* signal = new CanSignal {};
+   this->signals.push_back(signal);
+   return signal;
+}
+
 void CanBusConfig::AddMessage(CanMessage* message)
 {
    if (message)
@@ -170,7 +204,7 @@ ICanEnvVar* CanBusConfig::GetEnvVarByName(const char* name) const
    return (it != this->envVars.end() ? *it : nullptr);
 }
 
-void CanBusConfig::AddEnvVarByName(CanEnvVar* envVar)
+void CanBusConfig::AddEnvVar(CanEnvVar* envVar)
 {
    if (envVar)
    {
@@ -183,6 +217,37 @@ CanEnvVar* CanBusConfig::CreateAndAddEnvVar(void)
    CanEnvVar* envVar = new CanEnvVar {};
    this->envVars.push_back(envVar);
    return envVar;
+}
+
+size_t CanBusConfig::GetAttributesCount(void) const
+{
+   return this->attributes.size();
+}
+
+ICanAttribute* CanBusConfig::GetAttributeByIndex(size_t index) const
+{
+   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+}
+
+ICanAttribute* CanBusConfig::GetAttributeByName(const char* name) const
+{
+   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
+   return (it != this->attributes.end() ? *it : nullptr);
+}
+
+void CanBusConfig::AddAttribute(CanAttribute* attribute)
+{
+   if (attribute)
+   {
+      this->attributes.push_back(attribute);
+   }
+}
+
+CanAttribute* CanBusConfig::CreateAndAddAttribute(void)
+{
+   CanAttribute* attribute = new CanAttribute {};
+   this->attributes.push_back(attribute);
+   return attribute;
 }
 
 bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)
@@ -325,7 +390,8 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
       // If everything's okay
       if (const auto elementsCount = ranges::distance(tokens); elementsCount >= SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         CanSignal* signal = message->CreateAndAddSignal();
+         CanSignal* signal = this->CreateAndAddSignal();
+         message->AddSignal(signal);
          signal->SetMessage(message);
          if (CanNode* transmitterNode = dynamic_cast<CanNode*>(this->GetNodeByName(message->GetMainTransmitter())); transmitterNode != nullptr)
          {
@@ -577,6 +643,8 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                      if (CanEnvVar* envVar = dynamic_cast<CanEnvVar*>(this->GetEnvVarByName(token.c_str())); envVar != nullptr)
                      {
                         valueTable = new CanValueTable {};
+                        std::string valueTableName = "VtEv_"s + envVar->GetName();
+                        valueTable->SetName(valueTableName.c_str());
                         envVar->SetValueTable(valueTable);
                         pos++;
                      }
@@ -595,6 +663,8 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                      if (CanSignal* signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
                      {
                         valueTable = new CanValueTable {};
+                        std::string valueTableName = "VtSig_"s + signal->GetName();
+                        valueTable->SetName(valueTableName.c_str());
                         signal->SetValueTable(valueTable);
                      }
                      else

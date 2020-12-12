@@ -25,6 +25,12 @@ private:
    void AddLog(const QString& log);
    void BuildTree(void);
    void Clear(void);
+   
+   // Table widget properties
+   void BuildCanMessageProperties(const char * messageName);
+   void BuildCanMessagesProperties(void);
+   void BuildCanSignalProperties(const char* signalName);
+   void BuildCanSignalsProperties(void);
 
    // member variables
     Ui::BusConfigUIClass ui;

@@ -97,37 +97,19 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       const QString itemType = current->whatsThis(0);
       if (itemType == "CanMessage")
       {
-         if (const auto message = this->canBusConfig->GetMessageByName(text.toUtf8()); message != nullptr)
-         {
-            QStringList headerLabels;
-            headerLabels << "Name" << "ID" << "Size";
-            this->ui.tableWidget_Properties->setRowCount(1);
-            this->ui.tableWidget_Properties->setColumnCount(3);
-            this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-            this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem { message->GetName() });
-            this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem { toQString(message->GetId()) });
-            this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem { toQString(message->GetSize()) });
-            this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
-         }
+         this->BuildCanMessageProperties(text.toUtf8());
       }
       else if (itemType == "CanMessages")
       {
-         size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
-         QStringList headerLabels;
-         headerLabels << "Name" << "ID" << "Size";
-         this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
-         this->ui.tableWidget_Properties->setColumnCount(3);
-         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-         for (size_t i = 0; i < canMessagesCount; i++)
-         {
-            if (const auto message = this->canBusConfig->GetMessageByIndex(i); message != nullptr)
-            {
-               this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ message->GetName() });
-               this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(message->GetId()) });
-               this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
-            }
-         }
+         this->BuildCanMessagesProperties();
+      }
+      else if (itemType == "CanSignal")
+      {
+         this->BuildCanSignalProperties(text.toUtf8());
+      }
+      else if (itemType == "CanSignals")
+      {
+         this->BuildCanSignalsProperties();
       }
    }
 }
@@ -159,7 +141,10 @@ bool BusConfigUI::LoadDbcFile(const QString& fileName)
    if (this->canBusConfig->Load(fileName.toUtf8()))
    {
       this->AddLog(QString{ "Successfully loaded file: " } + fileName);
-      this->AddLog(this->canBusConfig->GetLog());
+      if (const std::string log = this->canBusConfig->GetLog(); log != "")
+      {
+         this->AddLog(log.c_str());
+      }
       this->BuildTree();
    }
    else
@@ -261,9 +246,6 @@ void BusConfigUI::BuildTree(void)
    canMessagesTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
    canMessagesTreeItem->setWhatsThis(0, "CanMessages");
    canMessagesTreeItem->setToolTip(0, "Can messages");
-   auto canSignalsTreeItem = new QTreeWidgetItem{ networkTreeItem };
-   canSignalsTreeItem->setText(0, "Signals");
-   canSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
    size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
    for (size_t i = 0; i < canMessagesCount; i++)
    {
@@ -274,17 +256,24 @@ void BusConfigUI::BuildTree(void)
          canMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
          canMessageTreeItem->setWhatsThis(0, "CanMessage");
          canMessageTreeItem->setToolTip(0, "Can message");
+      }
+   }
 
-         size_t canSignalsCount = canMessage->GetSignalsCount();
-         for (size_t j = 0; j < canSignalsCount; j++)
-         {
-            if (ICanSignal* canSignal = canMessage->GetSignalByIndex(j); canSignal != nullptr)
-            {
-               auto canSignalTreeItem = new QTreeWidgetItem{ canSignalsTreeItem };
-               canSignalTreeItem->setText(0, canSignal->GetName());
-               canSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
-            }
-         }
+   auto canSignalsTreeItem = new QTreeWidgetItem{ networkTreeItem };
+   canSignalsTreeItem->setText(0, "Signals");
+   canSignalsTreeItem->setWhatsThis(0, "CanSignals");
+   canSignalsTreeItem->setToolTip(0, "Can signals");
+   canSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
+   size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
+   for (size_t j = 0; j < canSignalsCount; j++)
+   {
+      if (ICanSignal* canSignal = this->canBusConfig->GetSignalByIndex(j); canSignal != nullptr)
+      {
+         auto canSignalTreeItem = new QTreeWidgetItem{ canSignalsTreeItem };
+         canSignalTreeItem->setText(0, canSignal->GetName());
+         canSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
+         canSignalTreeItem->setWhatsThis(0, "CanSignal");
+         canSignalTreeItem->setToolTip(0, "Can signal");
       }
    }
 }
@@ -293,4 +282,150 @@ void BusConfigUI::Clear(void)
 {
    this->canBusConfig->Clear();
    this->ui.treeWidget_MainView->clear();
+   this->ui.tableWidget_Properties->clear();
+   this->ui.tableWidget_Properties->setRowCount(0);
+   this->ui.tableWidget_Properties->setColumnCount(0);
+}
+
+void BusConfigUI::BuildCanMessageProperties(const char* messageName)
+{
+   if (const auto message = this->canBusConfig->GetMessageByName(messageName); message != nullptr)
+   {
+      QStringList headerLabels;
+      headerLabels << "Name" << "ID" << "Size";
+      this->ui.tableWidget_Properties->setRowCount(1);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ message->GetName() });
+      this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ toQString(message->GetId()) });
+      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
+      this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   }
+}
+
+void BusConfigUI::BuildCanMessagesProperties(void)
+{
+   size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
+   QStringList headerLabels;
+   headerLabels << "Name" << "ID" << "Size";
+   this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
+   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+   for (size_t i = 0; i < canMessagesCount; i++)
+   {
+      if (const auto message = this->canBusConfig->GetMessageByIndex(i); message != nullptr)
+      {
+         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ message->GetName() });
+         this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(message->GetId()) });
+         this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
+      }
+   }
+}
+
+void BusConfigUI::BuildCanSignalProperties(const char* signalName)
+{
+   if (const auto signal = this->canBusConfig->GetSignalByName(signalName); signal != nullptr)
+   {
+      QStringList headerLabels;
+      headerLabels << "Name" << "Start bit" << "Size" << "Byte order" << "Value type" << "Factor" << "Offset" << "Minimum" << "Maximum";
+      headerLabels << "Unit" << "Value table";
+      this->ui.tableWidget_Properties->setRowCount(1);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ signal->GetName() });
+      this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
+      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ toQString(signal->GetSize()) });
+
+      const QString byteOrder = std::invoke([&signal]
+      {
+         if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
+         {
+            return "Big endian";
+         }
+         return "Little endian";
+      });
+
+      const QString valueType = std::invoke([&signal]
+      {
+         if (signal->GetValueType() == ICanSignal::IValueType_e::UNSIGNED_TYPE)
+         {
+            return "Unsigned";
+         }
+         return "Signed";
+      });
+      const QString valueTableName = std::invoke([&signal]
+      {
+         if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable != nullptr)
+         {
+            return valueTable->GetName();
+         }
+         return "";
+      });
+      this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ byteOrder });
+      this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ valueType });
+      this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(signal->GetFactor()) });
+      this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ toQString(signal->GetOffset()) });
+      this->ui.tableWidget_Properties->setItem(0, 7, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
+      this->ui.tableWidget_Properties->setItem(0, 8, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
+      this->ui.tableWidget_Properties->setItem(0, 9, new QTableWidgetItem{ signal->GetUnit() });
+      this->ui.tableWidget_Properties->setItem(0, 10, new QTableWidgetItem{ valueTableName });
+      this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   }
+}
+
+void BusConfigUI::BuildCanSignalsProperties(void)
+{
+   size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
+   QStringList headerLabels;
+   headerLabels << "Name" << "Start bit" << "Size" << "Byte order" << "Value type" << "Factor" << "Offset" << "Minimum" << "Maximum";
+   headerLabels << "Unit" << "Value table";
+   this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
+   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+   for (size_t i = 0; i < canSignalsCount; i++)
+   {
+      if (const auto signal = this->canBusConfig->GetSignalByIndex(i); signal != nullptr)
+      {
+         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ signal->GetName() });
+         this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
+         this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(signal->GetSize()) });
+
+         const QString byteOrder = std::invoke([&signal]
+         {
+            if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
+            {
+               return "Big endian";
+            }
+            return "Little endian";
+         });
+
+         const QString valueType = std::invoke([&signal]
+         {
+            if (signal->GetValueType() == ICanSignal::IValueType_e::UNSIGNED_TYPE)
+            {
+               return "Unsigned";
+            }
+            return "Signed";
+         });
+         const QString valueTableName = std::invoke([&signal]
+         {
+            if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable != nullptr)
+            {
+               return valueTable->GetName();
+            }
+            return "";
+         });
+         this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ byteOrder });
+         this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ valueType });
+         this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(signal->GetFactor()) });
+         this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ toQString(signal->GetOffset()) });
+         this->ui.tableWidget_Properties->setItem(i, 7, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
+         this->ui.tableWidget_Properties->setItem(i, 8, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
+         this->ui.tableWidget_Properties->setItem(i, 9, new QTableWidgetItem{ signal->GetUnit() });
+         this->ui.tableWidget_Properties->setItem(i, 10, new QTableWidgetItem{ valueTableName });
+         this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+      }
+   }
 }
