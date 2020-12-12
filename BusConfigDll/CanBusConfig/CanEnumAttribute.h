@@ -12,6 +12,10 @@ public:
 
    void Clear(void) override;
 
+   const char* GetName(void) const override;
+   IValueType_e GetValueType(void) const override;
+   IObjectType_e GetObjectType(void) const override;
+
    size_t GetEnumaratorsCount(void) const override;
    const char* GetEnumarator(size_t index) const override;
    void AddEnumarator(const char * enumarator);

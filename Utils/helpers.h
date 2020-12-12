@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 namespace helpers
 {
    template <typename T, typename = void>
@@ -25,4 +27,17 @@ namespace helpers
 
    template <typename StlContainer, typename = std::enable_if_t<is_stl_container_v<StlContainer>>>
    inline void ClearContainer(StlContainer& stlContainer) { for (auto& ptr : stlContainer) { delete ptr; }; stlContainer.clear(); }
+
+
+   /*
+      Until MSVC doesn't support this std::span constructor
+      template< class It, class End >
+      explicit(extent != std::dynamic_extent)
+      constexpr span( It first, End last );
+   */
+   template<typename It>
+   constexpr auto make_span(It begin, It end)
+   {
+      return std::span<std::remove_pointer_t<It::pointer>>(&(*begin), std::distance(begin, end));
+   }
 }

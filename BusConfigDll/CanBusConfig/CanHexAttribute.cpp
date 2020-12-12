@@ -13,6 +13,21 @@ void CanHexAttribute::Clear(void)
    this->defaultValue = 0;
 }
 
+const char* CanHexAttribute::GetName(void) const
+{
+   return CanAttribute::GetName();
+}
+
+ICanAttribute::IValueType_e CanHexAttribute::GetValueType(void) const
+{
+   return CanAttribute::GetValueType();
+}
+
+ICanAttribute::IObjectType_e CanHexAttribute::GetObjectType(void) const
+{
+   return CanAttribute::GetObjectType();
+}
+
 int32_t CanHexAttribute::GetMinimum(void) const
 {
    return this->minimum;

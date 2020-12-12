@@ -13,6 +13,21 @@ void CanFloatAttribute::Clear(void)
    this->defaultValue = 0;
 }
 
+const char* CanFloatAttribute::GetName(void) const
+{
+   return CanAttribute::GetName();
+}
+
+ICanAttribute::IValueType_e CanFloatAttribute::GetValueType(void) const
+{
+   return CanAttribute::GetValueType();
+}
+
+ICanAttribute::IObjectType_e CanFloatAttribute::GetObjectType(void) const
+{
+   return CanAttribute::GetObjectType();
+}
+
 double CanFloatAttribute::GetMinimum(void) const
 {
    return this->minimum;

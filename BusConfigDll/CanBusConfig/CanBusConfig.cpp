@@ -2,9 +2,15 @@
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include "helpers.h"
+#include "CanIntAttribute.h"
+#include "CanHexAttribute.h"
+#include "CanFloatAttribute.h"
+#include "CanStringAttribute.h"
+#include "CanEnumAttribute.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <array>
 
 #ifndef line
 #define line lineData.first
@@ -71,6 +77,10 @@ bool CanBusConfig::Load(const char* filename)
          else if (line.starts_with(CanBusConfig::VALUE_TABLE_DEFINITION_HEADER))
          {
             this->ParseValueTableDefinition(file, lineData);
+         }
+         else if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFINITION_HEADER))
+         {
+            this->ParseAttributeDefinition(file, lineData);
          }
          lineNr++;
       }
@@ -724,6 +734,295 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
    else
    {
       this->log += "Value table definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFINITION_HEADER))
+   {
+      boost_char_separator sep(" \",;");
+      boost_char_separator_tokenizer tokenizer{ line, sep };
+      std::vector<std::string> tokens;
+      size_t elementsMinCount {};
+      ICanAttribute::IObjectType_e objectType = ICanAttribute::IObjectType_e::UNDEFINED;
+      CanAttribute* attribute { nullptr };
+      std::string attributeName;
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) >= ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         this->log += "Attribute: ";
+         for (auto& token : tokenizer)
+         {
+            tokens.push_back(token);
+            this->log += token + ", ";
+         }
+         this->log += "\r\n";
+         if (const std::string objectTypeToken = tokens[ATTRIBUTE_OBJECT_TYPE_POS]; objectTypeToken == DBC_KEYWORD_NETWORK_NODE)
+         {
+            elementsMinCount = NODE_ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::NODE;
+         }
+         else if (objectTypeToken == DBC_KEYWORD_MESSAGE)
+         {
+            elementsMinCount = MESSAGE_ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::MESSAGE;
+         }
+         else if (objectTypeToken == DBC_KEYWORD_SIGNAL)
+         {
+            elementsMinCount = SIGNAL_ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::SIGNAL;
+         }
+         else if (objectTypeToken == DBC_KEYWORD_ENVIRONMENT_VARIABLE)
+         {
+            elementsMinCount = ENVIRONMENT_VARIABLE_ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE;
+         }
+         else
+         {
+            elementsMinCount = NETWORK_ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::NETWORK;
+         }
+
+         if (elementsMinCount >= elementsMinCount)
+         {
+            for (size_t pos{}; const auto & token : tokens)
+            {
+               switch (pos)
+               {
+                  // if network object type
+                  if (pos == ATTRIBUTE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
+                  {
+                     ++pos;
+                  }
+
+                  case ATTRIBUTE_DEFINITION_HEADER_POS:
+                  {
+                     break;
+                  }
+                  case ATTRIBUTE_OBJECT_TYPE_POS:
+                  {
+                     break;
+                  }
+                  case ATTRIBUTE_NAME_POS:
+                  {
+                     attributeName = token;
+                     break;
+                  }
+                  case ATTRIBUTE_VALUE_TYPE_POS:
+                  {
+                     const uint8_t valueTypePos = std::invoke([&objectType]() -> uint8_t
+                     {
+                        if (objectType == ICanAttribute::IObjectType_e::NETWORK)
+                        {
+                           return ATTRIBUTE_VALUE_TYPE_POS - 1;
+                        }
+                        return ATTRIBUTE_VALUE_TYPE_POS;
+                     });
+                     if (token == ATTRIBUTE_INTEGER)
+                     {
+                        rV = this->ParseAttributeIntParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                     }
+                     else if (token == ATTRIBUTE_HEXADECIMAL)
+                     {
+                        rV = this->ParseAttributeHexParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                     }
+                     else if (token == ATTRIBUTE_FLOAT)
+                     {
+                        rV = this->ParseAttributeFloatParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                     }
+                     else if (token == ATTRIBUTE_STRING)
+                     {
+                        rV = this->ParseAttributeStringParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                     }
+                     else if (token == ATTRIBUTE_ENUM)
+                     {
+                        rV = this->ParseAttributeEnumParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                     }
+                     else
+                     {
+                        this->log += "Invalid attribute definition value type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        rV = false;
+                     }
+                  }
+               }
+
+               // If something went wrong
+               if (!rV)
+               {
+                  break;
+               }
+               ++pos;
+            }
+         }
+         else
+         {
+            rV = false;
+            this->log += "Invalid attribute definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid attribute definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Attribute definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+{
+   // locals
+   bool rV { true };
+
+   if (ranges::distance(paramTokens) == ATTRIBUTE_INT_PARAMS_COUNT)
+   {
+      attribute = new CanIntAttribute{};
+      attribute->SetValueType(ICanAttribute::IValueType_e::INT);
+
+      if (CanIntAttribute* intAttribute = dynamic_cast<CanIntAttribute*>(attribute); intAttribute != nullptr)
+      {
+         try
+         {
+            intAttribute->SetMinimum(std::stoi(paramTokens[0]));
+            intAttribute->SetMaximum(std::stoi(paramTokens[1]));
+         }
+         catch (...)
+         {
+            rV = false;
+            this->log += "Invalid int attribute params [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+      }
+   }
+   else
+   {
+      this->log += "Invalid int attribute params count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeHexParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   if (ranges::distance(paramTokens) == ATTRIBUTE_HEX_PARAMS_COUNT)
+   {
+      attribute = new CanHexAttribute{};
+      attribute->SetValueType(ICanAttribute::IValueType_e::HEX);
+
+      if (CanHexAttribute* hexAttribute = dynamic_cast<CanHexAttribute*>(attribute); hexAttribute != nullptr)
+      {
+         try
+         {
+            hexAttribute->SetMinimum(std::stoi(paramTokens[0]));
+            hexAttribute->SetMaximum(std::stoi(paramTokens[1]));
+         }
+         catch (...)
+         {
+            rV = false;
+            this->log += "Invalid hex attribute params [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+      }
+   }
+   else
+   {
+      this->log += "Invalid hex attribute params count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeFloatParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   if (ranges::distance(paramTokens) == ATTRIBUTE_FLOAT_PARAMS_COUNT)
+   {
+      attribute = new CanFloatAttribute{};
+      attribute->SetValueType(ICanAttribute::IValueType_e::FLOAT);
+
+      if (CanFloatAttribute* floatAttribute = dynamic_cast<CanFloatAttribute*>(attribute); floatAttribute != nullptr)
+      {
+         try
+         {
+            floatAttribute->SetMinimum(std::stod(paramTokens[0]));
+            floatAttribute->SetMaximum(std::stod(paramTokens[1]));
+         }
+         catch (...)
+         {
+            rV = false;
+            this->log += "Invalid float attribute params [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+      }
+   }
+   else
+   {
+      this->log += "Invalid float attribute params count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeStringParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   if (ranges::distance(paramTokens) == ATTRIBUTE_STRING_PARAMS_COUNT)
+   {
+      attribute = new CanStringAttribute{};
+      attribute->SetValueType(ICanAttribute::IValueType_e::STRING);
+   }
+   else
+   {
+      this->log += "Invalid string attribute params count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+{
+   // locals
+   bool rV{ true };
+
+   if (ranges::distance(paramTokens) >= ATTRIBUTE_ENUM_PARAMS_MIN_COUNT)
+   {
+      attribute = new CanEnumAttribute{};
+      attribute->SetValueType(ICanAttribute::IValueType_e::ENUM);
+
+
+      if (CanEnumAttribute* enumAttribute = dynamic_cast<CanEnumAttribute*>(attribute); enumAttribute != nullptr)
+      {
+         for (const auto& enumarator : paramTokens)
+         {
+            enumAttribute->AddEnumarator(enumarator.c_str());
+         }
+      }
+   }
+   else
+   {
+      this->log += "Invalid enum attribute enumarators count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 

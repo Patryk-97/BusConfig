@@ -13,6 +13,21 @@ void CanIntAttribute::Clear(void)
    this->defaultValue = 0;
 }
 
+const char* CanIntAttribute::GetName(void) const
+{
+   return CanAttribute::GetName();
+}
+
+ICanAttribute::IValueType_e CanIntAttribute::GetValueType(void) const
+{
+   return CanAttribute::GetValueType();
+}
+
+ICanAttribute::IObjectType_e CanIntAttribute::GetObjectType(void) const
+{
+   return CanAttribute::GetObjectType();
+}
+
 int32_t CanIntAttribute::GetMinimum(void) const
 {
    return this->minimum;

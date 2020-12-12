@@ -3,7 +3,7 @@
 #include "ICanAttribute.h"
 #include <string>
 
-class CanAttribute : public ICanAttribute
+class CanAttribute : virtual public ICanAttribute
 {
 public:
    CanAttribute() = default;

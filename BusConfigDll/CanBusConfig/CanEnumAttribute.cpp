@@ -12,6 +12,21 @@ void CanEnumAttribute::Clear(void)
    this->defaultValue = "";
 }
 
+const char* CanEnumAttribute::GetName(void) const
+{
+   return CanAttribute::GetName();
+}
+
+ICanAttribute::IValueType_e CanEnumAttribute::GetValueType(void) const
+{
+   return CanAttribute::GetValueType();
+}
+
+ICanAttribute::IObjectType_e CanEnumAttribute::GetObjectType(void) const
+{
+   return CanAttribute::GetObjectType();
+}
+
 size_t CanEnumAttribute::GetEnumaratorsCount(void) const
 {
    return this->enumerators.size();

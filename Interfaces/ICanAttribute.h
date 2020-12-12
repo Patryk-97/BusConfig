@@ -10,7 +10,7 @@ public:
    enum class IValueType_e
    {
       UNDEFINED = 0,
-      INTEGER = 1,
+      INT = 1,
       HEX = 2,
       FLOAT = 3,
       STRING = 4,
@@ -23,7 +23,8 @@ public:
       NETWORK = 1,
       NODE = 2,
       MESSAGE = 3,
-      SIGNAL = 4
+      SIGNAL = 4,
+      ENVIRONMENT_VARIABLE = 5
    };
 
    virtual void Clear(void) = 0;

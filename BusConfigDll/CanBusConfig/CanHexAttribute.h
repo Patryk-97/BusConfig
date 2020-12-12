@@ -11,6 +11,10 @@ public:
 
    void Clear(void) override;
 
+   const char* GetName(void) const override;
+   IValueType_e GetValueType(void) const override;
+   IObjectType_e GetObjectType(void) const override;
+
    int32_t GetMinimum(void) const override;
    void SetMinimum(int32_t minimum);
 
