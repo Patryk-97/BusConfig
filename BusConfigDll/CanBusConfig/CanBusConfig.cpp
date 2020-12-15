@@ -10,7 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <array>
+#include <variant>
 
 #ifndef line
 #define line lineData.first
@@ -81,6 +81,10 @@ bool CanBusConfig::Load(const char* filename)
          else if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFINITION_HEADER))
          {
             this->ParseAttributeDefinition(file, lineData);
+         }
+         else if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFAULT_DEFINITION_HEADER))
+         {
+            this->ParseAttributeDefaultDefinition(file, lineData);
          }
          lineNr++;
       }
@@ -758,13 +762,10 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
       // If everything's okay
       if (ranges::distance(tokenizer) >= ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         this->log += "Attribute: ";
          for (auto& token : tokenizer)
          {
             tokens.push_back(token);
-            this->log += token + ", ";
          }
-         this->log += "\r\n";
          if (const std::string objectTypeToken = tokens[ATTRIBUTE_OBJECT_TYPE_POS]; objectTypeToken == DBC_KEYWORD_NETWORK_NODE)
          {
             elementsMinCount = NODE_ATTRIBUTE_DEFINITION_ELEMENTS_MIN_COUNT;
@@ -793,16 +794,16 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
 
          if (elementsMinCount >= elementsMinCount)
          {
-            for (size_t pos{}; const auto & token : tokens)
+            for (size_t pos{}; const auto& token : tokens)
             {
+               // if network object type
+               if (pos == ATTRIBUTE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
+               {
+                  ++pos;
+               }
+
                switch (pos)
                {
-                  // if network object type
-                  if (pos == ATTRIBUTE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
-                  {
-                     ++pos;
-                  }
-
                   case ATTRIBUTE_DEFINITION_HEADER_POS:
                   {
                      break;
@@ -828,29 +829,50 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
                      });
                      if (token == ATTRIBUTE_INTEGER)
                      {
-                        rV = this->ParseAttributeIntParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                        rV = this->ParseAttributeIntParams(helpers::make_span(tokens.begin() + valueTypePos + 1, tokens.end()), attribute, lineData);
                      }
                      else if (token == ATTRIBUTE_HEXADECIMAL)
                      {
-                        rV = this->ParseAttributeHexParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                        rV = this->ParseAttributeHexParams(helpers::make_span(tokens.begin() + valueTypePos + 1, tokens.end()), attribute, lineData);
                      }
                      else if (token == ATTRIBUTE_FLOAT)
                      {
-                        rV = this->ParseAttributeFloatParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                        rV = this->ParseAttributeFloatParams(helpers::make_span(tokens.begin() + valueTypePos + 1, tokens.end()), attribute, lineData);
                      }
                      else if (token == ATTRIBUTE_STRING)
                      {
-                        rV = this->ParseAttributeStringParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                        if (ranges::distance(tokens) == elementsMinCount)
+                        {
+                           rV = this->ParseAttributeStringParams(attribute, lineData);
+                        }
+                        else
+                        {
+                           this->log += "Invalid string attribute params count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           rV = false;
+                        }
                      }
                      else if (token == ATTRIBUTE_ENUM)
                      {
-                        rV = this->ParseAttributeEnumParams(helpers::make_span(tokens.begin() + valueTypePos, tokens.end()), attribute, lineData);
+                        rV = this->ParseAttributeEnumParams(helpers::make_span(tokens.begin() + valueTypePos + 1, tokens.end()), attribute, lineData);
                      }
                      else
                      {
-                        this->log += "Invalid attribute definition value type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        this->log += "Invalid attribute definition value type: " + token;
+                        this->log += " [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
                         rV = false;
                      }
+
+                     if (rV && attribute != nullptr)
+                     {
+                        attribute->SetObjectType(objectType);
+                        attribute->SetName(attributeName.c_str());
+                        this->AddAttribute(attribute);
+                     }
+                     break;
+                  }
+                  default:
+                  {
+                     break;
                   }
                }
 
@@ -883,7 +905,336 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   bool rV { true };
+
+   if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFAULT_DEFINITION_HEADER))
+   {
+      boost_char_separator sep(" \";");
+      boost_char_separator_tokenizer tokenizer{ line, sep };
+      CanAttribute* attribute { nullptr };
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) != ATTRIBUTE_DEFAULT_DEFINITION_ELEMENTS_COUNT)
+      {
+         for (size_t pos{}; const auto& token : tokenizer)
+         {
+            switch (pos)
+            {
+               case ATTRIBUTE_DEFAULT_DEFINITION_HEADER_POS:
+               {
+                  break;
+               }
+               case ATTRIBUTE_DEFAULT_NAME_POS:
+               {
+                  if (attribute = dynamic_cast<CanAttribute*>(this->GetAttributeByName(token.c_str())); attribute == nullptr)
+                  {
+                     rV = false;
+                     this->log += "Not found attribute with this name [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case ATTRIBUTE_DEFAULT_VALUE_POS:
+               {
+                  if (attribute)
+                  {
+                     helpers::typecase(attribute,
+                        [&token](CanIntAttribute* intAttribute)
+                        {
+                           intAttribute->SetDefaultValue(std::stoi(token));
+                        },
+                        [&token](CanHexAttribute* hexAttribute)
+                        {
+                           hexAttribute->SetDefaultValue(std::stoi(token));
+                        },
+                        [&token](CanFloatAttribute* floatAttribute)
+                        {
+                           floatAttribute->SetDefaultValue(std::stod(token));
+                        },
+                        [&token](CanStringAttribute* stringAttribute)
+                        {
+                           stringAttribute->SetDefaultValue(token.c_str());
+                        },
+                        [&token](CanEnumAttribute* enumAttribute)
+                        {
+                           enumAttribute->SetDefaultValue(token.c_str());
+                        });
+                  }
+                  break;
+               }
+               default:
+               {
+                  break;
+               }
+            }
+
+            // If something went wrong
+            if (!rV)
+            {
+               break;
+            }
+            ++pos;
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid attribute default definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Attribute default definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV { true };
+
+   if (line.starts_with(CanBusConfig::ATTRIBUTE_VALUE_DEFINITION_HEADER))
+   {
+      boost_escaped_separator sep("\\", " ;", "\"");
+      boost_escaped_separator_tokenizer tokenizer{ line, sep }; // remains empty tokens
+      std::vector<std::string> tokens;
+      size_t elementsMinCount {};
+      CanAttribute* attribute { nullptr };
+      ICanAttribute::IObjectType_e objectType { ICanAttribute::IObjectType_e::UNDEFINED };
+      std::variant<CanNode*, CanMessage*, CanSignal*, CanEnvVar*> attributeOwner;
+      uint32_t messageId {};
+
+      // prepare attribute value definition tokens
+      std::invoke([&tokenizer, &tokens, this]
+      {
+         for (const auto& token : tokenizer)
+         {
+            if (token != "")
+            {
+               tokens.push_back(token);
+            }
+         }
+      });
+
+      // If everything's okay
+      if (ranges::distance(tokens) >= ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         attribute = dynamic_cast<CanAttribute*>(this->GetAttributeByName(tokens[ATTRIBUTE_VALUE_NAME_POS].c_str()));
+         if (attribute)
+         {
+            if (objectType = attribute->GetObjectType(); objectType == ICanAttribute::IObjectType_e::NETWORK)
+            {
+               elementsMinCount = NETWORK_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT;
+            }
+            else if (objectType == ICanAttribute::IObjectType_e::NODE)
+            {
+               elementsMinCount = NODE_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT;
+            }
+            else if (objectType == ICanAttribute::IObjectType_e::MESSAGE)
+            {
+               elementsMinCount = MESSAGE_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT;
+            }
+            else if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
+            {
+               elementsMinCount = SIGNAL_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT;
+            }
+            else if (objectType == ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE)
+            {
+               elementsMinCount = ENVIRONMENT_VARIABLE_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT;
+            }
+            else
+            {
+               rV = false;
+               this->log += "Wrong attribute's object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+            }
+
+            if (ranges::distance(tokens) == elementsMinCount && rV)
+            {
+               for (size_t pos{}; const auto & token : tokens)
+               {
+                  if (pos == ATTRIBUTE_VALUE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
+                  {
+                     pos = ATTRIBUTE_VALUE_POS;
+                  }
+
+                  switch (pos)
+                  {
+                     case ATTRIBUTE_VALUE_DEFINITION_HEADER_POS:
+                     {
+                        break;
+                     }
+                     case ATTRIBUTE_VALUE_NAME_POS:
+                     {
+                        break;
+                     }
+                     case ATTRIBUTE_VALUE_OBJECT_TYPE_POS:
+                     {
+                        if (token != DBC_KEYWORD_NETWORK_NODE && objectType == ICanAttribute::IObjectType_e::NODE)
+                        {
+                           rV = false;
+                           this->log += "Invalid attribute object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                        else if (token != DBC_KEYWORD_MESSAGE && objectType == ICanAttribute::IObjectType_e::MESSAGE)
+                        {
+                           rV = false;
+                           this->log += "Invalid attribute object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                        else if (token != DBC_KEYWORD_SIGNAL && objectType == ICanAttribute::IObjectType_e::SIGNAL)
+                        {
+                           rV = false;
+                           this->log += "Invalid attribute object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                        else if (token != DBC_KEYWORD_ENVIRONMENT_VARIABLE && objectType == ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE)
+                        {
+                           rV = false;
+                           this->log += "Invalid attribute object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                        break;
+                     }
+                     case ATTRIBUTE_VALUE_MESSAGE_ID_POS:
+                     {
+                        if (objectType == ICanAttribute::IObjectType_e::MESSAGE)
+                        {
+                           try
+                           {
+                              messageId = std::stoul(token);
+                              if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                              {
+                                 message->AddAttribute(attribute);
+                                 ++pos;
+                              }
+                              else
+                              {
+                                 rV = false;
+                                 this->log += "Message not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                              }
+                           }
+                           catch (...)
+                           {
+                              rV = false;
+                              this->log += "Message id conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                        }
+                        else if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
+                        {
+                           try
+                           {
+                              messageId = std::stoul(token);
+                           }
+                           catch (...)
+                           {
+                              rV = false;
+                              this->log += "Message id conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                        }
+                        else if (objectType == ICanAttribute::IObjectType_e::NODE)
+                        {
+                           if (auto node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
+                           {
+                              node->AddAttribute(attribute);
+                              ++pos;
+                           }
+                           else
+                           {
+                              rV = false;
+                              this->log += "Node not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                        }
+                        else if (objectType == ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE)
+                        {
+                           if (auto envVar = dynamic_cast<CanEnvVar*>(this->GetEnvVarByName(token.c_str())); envVar != nullptr)
+                           {
+                              envVar->AddAttribute(attribute);
+                              ++pos;
+                           }
+                           else
+                           {
+                              rV = false;
+                              this->log += "Node not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                        }
+                        break;
+                     }
+                     case ATTRIBUTE_VALUE_SIGNAL_NAME_POS:
+                     {
+                        if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
+                        {
+                           if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                           {
+                              if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
+                              {
+                                 signal->AddAttribute(attribute);
+                              }
+                              else
+                              {
+                                 rV = false;
+                                 this->log += "Signal not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                              }
+                           }
+                           else
+                           {
+                              rV = false;
+                              this->log += "Message not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                        }
+                        else
+                        {
+                           rV = false;
+                           this->log += "Wrong algorithm. Check it! [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                        break;
+                     }
+                     case ATTRIBUTE_VALUE_POS:
+                     {
+                        ;
+                        break;
+                     }
+                     default:
+                     {
+                        break;
+                     }
+                  }
+
+                  // If something went wrong
+                  if (!rV)
+                  {
+                     break;
+                  }
+                  ++pos;
+               }
+            }
+            else
+            {
+               rV = false;
+               this->log += "Invalid attribute value definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+            }
+         }
+         else
+         {
+            rV = false;
+            this->log += "Attribute has not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid attribute value definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Attribute value definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData)
 {
    // locals
    bool rV { true };
@@ -916,7 +1267,7 @@ bool CanBusConfig::ParseAttributeIntParams(std::span<std::string> paramTokens, C
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeHexParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeHexParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData)
 {
    // locals
    bool rV{ true };
@@ -949,7 +1300,7 @@ bool CanBusConfig::ParseAttributeHexParams(std::span<std::string> paramTokens, C
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeFloatParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeFloatParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData)
 {
    // locals
    bool rV{ true };
@@ -982,26 +1333,18 @@ bool CanBusConfig::ParseAttributeFloatParams(std::span<std::string> paramTokens,
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeStringParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeStringParams(CanAttribute*& attribute, LineData_t& lineData)
 {
    // locals
    bool rV{ true };
 
-   if (ranges::distance(paramTokens) == ATTRIBUTE_STRING_PARAMS_COUNT)
-   {
-      attribute = new CanStringAttribute{};
-      attribute->SetValueType(ICanAttribute::IValueType_e::STRING);
-   }
-   else
-   {
-      this->log += "Invalid string attribute params count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
-      rV = false;
-   }
+   attribute = new CanStringAttribute{};
+   attribute->SetValueType(ICanAttribute::IValueType_e::STRING);
 
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData)
 {
    // locals
    bool rV{ true };

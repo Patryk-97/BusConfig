@@ -49,5 +49,8 @@
     <ClInclude Include="..\Utils\DllLoader.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\Utils\helpers.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

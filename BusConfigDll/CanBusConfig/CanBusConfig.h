@@ -63,13 +63,15 @@ private:
    bool ParseNodeDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData);
 
    // helpers for ParseAttributeDefinition() function
-   bool ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData);
-   bool ParseAttributeHexParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData);
-   bool ParseAttributeFloatParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData);
-   bool ParseAttributeStringParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData);
-   bool ParseAttributeEnumParams(std::span<std::string> paramTokens, CanAttribute* attribute, LineData_t& lineData);
+   bool ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
+   bool ParseAttributeHexParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
+   bool ParseAttributeFloatParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
+   bool ParseAttributeStringParams(CanAttribute*& attribute, LineData_t& lineData);
+   bool ParseAttributeEnumParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
 
 
    // member variables
@@ -86,6 +88,8 @@ private:
    static constexpr std::string_view NODE_DEFINITION_HEADER = "BU_: ";
    static constexpr std::string_view VALUE_TABLE_DEFINITION_HEADER = "VAL_ ";
    static constexpr std::string_view ATTRIBUTE_DEFINITION_HEADER = "BA_DEF_ ";
+   static constexpr std::string_view ATTRIBUTE_DEFAULT_DEFINITION_HEADER = "BA_DEF_DEF_ ";
+   static constexpr std::string_view ATTRIBUTE_VALUE_DEFINITION_HEADER = "BA_ ";
 
    static constexpr std::string_view DBC_KEYWORD_NETWORK_NODE = "BU_";
    static constexpr std::string_view DBC_KEYWORD_MESSAGE = "BO_";
@@ -147,4 +151,26 @@ private:
    static constexpr std::string_view ATTRIBUTE_FLOAT = "FLOAT";
    static constexpr std::string_view ATTRIBUTE_STRING = "STRING";
    static constexpr std::string_view ATTRIBUTE_ENUM = "ENUM";
+
+   // attribute default definition
+   static constexpr uint8_t ATTRIBUTE_DEFAULT_DEFINITION_ELEMENTS_COUNT = 3;
+   static constexpr uint8_t ATTRIBUTE_DEFAULT_DEFINITION_HEADER_POS = 0;
+   static constexpr uint8_t ATTRIBUTE_DEFAULT_NAME_POS = 1;
+   static constexpr uint8_t ATTRIBUTE_DEFAULT_VALUE_POS = 2;
+
+   // attribute value definition
+   static constexpr uint8_t ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT = 3;
+   static constexpr uint8_t NETWORK_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT = 3;
+   static constexpr uint8_t NODE_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT = 5;
+   static constexpr uint8_t MESSAGE_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT = 5;
+   static constexpr uint8_t SIGNAL_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT = 6;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT = 5;
+   static constexpr uint8_t ATTRIBUTE_VALUE_DEFINITION_HEADER_POS = 0;
+   static constexpr uint8_t ATTRIBUTE_VALUE_NAME_POS = 1;
+   static constexpr uint8_t ATTRIBUTE_VALUE_OBJECT_TYPE_POS = 2;
+   static constexpr uint8_t ATTRIBUTE_VALUE_MESSAGE_ID_POS = 3;
+   static constexpr uint8_t ATTRIBUTE_VALUE_NODE_NAME_POS = 3;
+   static constexpr uint8_t ATTRIBUTE_VALUE_ENVIRONMENT_VARIABLE_NAME_POS = 3;
+   static constexpr uint8_t ATTRIBUTE_VALUE_SIGNAL_NAME_POS = 4;
+   static constexpr uint8_t ATTRIBUTE_VALUE_POS = 5;
 };

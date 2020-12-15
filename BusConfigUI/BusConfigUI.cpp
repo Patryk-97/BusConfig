@@ -265,15 +265,27 @@ void BusConfigUI::BuildTree(void)
    canSignalsTreeItem->setToolTip(0, "Can signals");
    canSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
    size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
-   for (size_t j = 0; j < canSignalsCount; j++)
+   for (size_t i = 0; i < canSignalsCount; i++)
    {
-      if (ICanSignal* canSignal = this->canBusConfig->GetSignalByIndex(j); canSignal != nullptr)
+      if (ICanSignal* canSignal = this->canBusConfig->GetSignalByIndex(i); canSignal != nullptr)
       {
          auto canSignalTreeItem = new QTreeWidgetItem{ canSignalsTreeItem };
          canSignalTreeItem->setText(0, canSignal->GetName());
          canSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
          canSignalTreeItem->setWhatsThis(0, "CanSignal");
          canSignalTreeItem->setToolTip(0, "Can signal");
+
+         size_t attributesCount = this->canBusConfig->GetAttributesCount();
+         for (size_t j = 0; j < attributesCount; j++)
+         {
+            if (ICanAttribute* attribute = this->canBusConfig->GetAttributeByIndex(j); attribute != nullptr)
+            {
+               auto attributeItem = new QTreeWidgetItem{ canSignalTreeItem };
+               attributeItem->setText(0, attribute->GetName());
+               attributeItem->setWhatsThis(0, "Attribute");
+               attributeItem->setToolTip(0, "Attribute");
+            }
+         }
       }
    }
 }
