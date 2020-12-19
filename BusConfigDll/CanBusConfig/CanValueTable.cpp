@@ -1,5 +1,6 @@
 #include "CanValueTable.h"
 #include "helpers.h"
+#include <algorithm>
 
 CanValueTable::~CanValueTable()
 {
@@ -56,14 +57,8 @@ uint32_t CanValueTable::GetValue(size_t index) const
 
 const char * CanValueTable::GetValueDescription(uint32_t value) const
 {
-   for (const auto& [key, description] : this->values)
-   {
-      if (key == value)
-      {
-         return description.data();
-      }
-   }
-   return nullptr;
+   auto it = std::find(this->values.begin(), this->values.end(), value);
+   return (it == this->values.end() ? it->second.data() : nullptr);
 }
 
 void CanValueTable::AddValue(uint32_t value, std::string_view valueDescription)
