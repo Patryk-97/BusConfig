@@ -1,12 +1,11 @@
 #pragma once
 
 #include "ICanSignal.h"
-#include "ICanAttribute.h"
 
 #include <stdint.h>
 #include <iostream>
 
-class ICanMessage
+class ICanMessage : public ICanAttributeOwner
 {
 protected:
    ICanMessage() {};
@@ -25,6 +24,8 @@ public:
    virtual size_t GetAttributesCount(void) const = 0;
    virtual ICanAttribute* GetAttributeByIndex(size_t index) const = 0;
    virtual ICanAttribute* GetAttributeByName(const char* name) const = 0;
+
+   virtual ICanAttributeValue* GetAttributeValue(const char* attributeName) const = 0;
 
    virtual const char* ToString(void) = 0;
 };

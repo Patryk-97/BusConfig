@@ -2,7 +2,7 @@
 
 #include "ICanAttribute.h"
 
-class ICanFloatAttribute : ICanAttribute
+class ICanFloatAttribute : public ICanAttribute
 {
 protected:
    ICanFloatAttribute() {};

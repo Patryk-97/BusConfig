@@ -2,16 +2,13 @@
 
 #include "ICanMessage.h"
 #include "CanSignal.h"
-#include "CanAttribute.h"
 
 #include <string>
 
-class CanMessage : public ICanMessage
+class CanMessage : public ICanMessage, public CanAttributeOwner
 {
 public:
-   CanMessage() = default;
-   CanMessage(uint32_t id, const char* name, uint32_t size, const char* mainTransmitter) :
-      id(id), name(name), size(size), mainTransmitter(mainTransmitter) {}
+   CanMessage() : CanAttributeOwner(ICanAttribute::IObjectType_e::MESSAGE) {};
    ~CanMessage();
 
    void Clear(void);
@@ -36,7 +33,8 @@ public:
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
    ICanAttribute* GetAttributeByName(const char* name) const override;
-   void AddAttribute(CanAttribute* attribute);
+
+   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* ToString(void) override;
 
@@ -46,6 +44,5 @@ private:
    uint32_t size {};
    std::string mainTransmitter;
    std::vector<CanSignal*> signals;
-   std::vector<CanAttribute*> attributes;
    std::string stringRepresentation;
 };

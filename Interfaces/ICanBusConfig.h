@@ -3,7 +3,7 @@
 #include "ICanMessage.h"
 #include "ICanNode.h"
 #include "ICanEnvVar.h"
-#include "ICanAttribute.h"
+#include "ICanAttributeOwner.h"
 
 // Classes
 class ICanBusConfig;
@@ -12,7 +12,7 @@ class ICanBusConfig;
 ICanBusConfig* CanBusConfigInstanceCreate(void);
 bool CanBusConfigInstanceDelete(ICanBusConfig* canBusConfig);
 
-class ICanBusConfig
+class ICanBusConfig : public ICanAttributeOwner
 {
 protected:
    ICanBusConfig() {};
@@ -40,8 +40,4 @@ public:
    virtual size_t GetEnvVarsCount(void) const = 0;
    virtual ICanEnvVar* GetEnvVarByIndex(size_t index) const = 0;
    virtual ICanEnvVar* GetEnvVarByName(const char* name) const = 0;
-
-   virtual size_t GetAttributesCount(void) const = 0;
-   virtual ICanAttribute* GetAttributeByIndex(size_t index) const = 0;
-   virtual ICanAttribute* GetAttributeByName(const char* name) const = 0;
 };

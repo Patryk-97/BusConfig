@@ -13,6 +13,7 @@ CanSignal::~CanSignal()
 
 void CanSignal::Clear(void)
 {
+   CanAttributeOwner::Clear();
    this->name = "";
    this->muxType = IMuxType_e::NOT_MULTIPLEXED;
    this->muxTypeStr = "";
@@ -32,7 +33,6 @@ void CanSignal::Clear(void)
    this->receivers.clear();
    this->message = nullptr;
    helpers::ClearPtr(this->valueTable);
-   this->attributes.clear();
    this->stringRepresentation = "";
 }
 
@@ -276,26 +276,22 @@ void CanSignal::SetValueTable(CanValueTable* valueTable)
 
 size_t CanSignal::GetAttributesCount(void) const
 {
-   return this->attributes.size();
+   return CanAttributeOwner::GetAttributesCount();
 }
 
 ICanAttribute* CanSignal::GetAttributeByIndex(size_t index) const
 {
-   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+   return CanAttributeOwner::GetAttributeByIndex(index);
 }
 
 ICanAttribute* CanSignal::GetAttributeByName(const char* name) const
 {
-   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
-   return (it != this->attributes.end() ? *it : nullptr);
+   return CanAttributeOwner::GetAttributeByName(name);
 }
 
-void CanSignal::AddAttribute(CanAttribute* attribute)
+ICanAttributeValue* CanSignal::GetAttributeValue(const char* attributeName) const
 {
-   if (attribute && attribute->GetObjectType() == ICanAttribute::IObjectType_e::SIGNAL)
-   {
-      this->attributes.push_back(attribute);
-   }
+   return CanAttributeOwner::GetAttributeValue(attributeName);
 }
 
 const char* CanSignal::ToString(void)

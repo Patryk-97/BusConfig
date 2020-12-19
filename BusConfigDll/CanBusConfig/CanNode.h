@@ -2,14 +2,13 @@
 
 #include "ICanNode.h"
 #include "CanMessage.h"
-#include "CanAttribute.h"
 #include <string>
 #include <set>
 
-class CanNode : public ICanNode
+class CanNode : public ICanNode, public CanAttributeOwner
 {
 public:
-   CanNode() = default;
+   CanNode() : CanAttributeOwner(ICanAttribute::IObjectType_e::NODE) {}
    ~CanNode();
 
    void Clear(void) override;
@@ -35,7 +34,8 @@ public:
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
    ICanAttribute* GetAttributeByName(const char* name) const override;
-   void AddAttribute(CanAttribute* attribute);
+
+   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
 private:
 
@@ -53,5 +53,4 @@ private:
    std::set<CanMessage*, Comparator<CanMessage>> rxMessages;
    std::set<CanSignal*, Comparator<CanSignal>> mappedTxSignals;
    std::set<CanSignal*, Comparator<CanSignal>> mappedRxSignals;
-   std::vector<CanAttribute*> attributes;
 };

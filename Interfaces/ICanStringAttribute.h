@@ -2,7 +2,7 @@
 
 #include "ICanAttribute.h"
 
-class ICanStringAttribute : ICanAttribute
+class ICanStringAttribute : public ICanAttribute
 {
 protected:
    ICanStringAttribute() {};

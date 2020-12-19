@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ICanValueDescription.h"
+#include <stdint.h>
 
 class ICanValueTable
 {
@@ -14,5 +14,5 @@ public:
    virtual uint32_t GetMaxValue(void) const = 0;
    virtual size_t GetValuesCount(void) const = 0;
    virtual uint32_t GetValue(size_t index) const = 0;
-   virtual const char* GetValueDescription(uint32_t value) const = 0;
+   virtual const char * GetValueDescription(uint32_t value) const = 0;
 };

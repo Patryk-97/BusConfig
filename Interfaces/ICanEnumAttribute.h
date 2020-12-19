@@ -3,7 +3,7 @@
 #include "ICanAttribute.h"
 #include <stdint.h>
 
-class ICanEnumAttribute : ICanAttribute
+class ICanEnumAttribute : public ICanAttribute
 {
 protected:
    ICanEnumAttribute() {};

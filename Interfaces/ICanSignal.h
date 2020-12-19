@@ -1,12 +1,12 @@
 #pragma once
 
 #include "ICanValueTable.h"
-#include "ICanAttribute.h"
+#include "ICanAttributeOwner.h"
 #include <stdint.h>
 
 class ICanMessage; // circular dependency
 
-class ICanSignal
+class ICanSignal : public ICanAttributeOwner
 {
 protected:
    ICanSignal() {};
@@ -58,10 +58,6 @@ public:
    virtual const char* GetReceiver(size_t index) const = 0;
    virtual ICanMessage* GetMessage(void) const = 0;
    virtual ICanValueTable* GetValueTable(void) const = 0;
-
-   virtual size_t GetAttributesCount(void) const = 0;
-   virtual ICanAttribute* GetAttributeByIndex(size_t index) const = 0;
-   virtual ICanAttribute* GetAttributeByName(const char* name) const = 0;
 
    virtual const char* ToString(void) = 0;
 

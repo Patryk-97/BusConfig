@@ -4,7 +4,7 @@
 #include "CanMessage.h"
 #include "CanNode.h"
 #include "CanEnvVar.h"
-#include "CanAttribute.h"
+#include "CanAttributeOwner.h"
 #include <string>
 #include <vector>
 #include <utility>
@@ -13,10 +13,10 @@
 
 using LineData_t = std::pair<std::string, size_t>;
 
-class CanBusConfig : public ICanBusConfig
+class CanBusConfig : public ICanBusConfig, CanAttributeOwner
 {
 public:
-   CanBusConfig() = default;
+   CanBusConfig() : CanAttributeOwner(ICanAttribute::IObjectType_e::NETWORK) {}
    ~CanBusConfig();
 
    void Clear(void) override;
@@ -54,8 +54,8 @@ public:
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
    ICanAttribute* GetAttributeByName(const char* name) const override;
-   void AddAttribute(CanAttribute* attribute);
-   CanAttribute* CreateAndAddAttribute(void);
+
+   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
@@ -80,7 +80,6 @@ private:
    std::vector<CanNode*> nodes;
    std::vector<CanSignal*> signals;
    std::vector<CanEnvVar*> envVars;
-   std::vector<CanAttribute*> attributes;
 
    // static variables
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";

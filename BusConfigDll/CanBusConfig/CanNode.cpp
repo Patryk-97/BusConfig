@@ -10,12 +10,12 @@ CanNode::~CanNode()
 
 void CanNode::Clear(void)
 {
+   CanAttributeOwner::Clear();
    this->name = "";
    this->txMessages.clear();
    this->rxMessages.clear();
    this->mappedRxSignals.clear();
    this->mappedTxSignals.clear();
-   this->attributes.clear();
 }
 
 const char* CanNode::GetName(void) const
@@ -102,24 +102,20 @@ void CanNode::AddMappedRxSignal(CanSignal* mappedRxSignal)
 
 size_t CanNode::GetAttributesCount(void) const
 {
-   return this->attributes.size();
+   return CanAttributeOwner::GetAttributesCount();
 }
 
 ICanAttribute* CanNode::GetAttributeByIndex(size_t index) const
 {
-   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+   return CanAttributeOwner::GetAttributeByIndex(index);
 }
 
 ICanAttribute* CanNode::GetAttributeByName(const char* name) const
 {
-   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
-   return (it != this->attributes.end() ? *it : nullptr);
+   return CanAttributeOwner::GetAttributeByName(name);
 }
 
-void CanNode::AddAttribute(CanAttribute* attribute)
+ICanAttributeValue* CanNode::GetAttributeValue(const char* attributeName) const
 {
-   if (attribute && attribute->GetObjectType() == ICanAttribute::IObjectType_e::NODE)
-   {
-      this->attributes.push_back(attribute);
-   }
+   return CanAttributeOwner::GetAttributeValue(attributeName);
 }

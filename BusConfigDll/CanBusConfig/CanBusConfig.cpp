@@ -35,12 +35,12 @@ CanBusConfig::~CanBusConfig()
 
 void CanBusConfig::Clear()
 {
+   CanAttributeOwner::Clear();
    this->log = "";
    helpers::ClearContainer(this->messages);
    helpers::ClearContainer(this->nodes);
    helpers::ClearContainer(this->signals);
    helpers::ClearContainer(this->envVars);
-   helpers::ClearContainer(this->attributes);
 }
 
 const char* CanBusConfig::GetLog(void) const
@@ -235,33 +235,22 @@ CanEnvVar* CanBusConfig::CreateAndAddEnvVar(void)
 
 size_t CanBusConfig::GetAttributesCount(void) const
 {
-   return this->attributes.size();
+   return CanAttributeOwner::GetAttributesCount();
 }
 
 ICanAttribute* CanBusConfig::GetAttributeByIndex(size_t index) const
 {
-   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+   return CanAttributeOwner::GetAttributeByIndex(index);
 }
 
 ICanAttribute* CanBusConfig::GetAttributeByName(const char* name) const
 {
-   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
-   return (it != this->attributes.end() ? *it : nullptr);
+   return CanAttributeOwner::GetAttributeByName(name);
 }
 
-void CanBusConfig::AddAttribute(CanAttribute* attribute)
+ICanAttributeValue* CanBusConfig::GetAttributeValue(const char* attributeName) const
 {
-   if (attribute)
-   {
-      this->attributes.push_back(attribute);
-   }
-}
-
-CanAttribute* CanBusConfig::CreateAndAddAttribute(void)
-{
-   CanAttribute* attribute = new CanAttribute {};
-   this->attributes.push_back(attribute);
-   return attribute;
+   return CanAttributeOwner::GetAttributeValue(attributeName);
 }
 
 bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)
@@ -271,7 +260,7 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
 
    if (line.starts_with(CanBusConfig::MESSAGE_DEFINITION_HEADER))
    {
-      boost_char_separator sep(" :");
+      boost_char_separator sep { " :" };
       boost_char_separator_tokenizer tokenizer { line, sep };
       
       // If everything's okay

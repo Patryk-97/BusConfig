@@ -10,9 +10,9 @@ CanEnvVar::~CanEnvVar()
 
 void CanEnvVar::Clear(void)
 {
+   CanAttributeOwner::Clear();
    this->name = "";
    helpers::ClearPtr(this->valueTable);
-   this->attributes.clear();
 }
 
 const char* CanEnvVar::GetName(void) const
@@ -37,24 +37,20 @@ void CanEnvVar::SetValueTable(CanValueTable* valueTable)
 
 size_t CanEnvVar::GetAttributesCount(void) const
 {
-   return this->attributes.size();
+   return CanAttributeOwner::GetAttributesCount();
 }
 
 ICanAttribute* CanEnvVar::GetAttributeByIndex(size_t index) const
 {
-   return (index < this->attributes.size() ? this->attributes[index] : nullptr);
+   return CanAttributeOwner::GetAttributeByIndex(index);
 }
 
 ICanAttribute* CanEnvVar::GetAttributeByName(const char* name) const
 {
-   auto it = ranges::find_if(this->attributes, [&name](CanAttribute* attribute) { return !std::strcmp(attribute->GetName(), name); });
-   return (it != this->attributes.end() ? *it : nullptr);
+   return CanAttributeOwner::GetAttributeByName(name);
 }
 
-void CanEnvVar::AddAttribute(CanAttribute* attribute)
+ICanAttributeValue* CanEnvVar::GetAttributeValue(const char* attributeName) const
 {
-   if (attribute && attribute->GetObjectType() == ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE)
-   {
-      this->attributes.push_back(attribute);
-   }
+   return CanAttributeOwner::GetAttributeValue(attributeName);
 }

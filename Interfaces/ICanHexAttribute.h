@@ -3,7 +3,7 @@
 #include "ICanAttribute.h"
 #include <stdint.h>
 
-class ICanHexAttribute : ICanAttribute
+class ICanHexAttribute : public ICanAttribute
 {
 protected:
    ICanHexAttribute() {};

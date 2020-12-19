@@ -2,17 +2,17 @@
 
 #include "ICanSignal.h"
 #include "CanValueTable.h"
-#include "CanAttribute.h"
+#include "CanAttributeOwner.h"
 
 #include <string>
 #include <vector>
 
 class CanMessage; // circular dependency
 
-class CanSignal : public ICanSignal
+class CanSignal : public ICanSignal, public CanAttributeOwner
 {
 public:
-   CanSignal() = default;
+   CanSignal() : CanAttributeOwner(ICanAttribute::IObjectType_e::SIGNAL) {};
    ~CanSignal();
 
    void Clear(void) override;
@@ -76,7 +76,8 @@ public:
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
    ICanAttribute* GetAttributeByName(const char* name) const override;
-   void AddAttribute(CanAttribute* attribute);
+
+   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* ToString(void) override;
 

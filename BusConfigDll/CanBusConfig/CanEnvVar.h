@@ -2,13 +2,13 @@
 
 #include "ICanEnvVar.h"
 #include "CanValueTable.h"
-#include "CanAttribute.h"
+#include "CanAttributeOwner.h"
 #include <string>
 
-class CanEnvVar : public ICanEnvVar
+class CanEnvVar : public ICanEnvVar, public CanAttributeOwner
 {
 public:
-   CanEnvVar() = default;
+   CanEnvVar() : CanAttributeOwner(ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE) {}
    ~CanEnvVar();
 
    void Clear(void) override;
@@ -22,10 +22,10 @@ public:
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
    ICanAttribute* GetAttributeByName(const char* name) const override;
-   void AddAttribute(CanAttribute* attribute);
+
+   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
 private:
    std::string name;
    CanValueTable* valueTable { nullptr };
-   std::vector<CanAttribute*> attributes;
 };

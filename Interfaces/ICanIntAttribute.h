@@ -3,7 +3,7 @@
 #include "ICanAttribute.h"
 #include <stdint.h>
 
-class ICanIntAttribute : virtual public ICanAttribute
+class ICanIntAttribute : public ICanAttribute
 {
 protected:
    ICanIntAttribute() {};

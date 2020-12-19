@@ -26,7 +26,8 @@ namespace helpers
    template <typename T>
    inline void ClearPtr(T* ptr) { delete ptr; ptr = nullptr; }
 
-   template <typename StlContainer, typename = std::enable_if_t<is_stl_container_v<StlContainer>>>
+   template <typename StlContainer, typename = std::enable_if_t<is_stl_container_v<StlContainer>>,
+      typename = std::enable_if_t<std::is_pointer_v<typename StlContainer::value_type>>>
    inline void ClearContainer(StlContainer& stlContainer) { for (auto& ptr : stlContainer) { delete ptr; }; stlContainer.clear(); }
 
 
