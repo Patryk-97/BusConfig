@@ -150,6 +150,12 @@
     <ClInclude Include="CanBusConfig\CanAttributeOwner.h">
       <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanAttributeValueFactory.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanAttributeManager.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -214,6 +220,12 @@
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanAttributeOwner.cpp">
       <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanAttributeManager.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Interfaces\ICanAttributeValueFactory.cpp">
+      <Filter>Interfaces\CanAttributes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,15 +2,16 @@
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include "helpers.h"
+#include "CanAttributeManager.h"
 #include "CanIntAttribute.h"
 #include "CanHexAttribute.h"
 #include "CanFloatAttribute.h"
 #include "CanStringAttribute.h"
 #include "CanEnumAttribute.h"
+#include "ICanAttributeValueFactory.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <variant>
 
 #ifndef line
 #define line lineData.first
@@ -927,27 +928,7 @@ bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData
                {
                   if (attribute)
                   {
-                     helpers::typecase(attribute,
-                        [&token](CanIntAttribute* intAttribute)
-                        {
-                           intAttribute->SetDefaultValue(std::stoi(token));
-                        },
-                        [&token](CanHexAttribute* hexAttribute)
-                        {
-                           hexAttribute->SetDefaultValue(std::stoi(token));
-                        },
-                        [&token](CanFloatAttribute* floatAttribute)
-                        {
-                           floatAttribute->SetDefaultValue(std::stod(token));
-                        },
-                        [&token](CanStringAttribute* stringAttribute)
-                        {
-                           stringAttribute->SetDefaultValue(token.c_str());
-                        },
-                        [&token](CanEnumAttribute* enumAttribute)
-                        {
-                           enumAttribute->SetDefaultValue(token.c_str());
-                        });
+                     CanAttributeManager::SetDefaultValue(attribute, token);
                   }
                   break;
                }
@@ -993,7 +974,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
       size_t elementsMinCount {};
       CanAttribute* attribute { nullptr };
       ICanAttribute::IObjectType_e objectType { ICanAttribute::IObjectType_e::UNDEFINED };
-      std::variant<CanNode*, CanMessage*, CanSignal*, CanEnvVar*> attributeOwner;
+      CanAttributeOwner* attributeOwner { nullptr };
       uint32_t messageId {};
 
       // prepare attribute value definition tokens
@@ -1092,7 +1073,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                               messageId = std::stoul(token);
                               if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
                               {
-                                 message->AddAttribute(attribute);
+                                 attributeOwner = message;
                                  ++pos;
                               }
                               else
@@ -1123,7 +1104,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                         {
                            if (auto node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
                            {
-                              node->AddAttribute(attribute);
+                              attributeOwner = node;
                               ++pos;
                            }
                            else
@@ -1136,7 +1117,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                         {
                            if (auto envVar = dynamic_cast<CanEnvVar*>(this->GetEnvVarByName(token.c_str())); envVar != nullptr)
                            {
-                              envVar->AddAttribute(attribute);
+                              attributeOwner = envVar;
                               ++pos;
                            }
                            else
@@ -1155,7 +1136,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                            {
                               if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
                               {
-                                 signal->AddAttribute(attribute);
+                                 attributeOwner = signal;
                               }
                               else
                               {
@@ -1178,7 +1159,17 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                      }
                      case ATTRIBUTE_VALUE_POS:
                      {
-                        ;
+                        if (objectType != ICanAttribute::IObjectType_e::NETWORK)
+                        {
+                           attributeOwner->AddAttribute(attribute);
+                        }
+                        ICanAttributeValue* attributeValue = 
+                           ICanAttributeValueFactory::CreateAttributeValue(attribute->GetValueType());
+                        if (attributeValue)
+                        {
+                           CanAttributeManager::SetValue(attributeValue, token);
+                           attributeOwner->AddAttributeValue(attribute->GetName(), attributeValue);
+                        }
                         break;
                      }
                      default:

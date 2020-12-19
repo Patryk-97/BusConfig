@@ -166,6 +166,7 @@
     <ClInclude Include="..\Interfaces\ICanAttributeOwner.h" />
     <ClInclude Include="..\Interfaces\ICanAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeValue.h" />
+    <ClInclude Include="..\Interfaces\ICanAttributeValueFactory.h" />
     <ClInclude Include="..\Interfaces\ICanBusConfig.h" />
     <ClInclude Include="..\Interfaces\ICanEnumAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanEnumAttributeValue.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="..\Interfaces\ICanValueTable.h" />
     <ClInclude Include="..\Utils\helpers.h" />
     <ClInclude Include="CanBusConfig\CanAttribute.h" />
+    <ClInclude Include="CanBusConfig\CanAttributeManager.h" />
     <ClInclude Include="CanBusConfig\CanAttributeOwner.h" />
     <ClInclude Include="CanBusConfig\CanBusConfig.h" />
     <ClInclude Include="CanBusConfig\CanEnumAttribute.h" />
@@ -205,8 +207,10 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Interfaces\ICanAttributeValueFactory.cpp" />
     <ClCompile Include="..\Interfaces\ICanBusConfig.cpp" />
     <ClCompile Include="CanBusConfig\CanAttribute.cpp" />
+    <ClCompile Include="CanBusConfig\CanAttributeManager.cpp" />
     <ClCompile Include="CanBusConfig\CanAttributeOwner.cpp" />
     <ClCompile Include="CanBusConfig\CanBusConfig.cpp" />
     <ClCompile Include="CanBusConfig\CanEnumAttribute.cpp" />
