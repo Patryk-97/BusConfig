@@ -12,6 +12,7 @@ public:
    virtual const char * GetName(void) const = 0;
    virtual uint32_t GetMinValue(void) const = 0;
    virtual uint32_t GetMaxValue(void) const = 0;
-   virtual size_t GetValueDescriptionsCount(void) const = 0;
-   virtual ICanValueDescription* GetValueDescription(size_t index) const = 0;
+   virtual size_t GetValuesCount(void) const = 0;
+   virtual uint32_t GetValue(size_t index) const = 0;
+   virtual const char* GetValueDescription(uint32_t value) const = 0;
 };

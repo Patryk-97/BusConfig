@@ -174,7 +174,6 @@
     <ClInclude Include="..\Interfaces\ICanNode.h" />
     <ClInclude Include="..\Interfaces\ICanSignal.h" />
     <ClInclude Include="..\Interfaces\ICanStringAttribute.h" />
-    <ClInclude Include="..\Interfaces\ICanValueDescription.h" />
     <ClInclude Include="..\Interfaces\ICanValueTable.h" />
     <ClInclude Include="..\Utils\helpers.h" />
     <ClInclude Include="CanBusConfig\CanAttribute.h" />
@@ -188,7 +187,6 @@
     <ClInclude Include="CanBusConfig\CanNode.h" />
     <ClInclude Include="CanBusConfig\CanSignal.h" />
     <ClInclude Include="CanBusConfig\CanStringAttribute.h" />
-    <ClInclude Include="CanBusConfig\CanValueDescription.h" />
     <ClInclude Include="CanBusConfig\CanValueTable.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -206,7 +204,6 @@
     <ClCompile Include="CanBusConfig\CanNode.cpp" />
     <ClCompile Include="CanBusConfig\CanSignal.cpp" />
     <ClCompile Include="CanBusConfig\CanStringAttribute.cpp" />
-    <ClCompile Include="CanBusConfig\CanValueDescription.cpp" />
     <ClCompile Include="CanBusConfig\CanValueTable.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

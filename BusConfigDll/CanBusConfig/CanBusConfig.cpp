@@ -609,7 +609,7 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
 
    ICanMessage* message { nullptr }; // only if signal is value owner
    CanValueTable* valueTable { nullptr };
-   CanValueDescription* valueDescription { nullptr };
+   uint32_t value { (uint32_t)-1 };
 
    if (line.starts_with(CanBusConfig::VALUE_TABLE_DEFINITION_HEADER))
    {
@@ -696,10 +696,9 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                      // value
                      if (pos % 2 == 1)
                      {
-                        valueDescription = valueTable->CreateAndAddValueDescription();
                         try
                         {
-                           valueDescription->SetValue(std::stoul(token));
+                           value = std::stoul(token);
                         }
                         catch (...)
                         {
@@ -711,9 +710,9 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                      // description
                      else
                      {
-                        if (valueDescription)
+                        if (value != (uint32_t)-1 && valueTable != nullptr)
                         {
-                           valueDescription->SetDescription(token.c_str());
+                           valueTable->AddValue(value, token);
                         }
                      }
                   }

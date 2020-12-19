@@ -60,17 +60,11 @@
     <ClInclude Include="CanBusConfig\CanNode.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interfaces\ICanValueDescription.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="CanBusConfig\CanValueTable.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="..\Interfaces\ICanValueTable.h">
       <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="CanBusConfig\CanValueDescription.h">
-      <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="..\Utils\helpers.h">
       <Filter>Utils</Filter>
@@ -141,9 +135,6 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanValueTable.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="CanBusConfig\CanValueDescription.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanEnvVar.cpp">

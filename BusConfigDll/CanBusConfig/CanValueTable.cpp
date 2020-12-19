@@ -11,7 +11,7 @@ void CanValueTable::Clear(void)
    this->name = "";
    this->minValue = 0;
    this->maxValue = 0;
-   helpers::ClearContainer(this->valueDescriptions);
+   this->values.clear();
 }
 
 const char* CanValueTable::GetName(void) const
@@ -44,27 +44,29 @@ void CanValueTable::SetMaxValue(uint32_t maxValue)
    this->maxValue = maxValue;
 }
 
-size_t CanValueTable::GetValueDescriptionsCount(void) const
+size_t CanValueTable::GetValuesCount(void) const
 {
-   return this->valueDescriptions.size();
+   return this->values.size();
 }
 
-ICanValueDescription* CanValueTable::GetValueDescription(size_t index) const
+uint32_t CanValueTable::GetValue(size_t index) const
 {
-   return (index < this->valueDescriptions.size() ? this->valueDescriptions[index] : nullptr);
+   return (index < this->values.size() ? (*std::next(this->values.begin(), index)).first : -1);
 }
 
-void CanValueTable::AddValueDescription(CanValueDescription* valueDescription)
+const char * CanValueTable::GetValueDescription(uint32_t value) const
 {
-   if (valueDescription)
+   for (const auto& [key, description] : this->values)
    {
-      this->valueDescriptions.push_back(valueDescription);
+      if (key == value)
+      {
+         return description.data();
+      }
    }
+   return nullptr;
 }
 
-CanValueDescription* CanValueTable::CreateAndAddValueDescription(void)
+void CanValueTable::AddValue(uint32_t value, std::string_view valueDescription)
 {
-   CanValueDescription* valueDescription = new CanValueDescription();
-   this->valueDescriptions.push_back(valueDescription);
-   return valueDescription;
+   this->values[value] = valueDescription;
 }
