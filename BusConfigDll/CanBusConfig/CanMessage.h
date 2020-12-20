@@ -5,7 +5,7 @@
 
 #include <string>
 
-class CanMessage : public ICanMessage, public CanAttributeOwner
+class CanMessage : public CanAttributeOwner, public ICanMessage
 {
 public:
    CanMessage() : CanAttributeOwner(ICanAttribute::IObjectType_e::MESSAGE) {};

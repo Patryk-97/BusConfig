@@ -5,7 +5,7 @@
 #include <string>
 #include <set>
 
-class CanNode : public ICanNode, public CanAttributeOwner
+class CanNode : public CanAttributeOwner, public ICanNode
 {
 public:
    CanNode() : CanAttributeOwner(ICanAttribute::IObjectType_e::NODE) {}

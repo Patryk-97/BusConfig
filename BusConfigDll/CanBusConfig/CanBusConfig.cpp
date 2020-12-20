@@ -87,6 +87,10 @@ bool CanBusConfig::Load(const char* filename)
          {
             this->ParseAttributeDefaultDefinition(file, lineData);
          }
+         else if (line.starts_with(CanBusConfig::ATTRIBUTE_VALUE_DEFINITION_HEADER))
+         {
+            this->ParseAttributeValueDefinition(file, lineData);
+         }
          lineNr++;
       }
    }
@@ -900,14 +904,25 @@ bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData
 
    if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFAULT_DEFINITION_HEADER))
    {
-      boost_char_separator sep(" \";");
-      boost_char_separator_tokenizer tokenizer{ line, sep };
+      boost_char_separator sep { " \";" };
+      boost_char_separator_tokenizer tokenizer { line, sep };
       CanAttribute* attribute { nullptr };
+      std::vector<std::string> tokens;
+      
+      // prepare attribute default definition tokens
+      for (const auto& token : tokenizer)
+      {
+         tokens.push_back(token);
+      }
+      if (tokens.size() == 2)
+      {
+         tokens.push_back(std::string{""});
+      }
 
       // If everything's okay
-      if (ranges::distance(tokenizer) != ATTRIBUTE_DEFAULT_DEFINITION_ELEMENTS_COUNT)
+      if (ranges::distance(tokens) == ATTRIBUTE_DEFAULT_DEFINITION_ELEMENTS_COUNT)
       {
-         for (size_t pos{}; const auto& token : tokenizer)
+         for (size_t pos{}; const auto& token : tokens)
          {
             switch (pos)
             {
@@ -1021,13 +1036,19 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                this->log += "Wrong attribute's object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
             }
 
-            if (ranges::distance(tokens) == elementsMinCount && rV)
+            if (rV && ranges::distance(tokens) == elementsMinCount - 1)
+            {
+               tokens.push_back(std::string{""});
+            }
+
+            if (rV && ranges::distance(tokens) == elementsMinCount)
             {
                for (size_t pos{}; const auto & token : tokens)
                {
                   if (pos == ATTRIBUTE_VALUE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
                   {
                      pos = ATTRIBUTE_VALUE_POS;
+                     attributeOwner = this;
                   }
 
                   switch (pos)
@@ -1159,6 +1180,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                      }
                      case ATTRIBUTE_VALUE_POS:
                      {
+                        // because for network object type assigning is in BA_DEF_DEF_ section
                         if (objectType != ICanAttribute::IObjectType_e::NETWORK)
                         {
                            attributeOwner->AddAttribute(attribute);
@@ -1286,7 +1308,7 @@ bool CanBusConfig::ParseAttributeFloatParams(std::span<std::string> paramTokens,
 
    if (ranges::distance(paramTokens) == ATTRIBUTE_FLOAT_PARAMS_COUNT)
    {
-      attribute = new CanFloatAttribute{};
+      attribute = new CanFloatAttribute {};
       attribute->SetValueType(ICanAttribute::IValueType_e::FLOAT);
 
       if (CanFloatAttribute* floatAttribute = dynamic_cast<CanFloatAttribute*>(attribute); floatAttribute != nullptr)

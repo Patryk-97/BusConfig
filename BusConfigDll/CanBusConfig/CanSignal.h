@@ -9,7 +9,7 @@
 
 class CanMessage; // circular dependency
 
-class CanSignal : public ICanSignal, public CanAttributeOwner
+class CanSignal : public CanAttributeOwner, public ICanSignal
 {
 public:
    CanSignal() : CanAttributeOwner(ICanAttribute::IObjectType_e::SIGNAL) {};

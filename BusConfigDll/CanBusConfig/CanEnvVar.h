@@ -5,7 +5,7 @@
 #include "CanAttributeOwner.h"
 #include <string>
 
-class CanEnvVar : public ICanEnvVar, public CanAttributeOwner
+class CanEnvVar : public CanAttributeOwner, public ICanEnvVar
 {
 public:
    CanEnvVar() : CanAttributeOwner(ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE) {}

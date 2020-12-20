@@ -9,7 +9,6 @@
 class CanAttributeOwner : public ICanAttributeOwner
 {
 public:
-   CanAttributeOwner() = default;
    CanAttributeOwner(ICanAttribute::IObjectType_e objectType) : objectType(objectType) {}
    ~CanAttributeOwner();
 

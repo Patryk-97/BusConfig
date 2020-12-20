@@ -47,15 +47,15 @@ void CanAttributeManager::SetValue(ICanAttributeValue* attributeValue, const std
       {
          hexAttributeValue->SetValue(std::stoi(value));
       },
-         [&value](CanFloatAttributeValue* floatAttributeValue)
+      [&value](CanFloatAttributeValue* floatAttributeValue)
       {
          floatAttributeValue->SetValue(std::stod(value));
       },
-         [&value](CanStringAttributeValue* stringAttributeValue)
+      [&value](CanStringAttributeValue* stringAttributeValue)
       {
          stringAttributeValue->SetValue(value.c_str());
       },
-         [&value](CanEnumAttributeValue* enumAttributeValue)
+      [&value](CanEnumAttributeValue* enumAttributeValue)
       {
          enumAttributeValue->SetValue(value.c_str());
       });

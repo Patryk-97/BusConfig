@@ -1,4 +1,5 @@
 #include "CanAttributeOwner.h"
+#include "CanIntAttribute.h"
 #include <algorithm>
 
 namespace ranges = std::ranges;

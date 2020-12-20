@@ -13,7 +13,7 @@
 
 using LineData_t = std::pair<std::string, size_t>;
 
-class CanBusConfig : public ICanBusConfig, CanAttributeOwner
+class CanBusConfig : public CanAttributeOwner, public ICanBusConfig
 {
 public:
    CanBusConfig() : CanAttributeOwner(ICanAttribute::IObjectType_e::NETWORK) {}
