@@ -3,6 +3,7 @@
 #include "ICanBusConfig.h"
 #include <qmessagebox.h>
 #include <QFileDialog>
+#include "ICanAttributeManager.h"
 
 DllLoader<ICanBusConfig, bool> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
@@ -93,8 +94,11 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
 
    if (current != nullptr)
    {
-      const QString text = current->text(0);
-      const QString itemType = current->whatsThis(0);
+      const auto text = current->text(0);
+      const auto itemType = current->whatsThis(0);
+      const auto parent = current->parent();
+      const auto parentText = parent->text(0);
+      const auto parentItemType = parent->whatsThis(0);
       if (itemType == "CanMessage")
       {
          this->BuildCanMessageProperties(text.toUtf8());
@@ -110,6 +114,10 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       else if (itemType == "CanSignals")
       {
          this->BuildCanSignalsProperties();
+      }
+      else if (itemType == "Attributes" && parentItemType == "CanSignal")
+      {
+         this->BuildSignalAttributesProperties(parentText.toUtf8());
       }
    }
 }
@@ -275,17 +283,10 @@ void BusConfigUI::BuildTree(void)
          canSignalTreeItem->setWhatsThis(0, "CanSignal");
          canSignalTreeItem->setToolTip(0, "Can signal");
 
-         size_t attributesCount = this->canBusConfig->GetAttributesCount();
-         for (size_t j = 0; j < attributesCount; j++)
-         {
-            if (ICanAttribute* attribute = this->canBusConfig->GetAttributeByIndex(j); attribute != nullptr)
-            {
-               auto attributeItem = new QTreeWidgetItem{ canSignalTreeItem };
-               attributeItem->setText(0, attribute->GetName());
-               attributeItem->setWhatsThis(0, "Attribute");
-               attributeItem->setToolTip(0, "Attribute");
-            }
-         }
+         auto attributesItem = new QTreeWidgetItem{ canSignalTreeItem };
+         attributesItem->setText(0, "Attributes");
+         attributesItem->setWhatsThis(0, "Attributes");
+         attributesItem->setToolTip(0, "Attributes");
       }
    }
 }
@@ -439,5 +440,47 @@ void BusConfigUI::BuildCanSignalsProperties(void)
          this->ui.tableWidget_Properties->setItem(i, 10, new QTableWidgetItem{ valueTableName });
          this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
       }
+   }
+}
+
+void BusConfigUI::BuildSignalAttributesProperties(const char* signalName)
+{
+   if (const auto signal = this->canBusConfig->GetSignalByName(signalName); signal != nullptr)
+   {
+      size_t attributesCount = signal->GetAttributesCount();
+      QStringList headerLabels;
+      for (size_t i = 0; i < attributesCount; i++)
+      {
+         if (const auto attribute = signal->GetAttributeByIndex(i); attribute != nullptr)
+         {
+            headerLabels << attribute->GetName();
+         }
+      }
+      this->ui.tableWidget_Properties->setRowCount(2);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+      const auto fillAttributeValuesRow = [&props = this->ui.tableWidget_Properties, signal]
+         (const ICanAttribute* attribute)
+      {
+         const auto attributeValue = signal->GetAttributeValue(attribute->GetName());
+         if (attributeValue != nullptr)
+         {
+            const auto fillAttributeValueColumn = [&props, col = 0]
+               (const auto& value) mutable
+            {
+               if (std::is_arithmetic_v<value>)
+               {
+                  props->setItem(1, col, new QTableWidgetItem{ toQString(value) });
+               }
+               else if (std::is_same_v<value, const char *>)
+               {
+                  props->setItem(1, col, new QTableWidgetItem{ value });
+               }
+               ++col;
+            };
+            ICanAttributeManager::ForAttributeValue(attributeValue, fillAttributeValueColumn);
+         }
+      };
+      ICanAttributeManager::ForEachAttribute(signal, fillAttributeValuesRow);
    }
 }
