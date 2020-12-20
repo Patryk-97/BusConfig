@@ -5,7 +5,7 @@
 #include <QFileDialog>
 #include "ICanAttributeManager.h"
 
-DllLoader<ICanBusConfig, bool> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
+DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
 template <typename T>
 inline QString toQString(const T& parameter)

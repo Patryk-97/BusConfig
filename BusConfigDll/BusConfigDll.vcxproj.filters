@@ -156,6 +156,9 @@
     <ClInclude Include="CanBusConfig\CanAttributeManager.h">
       <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanAttributeManager.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

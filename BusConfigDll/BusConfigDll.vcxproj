@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Interfaces\ICanAttributeManager.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeOwner.h" />
     <ClInclude Include="..\Interfaces\ICanAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeValue.h" />
