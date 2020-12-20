@@ -22,8 +22,9 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
    void AddAttributeValue(const std::string& attributeName, ICanAttributeValue* attributeValue);
 
-private:
+public:
    ICanAttribute::IObjectType_e objectType { ICanAttribute::IObjectType_e::UNDEFINED };
+private:
    std::vector<CanAttribute*> attributes;
    std::map<std::string, ICanAttributeValue*> attributesValues;
 };

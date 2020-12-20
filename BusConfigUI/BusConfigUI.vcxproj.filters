@@ -52,5 +52,8 @@
     <ClInclude Include="..\Utils\helpers.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="ICanAttributeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

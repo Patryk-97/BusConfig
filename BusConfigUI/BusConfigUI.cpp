@@ -97,8 +97,8 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       const auto text = current->text(0);
       const auto itemType = current->whatsThis(0);
       const auto parent = current->parent();
-      const auto parentText = parent->text(0);
-      const auto parentItemType = parent->whatsThis(0);
+      const auto parentText = (parent ? parent->text(0) : "");
+      const auto parentItemType = (parent ? parent->whatsThis(0) : "");
       if (itemType == "CanMessage")
       {
          this->BuildCanMessageProperties(text.toUtf8());
@@ -445,40 +445,34 @@ void BusConfigUI::BuildCanSignalsProperties(void)
 
 void BusConfigUI::BuildSignalAttributesProperties(const char* signalName)
 {
-   if (const auto signal = this->canBusConfig->GetSignalByName(signalName); signal != nullptr)
+   if (const auto signal = this->canBusConfig->GetSignalByName(signalName); signal)
    {
       size_t attributesCount = signal->GetAttributesCount();
       QStringList headerLabels;
       for (size_t i = 0; i < attributesCount; i++)
       {
-         if (const auto attribute = signal->GetAttributeByIndex(i); attribute != nullptr)
+         if (const auto attribute = signal->GetAttributeByIndex(i); attribute)
          {
             headerLabels << attribute->GetName();
          }
       }
-      this->ui.tableWidget_Properties->setRowCount(2);
+      this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-      const auto fillAttributeValuesRow = [&props = this->ui.tableWidget_Properties, signal]
+      uint8_t col = 0;
+      const auto fillAttributeValuesRow = [this, signal, &col]
          (const ICanAttribute* attribute)
       {
          const auto attributeValue = signal->GetAttributeValue(attribute->GetName());
          if (attributeValue != nullptr)
          {
-            const auto fillAttributeValueColumn = [&props, col = 0]
-               (const auto& value) mutable
+            const auto fillAttributeValueColumn = [this, &col]
+               (const std::string& value)
             {
-               if (std::is_arithmetic_v<value>)
-               {
-                  props->setItem(1, col, new QTableWidgetItem{ toQString(value) });
-               }
-               else if (std::is_same_v<value, const char *>)
-               {
-                  props->setItem(1, col, new QTableWidgetItem{ value });
-               }
+               this->ui.tableWidget_Properties->setItem(0, col, new QTableWidgetItem{ value.c_str() });
                ++col;
             };
-            ICanAttributeManager::ForAttributeValue(attributeValue, fillAttributeValueColumn);
+            ICanAttributeManager::ForAttributeStrValue(attributeValue, fillAttributeValueColumn);
          }
       };
       ICanAttributeManager::ForEachAttribute(signal, fillAttributeValuesRow);

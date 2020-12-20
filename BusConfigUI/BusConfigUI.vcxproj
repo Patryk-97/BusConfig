@@ -107,6 +107,7 @@
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <ClInclude Include="ICanAttributeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusConfigDll\BusConfigDll.vcxproj">

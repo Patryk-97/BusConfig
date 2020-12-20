@@ -32,7 +32,7 @@ ICanAttribute* CanAttributeOwner::GetAttributeByName(const char* name) const
 
 void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
 {
-   if (attribute)
+   /*if (attribute)
    {
       if (this->objectType != ICanAttribute::IObjectType_e::NETWORK)
       {
@@ -45,13 +45,17 @@ void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
       {
          this->attributes.push_back(attribute);
       }
+   }*/
+   if (attribute)
+   {
+      this->attributes.push_back(attribute);
    }
 }
 
 ICanAttributeValue* CanAttributeOwner::GetAttributeValue(const char* attributeName) const
 {
    auto it = this->attributesValues.find(std::string{ attributeName });
-   return (it == this->attributesValues.end() ? it->second : nullptr);
+   return (it != this->attributesValues.end() ? it->second : nullptr);
 }
 
 void CanAttributeOwner::AddAttributeValue(const std::string& attributeName, ICanAttributeValue* attributeValue)

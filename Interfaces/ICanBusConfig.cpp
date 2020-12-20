@@ -1,14 +1,18 @@
 #include "ICanBusConfig.h"
 #include "CanBusConfig.h"
 
-CanBusConfig canBusConfig;
-
 ICanBusConfig* CanBusConfigInstanceCreate(void)
 {
-   return &canBusConfig;
+   auto canBusConfig = new CanBusConfig {};
+   return canBusConfig;
 }
 
 bool CanBusConfigInstanceDelete(ICanBusConfig* canBusConfig)
 {
-   return true;
+   if (const auto instance = dynamic_cast<CanBusConfig*>(canBusConfig); instance != nullptr)
+   {
+      delete instance;
+      return true;
+   }
+   return false;
 }
