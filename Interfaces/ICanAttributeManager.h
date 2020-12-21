@@ -16,7 +16,7 @@ public:
    ICanAttributeManager() = delete;
 
    template <typename T>
-   static void ForEachAttribute(ICanAttributeOwner* attributeOwner, T fun)
+   static void ForEachAttribute(const ICanAttributeOwner* attributeOwner, const T& fun)
    {
       if (attributeOwner)
       {
@@ -31,7 +31,7 @@ public:
    }
 
    template <typename T>
-   static void ForAttributeValue(ICanAttributeValue* attributeValue, T fun)
+   static void ForAttributeValue(const ICanAttributeValue* attributeValue, const T& fun)
    {
       if (attributeValue)
       {
@@ -60,30 +60,30 @@ public:
    }
 
    template <typename T>
-   static void ForAttributeStrValue(ICanAttributeValue* attributeValue, T fun)
+   static void ForAttributeStrValue(const ICanAttributeValue* attributeValue, const T& fun)
    {
       if (attributeValue)
       {
          helpers::typecase(attributeValue,
-            [&fun](ICanIntAttributeValue* intAttributeValue)
+            [&fun](const ICanIntAttributeValue* intAttributeValue)
             {
                fun(std::to_string(intAttributeValue->GetValue()));
             },
-            [&fun](ICanHexAttributeValue* hexAttributeValue)
+            [&fun](const ICanHexAttributeValue* hexAttributeValue)
             {
                std::stringstream strStream;
                strStream << "0x" << std::hex << hexAttributeValue->GetValue();
                fun(strStream.str());
             },
-            [&fun](ICanFloatAttributeValue* floatAttributeValue)
+            [&fun](const ICanFloatAttributeValue* floatAttributeValue)
             {
                fun(std::to_string(floatAttributeValue->GetValue()));
             },
-            [&fun](ICanStringAttributeValue* stringAttributeValue)
+            [&fun](const ICanStringAttributeValue* stringAttributeValue)
             {
                fun(stringAttributeValue->GetValue());
             },
-            [&fun](ICanEnumAttributeValue* enumAttributeValue)
+            [&fun](const ICanEnumAttributeValue* enumAttributeValue)
             {
                fun(enumAttributeValue->GetValue());
             });

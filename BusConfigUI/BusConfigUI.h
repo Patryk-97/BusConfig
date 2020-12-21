@@ -31,7 +31,7 @@ private:
    void BuildCanMessagesProperties(void);
    void BuildCanSignalProperties(const char* signalName);
    void BuildCanSignalsProperties(void);
-   void BuildSignalAttributesProperties(const char* signalName);
+   void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
    // member variables
     Ui::BusConfigUIClass ui;

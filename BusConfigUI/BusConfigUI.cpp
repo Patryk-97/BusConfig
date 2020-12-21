@@ -117,7 +117,18 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       }
       else if (itemType == "Attributes" && parentItemType == "CanSignal")
       {
-         this->BuildSignalAttributesProperties(parentText.toUtf8());
+         const auto canSignal = this->canBusConfig->GetSignalByName(parentText.toUtf8());
+         this->BuildAttributesProperties(canSignal);
+      }
+      else if (itemType == "Attributes" && parentItemType == "CanMessage")
+      {
+         const auto canMessage = this->canBusConfig->GetMessageByName(parentText.toUtf8());
+         this->BuildAttributesProperties(canMessage);
+      }
+      else if (itemType == "Attributes" && parentItemType == "CanNetworkNode")
+      {
+         const auto canNetworkNode = this->canBusConfig->GetNodeByName(parentText.toUtf8());
+         this->BuildAttributesProperties(canNetworkNode);
       }
    }
 }
@@ -185,6 +196,8 @@ void BusConfigUI::BuildTree(void)
       {
          auto canNodeTreeItem = new QTreeWidgetItem{ networkNodesTreeItem };
          canNodeTreeItem->setText(0, canNode->GetName());
+         canNodeTreeItem->setWhatsThis(0, "CanNetworkNode");
+         canNodeTreeItem->setToolTip(0, "Can network node");
          canNodeTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
 
          // Tx Messages
@@ -246,6 +259,12 @@ void BusConfigUI::BuildTree(void)
                rxSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
             }
          }
+
+         // Can Network Node Attributes
+         auto attributesItem = new QTreeWidgetItem{ canNodeTreeItem };
+         attributesItem->setText(0, "Attributes");
+         attributesItem->setWhatsThis(0, "Attributes");
+         attributesItem->setToolTip(0, "Attributes");
       }
    }
 
@@ -264,6 +283,11 @@ void BusConfigUI::BuildTree(void)
          canMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
          canMessageTreeItem->setWhatsThis(0, "CanMessage");
          canMessageTreeItem->setToolTip(0, "Can message");
+
+         auto attributesItem = new QTreeWidgetItem{ canMessageTreeItem };
+         attributesItem->setText(0, "Attributes");
+         attributesItem->setWhatsThis(0, "Attributes");
+         attributesItem->setToolTip(0, "Attributes");
       }
    }
 
@@ -289,6 +313,11 @@ void BusConfigUI::BuildTree(void)
          attributesItem->setToolTip(0, "Attributes");
       }
    }
+
+   auto attributesItem = new QTreeWidgetItem{ networkTreeItem };
+   attributesItem->setText(0, "Attributes");
+   attributesItem->setWhatsThis(0, "Attributes");
+   attributesItem->setToolTip(0, "Attributes");
 }
 
 void BusConfigUI::Clear(void)
@@ -443,15 +472,15 @@ void BusConfigUI::BuildCanSignalsProperties(void)
    }
 }
 
-void BusConfigUI::BuildSignalAttributesProperties(const char* signalName)
+void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeOwner)
 {
-   if (const auto signal = this->canBusConfig->GetSignalByName(signalName); signal)
+   if (attributeOwner)
    {
-      size_t attributesCount = signal->GetAttributesCount();
+      size_t attributesCount = attributeOwner->GetAttributesCount();
       QStringList headerLabels;
       for (size_t i = 0; i < attributesCount; i++)
       {
-         if (const auto attribute = signal->GetAttributeByIndex(i); attribute)
+         if (const auto attribute = attributeOwner->GetAttributeByIndex(i); attribute)
          {
             headerLabels << attribute->GetName();
          }
@@ -459,15 +488,16 @@ void BusConfigUI::BuildSignalAttributesProperties(const char* signalName)
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+      
       uint8_t col = 0;
-      const auto fillAttributeValuesRow = [this, signal, &col]
-         (const ICanAttribute* attribute)
+      const auto fillAttributeValuesRow = [this, attributeOwner, &col]
+      (const ICanAttribute* attribute)
       {
-         const auto attributeValue = signal->GetAttributeValue(attribute->GetName());
+         const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName());
          if (attributeValue != nullptr)
          {
             const auto fillAttributeValueColumn = [this, &col]
-               (const std::string& value)
+            (const std::string& value)
             {
                this->ui.tableWidget_Properties->setItem(0, col, new QTableWidgetItem{ value.c_str() });
                ++col;
@@ -475,6 +505,6 @@ void BusConfigUI::BuildSignalAttributesProperties(const char* signalName)
             ICanAttributeManager::ForAttributeStrValue(attributeValue, fillAttributeValueColumn);
          }
       };
-      ICanAttributeManager::ForEachAttribute(signal, fillAttributeValuesRow);
+      ICanAttributeManager::ForEachAttribute(attributeOwner, fillAttributeValuesRow);
    }
 }

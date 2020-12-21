@@ -16,7 +16,7 @@ public:
    ICanAttributeManager() = delete;
 
    template <typename T>
-   static void ForEachAttribute(ICanAttributeOwner* attributeOwner, T fun)
+   static void ForEachAttribute(const ICanAttributeOwner* attributeOwner, const T& fun)
    {
       if (attributeOwner)
       {
@@ -31,28 +31,28 @@ public:
    }
 
    template <typename T>
-   static void ForAttributeValue(ICanAttributeValue* attributeValue, T fun)
+   static void ForAttributeValue(const ICanAttributeValue* attributeValue, const T& fun)
    {
       if (attributeValue)
       {
          helpers::typecase(attributeValue,
-            [&fun] (ICanIntAttributeValue* intAttributeValue)
+            [&fun] (const ICanIntAttributeValue* intAttributeValue)
             {
                fun(intAttributeValue->GetValue());
             },
-            [&fun](ICanHexAttributeValue* hexAttributeValue)
+            [&fun](const ICanHexAttributeValue* hexAttributeValue)
             {
                fun(hexAttributeValue->GetValue());
             },
-            [&fun](ICanFloatAttributeValue* floatAttributeValue)
+            [&fun](const ICanFloatAttributeValue* floatAttributeValue)
             {
                fun(floatAttributeValue->GetValue());
             },
-            [&fun](ICanStringAttributeValue* stringAttributeValue)
+            [&fun](const ICanStringAttributeValue* stringAttributeValue)
             {
                fun(stringAttributeValue->GetValue());
             },
-            [&fun](ICanEnumAttributeValue* enumAttributeValue)
+            [&fun](const ICanEnumAttributeValue* enumAttributeValue)
             {
                fun(enumAttributeValue->GetValue());
             });
@@ -60,7 +60,7 @@ public:
    }
 
    template <typename T>
-   static void ForAttributeStrValue(ICanAttributeValue* attributeValue, T fun)
+   static void ForAttributeStrValue(ICanAttributeValue* attributeValue, const T& fun)
    {
       if (attributeValue)
       {
