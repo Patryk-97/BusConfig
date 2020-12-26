@@ -10,6 +10,10 @@ CommunicationMatrix::CommunicationMatrix(QWidget *parent) :
    ui(new Ui::CommunicationMatrix)
 {
    ui->setupUi(this);
+   Qt::WindowFlags flags { Qt::Window | Qt::WindowContextHelpButtonHint |
+      Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint };
+   this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
+   this->setWindowFlags(flags);
 }
 
 CommunicationMatrix::~CommunicationMatrix()
@@ -71,7 +75,7 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
                   if (signalIndex != ICanBusConfig::INVALID_INDEX && mappedTxMessage)
                   {
                      auto item = new QTableWidgetItem{ QString { "<Tx> " } + mappedTxMessage->GetName() };
-                     item->setForeground(QBrush(QColor(0, 0, 255)));
+                     item->setForeground(QBrush { QColor { 0, 0, 255 }});
                      this->ui->tableWidget->setItem(signalIndex, i, item);
                   }
                }
@@ -86,7 +90,6 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
                   if (signalIndex != ICanBusConfig::INVALID_INDEX && mappedRxMessage)
                   {
                      auto item = new QTableWidgetItem{ mappedRxMessage->GetName() };
-                     item->setForeground(QBrush(QColor(0, 0, 255)));
                      this->ui->tableWidget->setItem(signalIndex, i, item);
                   }
                }
