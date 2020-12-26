@@ -17,6 +17,7 @@ private slots:
    void on_actionClear_triggered();
    void on_actionOpen_triggered();
    void on_actionExit_triggered();
+   void on_actionBase_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 private:
 
@@ -46,5 +47,12 @@ private:
        NETWORK = 3
     };
 
+    enum class Base_e
+    {
+       DEC = 0,
+       HEX = 1
+    };
+
     QMap<Icon_e, QIcon> icons;
+    Base_e base { Base_e::DEC };
 };

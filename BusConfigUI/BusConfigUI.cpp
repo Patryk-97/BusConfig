@@ -3,6 +3,7 @@
 #include "ICanBusConfig.h"
 #include <qmessagebox.h>
 #include <QFileDialog>
+#include <qtoolbutton.h>
 #include "ICanAttributeManager.h"
 
 DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
@@ -37,6 +38,15 @@ BusConfigUI::BusConfigUI(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+
+    foreach(QToolButton * button, ui.mainToolBar->findChildren<QToolButton*>())
+    {
+       if (button->text() == "Hex base" || button->text() == "Dec base")
+       {
+          button->setText("");
+       }
+    }
+
     if (LoadBusConfigDll())
     {
        this->AddLog("Successfully loaded BusConfigDll.dll");
@@ -74,6 +84,30 @@ void BusConfigUI::on_actionOpen_triggered()
    {
       fileName = dlgOpen.selectedFiles();
       this->LoadFile(fileName[0]);
+   }
+}
+
+void BusConfigUI::on_actionBase_triggered()
+{
+   if (this->base == Base_e::DEC)
+   {
+      this->base = Base_e::HEX;
+      this->ui.actionBase->setIcon(QIcon { QString { "icons/dec.ico" }});
+      this->ui.actionBase->setText("Dec base");
+   }
+   else // (this->base = Base_e::HEX)
+   {
+      this->base = Base_e::DEC;
+      this->ui.actionBase->setIcon(QIcon { QString { "icons/hex.ico" }});
+      this->ui.actionBase->setText("Hex base");
+   }
+
+   for(auto toolButton : this->ui.mainToolBar->findChildren<QToolButton*>())
+   {
+      if (toolButton->text() == "Hex base" || toolButton->text() == "Dec base")
+      {
+         toolButton->setText("");
+      }
    }
 }
 
