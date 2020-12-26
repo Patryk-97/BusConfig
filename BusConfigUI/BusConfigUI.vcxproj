@@ -48,13 +48,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../Interfaces;../Utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interfaces;../Utils;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../Interfaces;../Utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Interfaces;../Utils;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -102,11 +102,14 @@
     <QtUic Include="BusConfigUI.ui" />
     <QtMoc Include="BusConfigUI.h" />
     <ClCompile Include="BusConfigUI.cpp" />
+    <ClCompile Include="CommunicationMatrix.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="CommunicationMatrix.ui" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <QtMoc Include="CommunicationMatrix.h" />
     <ClInclude Include="ICanAttributeManager.h" />
   </ItemGroup>
   <ItemGroup>
