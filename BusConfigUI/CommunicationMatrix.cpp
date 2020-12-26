@@ -24,7 +24,7 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
    if (canBusConfig)
    {
       this->ui->tableWidget->clear();
-      uint8_t col = 0, row = 0;
+      uint16_t col = 0, row = 0;
       this->ui->tableWidget->setRowCount(canBusConfig->GetSignalsCount());
       this->ui->tableWidget->setColumnCount(canBusConfig->GetNodesCount());
       ICanManager::ForEachNetworkNode(canBusConfig, [this, &col]
@@ -33,7 +33,7 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
          if (canNetworkNode)
          {
             this->ui->tableWidget->setHorizontalHeaderItem(col++, 
-               new QTableWidgetItem { QIcon { ":/BusConfigUI/Icons/network-node.png" },canNetworkNode->GetName() });
+               new QTableWidgetItem { QIcon { ":/BusConfigUI/Icons/network-node.png" }, canNetworkNode->GetName() });
          }
       });
 
@@ -56,6 +56,42 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
          label->setAlignment(Qt::AlignCenter);
          label->setContentsMargins(2, 2, 2, 2);
          lay->addWidget(label);
+      }
+
+      for (size_t i = 0; i < canBusConfig->GetNodesCount(); ++i)
+      {
+         if (const auto canNetworkNode = canBusConfig->GetNodeByIndex(i); canNetworkNode)
+         {
+            for (size_t j = 0; j < canNetworkNode->GetMappedTxSignalsCount(); ++j)
+            {
+               if (const auto mappedTxSignal = canNetworkNode->GetMappedTxSignalByIndex(j); mappedTxSignal)
+               {
+                  size_t signalIndex = canBusConfig->GetSignalIndex(mappedTxSignal->GetName());
+                  const auto mappedTxMessage = mappedTxSignal->GetMessage();
+                  if (signalIndex != ICanBusConfig::INVALID_INDEX && mappedTxMessage)
+                  {
+                     auto item = new QTableWidgetItem{ QString { "<Tx> " } + mappedTxMessage->GetName() };
+                     item->setForeground(QBrush(QColor(0, 0, 255)));
+                     this->ui->tableWidget->setItem(signalIndex, i, item);
+                  }
+               }
+            }
+
+            for (size_t j = 0; j < canNetworkNode->GetMappedRxSignalsCount(); ++j)
+            {
+               if (const auto mappedRxSignal = canNetworkNode->GetMappedRxSignalByIndex(j); mappedRxSignal)
+               {
+                  size_t signalIndex = canBusConfig->GetSignalIndex(mappedRxSignal->GetName());
+                  const auto mappedRxMessage = mappedRxSignal->GetMessage();
+                  if (signalIndex != ICanBusConfig::INVALID_INDEX && mappedRxMessage)
+                  {
+                     auto item = new QTableWidgetItem{ mappedRxMessage->GetName() };
+                     item->setForeground(QBrush(QColor(0, 0, 255)));
+                     this->ui->tableWidget->setItem(signalIndex, i, item);
+                  }
+               }
+            }
+         }
       }
    }
    

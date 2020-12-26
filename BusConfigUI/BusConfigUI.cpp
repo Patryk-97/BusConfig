@@ -63,10 +63,12 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->setWindowState(Qt::WindowMaximized);
        this->canBusConfig = dllLoader.pfCreate();
 
-       this->icons[Icon_e::MESSAGE] = QIcon { ":/BusConfigUI/Icons/message.png" };
-       this->icons[Icon_e::SIGNAL] = QIcon { ":/BusConfigUI/Icons/signal.png" };
-       this->icons[Icon_e::NETWORK_NODE] = QIcon { ":/BusConfigUI/Icons/network-node.png" };
-       this->icons[Icon_e::NETWORK] = QIcon { ":/BusConfigUI/Icons/network.png" };
+       this->icons[Icon_e::MESSAGE] = QIcon{ ":/BusConfigUI/Icons/message.png" };
+       this->icons[Icon_e::SIGNAL] = QIcon{ ":/BusConfigUI/Icons/signal.png" };
+       this->icons[Icon_e::NETWORK_NODE] = QIcon{ ":/BusConfigUI/Icons/network-node.png" };
+       this->icons[Icon_e::NETWORK] = QIcon{ ":/BusConfigUI/Icons/network.png" };
+       this->icons[Icon_e::HEX] = QIcon{ ":/BusConfigUI/Icons/hex.ico" };
+       this->icons[Icon_e::DEC] = QIcon{ ":/BusConfigUI/Icons/dec.ico" };
 
        // golden ratio proportion in splitter
        this->ui.splitter->setSizes({ static_cast<int>(10000 - 10000 / 1.618), static_cast<int>(10000 / 1.618) });
@@ -102,13 +104,13 @@ void BusConfigUI::on_actionBase_triggered()
    if (this->base == Base_e::DEC)
    {
       this->base = Base_e::HEX;
-      this->ui.actionBase->setIcon(QIcon { QString { "icons/dec.ico" }});
+      this->ui.actionBase->setIcon(this->icons[Icon_e::DEC]);
       this->ui.actionBase->setText(QString { "Dec base" });
    }
    else // (this->base = Base_e::HEX)
    {
       this->base = Base_e::DEC;
-      this->ui.actionBase->setIcon(QIcon { QString { "icons/hex.ico" }});
+      this->ui.actionBase->setIcon(this->icons[Icon_e::HEX]);
       this->ui.actionBase->setText(QString { "Hex base" });
    }
 

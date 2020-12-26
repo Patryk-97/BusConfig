@@ -114,6 +114,13 @@ ICanNode* CanBusConfig::GetNodeByName(const char* name) const
    return (it != this->nodes.end() ? *it : nullptr);
 }
 
+size_t CanBusConfig::GetNodeIndex(const char* name) const
+{
+   auto it = ranges::find_if(this->nodes, [&name](CanNode* node) { return !std::strcmp(node->GetName(), name); });
+   return (it != this->nodes.end() ? std::distance(this->nodes.begin(), it) :
+      ICanBusConfig::INVALID_INDEX);
+}
+
 void CanBusConfig::AddNode(CanNode* node)
 {
    if (node)
@@ -175,6 +182,13 @@ ICanSignal* CanBusConfig::GetSignalByName(const char* name) const
 {
    auto it = ranges::find_if(this->signals, [&name](CanSignal* signal) { return !std::strcmp(signal->GetName(), name); });
    return (it != this->signals.end() ? *it : nullptr);
+}
+
+size_t CanBusConfig::GetSignalIndex(const char* name) const
+{
+   auto it = ranges::find_if(this->signals, [&name](CanSignal* signal) { return !std::strcmp(signal->GetName(), name); });
+   return (it != this->signals.end() ? std::distance(this->signals.begin(), it) :
+      ICanBusConfig::INVALID_INDEX);
 }
 
 void CanBusConfig::AddSignal(CanSignal* signal)

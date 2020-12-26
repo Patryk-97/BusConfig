@@ -27,6 +27,7 @@ public:
    size_t GetNodesCount(void) const override;
    ICanNode* GetNodeByIndex(size_t index) const override;
    ICanNode* GetNodeByName(const char* name) const override;
+   size_t GetNodeIndex(const char* name) const override;
    void AddNode(CanNode* node);
    CanNode* CreateAndAddNode(void);
 
@@ -42,6 +43,7 @@ public:
    size_t GetSignalsCount(void) const override;
    ICanSignal* GetSignalByIndex(size_t index) const override;
    ICanSignal* GetSignalByName(const char* name) const override;
+   size_t GetSignalIndex(const char* name) const override;
    void AddSignal(CanSignal* signal);
    CanSignal* CreateAndAddSignal(void);
 

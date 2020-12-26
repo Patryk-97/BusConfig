@@ -46,7 +46,9 @@ private:
        MESSAGE = 0,
        SIGNAL = 1,
        NETWORK_NODE = 2,
-       NETWORK = 3
+       NETWORK = 3,
+       HEX = 4,
+       DEC = 5
     };
 
     enum class Base_e
