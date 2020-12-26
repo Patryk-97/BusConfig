@@ -4,6 +4,8 @@
 #include <qmessagebox.h>
 #include <QFileDialog>
 #include <qtoolbutton.h>
+#include <sstream>
+#include <concepts>
 #include "ICanAttributeManager.h"
 
 DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
@@ -12,6 +14,14 @@ template <typename T>
 inline QString toQString(const T& parameter)
 {
    return QStringLiteral("%1").arg(parameter);
+}
+
+template <std::integral T>
+inline QString toHexQString(const T& hexNumber)
+{
+   std::stringstream stream;
+   stream << "0x" << std::hex << hexNumber;
+   return QString::fromStdString(stream.str());
 }
 
 bool LoadBusConfigDll(void)
@@ -93,13 +103,13 @@ void BusConfigUI::on_actionBase_triggered()
    {
       this->base = Base_e::HEX;
       this->ui.actionBase->setIcon(QIcon { QString { "icons/dec.ico" }});
-      this->ui.actionBase->setText("Dec base");
+      this->ui.actionBase->setText(QString { "Dec base" });
    }
    else // (this->base = Base_e::HEX)
    {
       this->base = Base_e::DEC;
       this->ui.actionBase->setIcon(QIcon { QString { "icons/hex.ico" }});
-      this->ui.actionBase->setText("Hex base");
+      this->ui.actionBase->setText(QString { "Hex base" });
    }
 
    for(auto toolButton : this->ui.mainToolBar->findChildren<QToolButton*>())
@@ -393,7 +403,14 @@ void BusConfigUI::BuildCanMessagesProperties(void)
       if (const auto message = this->canBusConfig->GetMessageByIndex(i); message != nullptr)
       {
          this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ message->GetName() });
-         this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(message->GetId()) });
+         if (this->base == Base_e::DEC)
+         {
+            this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(message->GetId()) });
+         }
+         else
+         {
+            this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toHexQString(message->GetId()) });
+         }
          this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
       }
    }
