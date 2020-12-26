@@ -3,21 +3,23 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_BusConfigUI.h"
 #include "ICanBusConfig.h"
+#include "CommunicationMatrix.h"
 #include <qmap.h>
 
 class BusConfigUI : public QMainWindow
 {
     Q_OBJECT
-
 public:
     BusConfigUI(QWidget *parent = Q_NULLPTR);
 
+    friend CommunicationMatrix;
 
 private slots:
    void on_actionClear_triggered();
    void on_actionOpen_triggered();
    void on_actionExit_triggered();
    void on_actionBase_triggered();
+   void on_actionCommunication_matrix_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 private:
 
@@ -37,7 +39,7 @@ private:
    // member variables
     Ui::BusConfigUIClass ui;
     ICanBusConfig* canBusConfig { nullptr };
-
+    CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
 
     enum class Icon_e
     {

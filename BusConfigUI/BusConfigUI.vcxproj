@@ -109,6 +109,7 @@
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <ClInclude Include="ICanManager.h" />
     <QtMoc Include="CommunicationMatrix.h" />
     <ClInclude Include="ICanAttributeManager.h" />
   </ItemGroup>

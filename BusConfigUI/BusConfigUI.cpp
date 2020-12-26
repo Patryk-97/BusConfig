@@ -63,10 +63,10 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->setWindowState(Qt::WindowMaximized);
        this->canBusConfig = dllLoader.pfCreate();
 
-       this->icons[Icon_e::MESSAGE] = QIcon(QString("icons/message.png"));
-       this->icons[Icon_e::SIGNAL] = QIcon(QString("icons/signal.png"));
-       this->icons[Icon_e::NETWORK_NODE] = QIcon(QString("icons/network-node.png"));
-       this->icons[Icon_e::NETWORK] = QIcon(QString("icons/network.png"));
+       this->icons[Icon_e::MESSAGE] = QIcon { ":/BusConfigUI/Icons/message.png" };
+       this->icons[Icon_e::SIGNAL] = QIcon { ":/BusConfigUI/Icons/signal.png" };
+       this->icons[Icon_e::NETWORK_NODE] = QIcon { ":/BusConfigUI/Icons/network-node.png" };
+       this->icons[Icon_e::NETWORK] = QIcon { ":/BusConfigUI/Icons/network.png" };
 
        // golden ratio proportion in splitter
        this->ui.splitter->setSizes({ static_cast<int>(10000 - 10000 / 1.618), static_cast<int>(10000 / 1.618) });
@@ -119,6 +119,12 @@ void BusConfigUI::on_actionBase_triggered()
          toolButton->setText("");
       }
    }
+}
+
+void BusConfigUI::on_actionCommunication_matrix_triggered()
+{
+   this->communicationMatrix->Create(this->canBusConfig);
+   this->communicationMatrix->show();
 }
 
 void BusConfigUI::on_actionExit_triggered()
@@ -542,7 +548,7 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
       
       uint8_t col = 0;
       const auto fillAttributeValuesRow = [this, attributeOwner, &col]
-      (const ICanAttribute* attribute)
+         (const ICanAttribute* attribute)
       {
          const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName());
          if (attributeValue != nullptr)
@@ -550,7 +556,7 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
             const auto fillAttributeValueColumn = [this, &col]
             (const std::string& value)
             {
-               this->ui.tableWidget_Properties->setItem(0, col, new QTableWidgetItem{ value.c_str() });
+               this->ui.tableWidget_Properties->setItem(0, col, new QTableWidgetItem { value.c_str() });
                ++col;
             };
             ICanAttributeManager::ForAttributeStrValue(attributeValue, fillAttributeValueColumn);
