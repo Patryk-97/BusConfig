@@ -50,14 +50,6 @@ BusConfigUI::BusConfigUI(QWidget *parent)
 {
     ui.setupUi(this);
 
-    foreach(QToolButton * button, ui.mainToolBar->findChildren<QToolButton*>())
-    {
-       if (button->text() == "Hex base" || button->text() == "Dec base")
-       {
-          button->setText("");
-       }
-    }
-
     if (LoadBusConfigDll())
     {
        this->AddLog("Successfully loaded BusConfigDll.dll");
@@ -70,11 +62,26 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->icons[Icon_e::NETWORK] = QIcon{ ":/BusConfigUI/Icons/network.png" };
        this->icons[Icon_e::HEX] = QIcon{ ":/BusConfigUI/Icons/hex.ico" };
        this->icons[Icon_e::DEC] = QIcon{ ":/BusConfigUI/Icons/dec.ico" };
+       this->icons[Icon_e::COMMUNICATION_MATRIX] = QIcon{ ":/BusConfigUI/Icons/communication-matrix.png" };
+
+       foreach(QToolButton * button, ui.mainToolBar->findChildren<QToolButton*>())
+       {
+          if (button->text() == "Hex base" || button->text() == "Dec base")
+          {
+             button->setText("");
+          }
+          if (button->text() == "Communication matrix")
+          {
+             button->setText("");
+             button->setIcon(this->icons[Icon_e::COMMUNICATION_MATRIX]);
+          }
+       }
 
        this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 0 10px; border: 0; }");
        this->ui.tableWidget_Properties->horizontalHeader()->setStyleSheet(
          "QHeaderView::section { padding: 0 10px; border: 0; }");
        this->ui.tableWidget_Properties->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+       // because without it is some border after clicking on item in table widget
 
        // golden ratio proportion in splitter
        this->ui.splitter->setSizes({ static_cast<int>(10000 - 10000 / 1.618), static_cast<int>(10000 / 1.618) });
@@ -403,7 +410,7 @@ void BusConfigUI::BuildCanMessageProperties(const char* messageName)
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ message->GetName() });
+      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ this->icons[Icon_e::MESSAGE], message->GetName() });
       this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ toQString(message->GetId()) });
 
       const QString idFormat = std::invoke([&message] () -> QString
@@ -412,19 +419,19 @@ void BusConfigUI::BuildCanMessageProperties(const char* messageName)
          {
             case ICanMessage::IdFormat_e::STANDARD_CAN:
             {
-               return ICanMessage::IdFormat::STANDARD_CAN;
+               return "CAN Standard";
             }
             case ICanMessage::IdFormat_e::EXTENDED_CAN:
             {
-               return ICanMessage::IdFormat::EXTENDED_CAN;
+               return "CAN Extended";
             }
             case ICanMessage::IdFormat_e::STANDARD_CAN_FD:
             {
-               return ICanMessage::IdFormat::STANDARD_CAN_FD;
+               return "CAN FD Standard";
             }
             case ICanMessage::IdFormat_e::EXTENDED_CAN_FD:
             {
-               return ICanMessage::IdFormat::EXTENDED_CAN_FD;
+               return "CAN FD Extended";
             }
          }
          return ICanMessage::IdFormat::DEFAULT;
@@ -475,7 +482,7 @@ void BusConfigUI::BuildCanMessagesProperties(void)
    {
       if (const auto message = this->canBusConfig->GetMessageByIndex(i); message != nullptr)
       {
-         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ message->GetName() });
+         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ this->icons[Icon_e::MESSAGE], message->GetName() });
          if (this->base == Base_e::DEC)
          {
             this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(message->GetId()) });
@@ -550,7 +557,7 @@ void BusConfigUI::BuildCanSignalProperties(const char* signalName)
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ signal->GetName() });
+      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ this->icons[Icon_e::SIGNAL], signal->GetName() });
       this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
       this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ toQString(signal->GetSize()) });
 
@@ -605,7 +612,7 @@ void BusConfigUI::BuildCanSignalsProperties(void)
    {
       if (const auto signal = this->canBusConfig->GetSignalByIndex(i); signal != nullptr)
       {
-         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ signal->GetName() });
+         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ this->icons[Icon_e::SIGNAL], signal->GetName() });
          this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
          this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(signal->GetSize()) });
 
