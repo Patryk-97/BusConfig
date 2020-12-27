@@ -96,6 +96,11 @@ bool CanBusConfig::Load(const char* filename)
       }
    }
 
+   if (rV)
+   {
+      this->SetMainAttributes();
+   }
+
    return rV;
 }
 

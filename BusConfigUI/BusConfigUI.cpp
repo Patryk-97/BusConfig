@@ -71,6 +71,11 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->icons[Icon_e::HEX] = QIcon{ ":/BusConfigUI/Icons/hex.ico" };
        this->icons[Icon_e::DEC] = QIcon{ ":/BusConfigUI/Icons/dec.ico" };
 
+       this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 0 10px; border: 0; }");
+       this->ui.tableWidget_Properties->horizontalHeader()->setStyleSheet(
+         "QHeaderView::section { padding: 0 10px; border: 0; }");
+       this->ui.tableWidget_Properties->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
        // golden ratio proportion in splitter
        this->ui.splitter->setSizes({ static_cast<int>(10000 - 10000 / 1.618), static_cast<int>(10000 / 1.618) });
     }
@@ -394,13 +399,65 @@ void BusConfigUI::BuildCanMessageProperties(const char* messageName)
    if (const auto message = this->canBusConfig->GetMessageByName(messageName); message != nullptr)
    {
       QStringList headerLabels;
-      headerLabels << "Name" << "ID" << "Size";
+      headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
       this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ message->GetName() });
       this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ toQString(message->GetId()) });
-      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
+
+      const QString idFormat = std::invoke([&message] () -> QString
+      {
+         switch (message->GetIdFormat())
+         {
+            case ICanMessage::IdFormat_e::STANDARD_CAN:
+            {
+               return ICanMessage::IdFormat::STANDARD_CAN;
+            }
+            case ICanMessage::IdFormat_e::EXTENDED_CAN:
+            {
+               return ICanMessage::IdFormat::EXTENDED_CAN;
+            }
+            case ICanMessage::IdFormat_e::STANDARD_CAN_FD:
+            {
+               return ICanMessage::IdFormat::STANDARD_CAN_FD;
+            }
+            case ICanMessage::IdFormat_e::EXTENDED_CAN_FD:
+            {
+               return ICanMessage::IdFormat::EXTENDED_CAN_FD;
+            }
+         }
+         return ICanMessage::IdFormat::DEFAULT;
+      });
+
+      const QString txMethod = std::invoke([&message]() -> QString
+      {
+         switch (message->GetTxMethod())
+         {
+            case ICanMessage::TxMethod_e::NO_MSG_SEND_TYPE:
+            {
+               return ICanMessage::TxMethod::NO_MSG_SEND_TYPE;
+            }
+            case ICanMessage::TxMethod_e::CYCLIC:
+            {
+               return ICanMessage::TxMethod::CYCLIC;
+            }
+            case ICanMessage::TxMethod_e::IF_ACTIVE:
+            {
+               return ICanMessage::TxMethod::IF_ACTIVE;
+            }
+            case ICanMessage::TxMethod_e::NOT_USED:
+            {
+               return ICanMessage::TxMethod::NOT_USED;
+            }
+         }
+         return ICanMessage::TxMethod::DEFAULT;
+      });
+
+      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ idFormat });
+      this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(message->GetSize()) });
+      this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ txMethod });
+      this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(message->GetCycleTime()) });
       this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
    }
 }
@@ -409,7 +466,7 @@ void BusConfigUI::BuildCanMessagesProperties(void)
 {
    size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
    QStringList headerLabels;
-   headerLabels << "Name" << "ID" << "Size";
+   headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
    this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -427,7 +484,58 @@ void BusConfigUI::BuildCanMessagesProperties(void)
          {
             this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toHexQString(message->GetId()) });
          }
-         this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(message->GetSize()) });
+
+         const QString idFormat = std::invoke([&message]() -> QString
+         {
+            switch (message->GetIdFormat())
+            {
+               case ICanMessage::IdFormat_e::STANDARD_CAN:
+               {
+                  return "CAN Standard";
+               }
+               case ICanMessage::IdFormat_e::EXTENDED_CAN:
+               {
+                  return "CAN Extended";
+               }
+               case ICanMessage::IdFormat_e::STANDARD_CAN_FD:
+               {
+                  return "CAN FD Standard";
+               }
+               case ICanMessage::IdFormat_e::EXTENDED_CAN_FD:
+               {
+                  return "CAN FD Extended";
+               }
+            }
+            return "CAN Standard";
+         });
+
+         const QString txMethod = std::invoke([&message]() -> QString
+         {
+            switch (message->GetTxMethod())
+            {
+               case ICanMessage::TxMethod_e::NO_MSG_SEND_TYPE:
+               {
+                  return ICanMessage::TxMethod::NO_MSG_SEND_TYPE;
+               }
+               case ICanMessage::TxMethod_e::CYCLIC:
+               {
+                  return ICanMessage::TxMethod::CYCLIC;
+               }
+               case ICanMessage::TxMethod_e::IF_ACTIVE:
+               {
+                  return ICanMessage::TxMethod::IF_ACTIVE;
+               }
+               case ICanMessage::TxMethod_e::NOT_USED:
+               {
+                  return ICanMessage::TxMethod::NOT_USED;
+               }
+            }
+            return ICanMessage::TxMethod::DEFAULT;
+         });
+         this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ idFormat });
+         this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(message->GetSize()) });
+         this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ txMethod });
+         this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(message->GetCycleTime()) });
       }
    }
 }
@@ -565,9 +673,9 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
          if (attributeValue != nullptr)
          {
             const auto fillAttributeValueColumn = [this, &row]
-            (const std::string& value)
+               (const std::string& value)
             {
-               this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem { value.c_str() });
+               this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ value.c_str() });
                ++row;
             };
             ICanAttributeManager::ForAttributeStrValue(attributeValue, fillAttributeValueColumn);
