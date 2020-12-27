@@ -75,6 +75,7 @@ private:
    bool ParseAttributeStringParams(CanAttribute*& attribute, LineData_t& lineData);
    bool ParseAttributeEnumParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
 
+   void SetMainAttributes(void);
 
    // member variables
    std::string log;

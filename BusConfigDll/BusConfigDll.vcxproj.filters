@@ -159,6 +159,15 @@
     <ClInclude Include="..\Interfaces\ICanAttributeManager.h">
       <Filter>Interfaces\CanAttributes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanAttributeType.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanAttributeCppValueType.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanAttributeValueType.h">
+      <Filter>Interfaces\CanAttributes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

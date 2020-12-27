@@ -163,11 +163,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Interfaces\ICanAttributeCppValueType.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeManager.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeOwner.h" />
     <ClInclude Include="..\Interfaces\ICanAttribute.h" />
+    <ClInclude Include="..\Interfaces\ICanAttributeType.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeValue.h" />
     <ClInclude Include="..\Interfaces\ICanAttributeValueFactory.h" />
+    <ClInclude Include="..\Interfaces\ICanAttributeValueType.h" />
     <ClInclude Include="..\Interfaces\ICanBusConfig.h" />
     <ClInclude Include="..\Interfaces\ICanEnumAttribute.h" />
     <ClInclude Include="..\Interfaces\ICanEnumAttributeValue.h" />

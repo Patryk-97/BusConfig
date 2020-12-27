@@ -4,6 +4,7 @@
 #include "CanSignal.h"
 
 #include <string>
+#include <map>
 
 class CanMessage : public CanAttributeOwner, public ICanMessage
 {
@@ -46,6 +47,23 @@ public:
    void SetCycleTime(cycle_time_t cycleTime);
 
    const char* ToString(void) override;
+
+   static const inline std::map<std::string_view, IdFormat_e> ID_FORMATS
+   {
+      { ICanMessage::IdFormat::STANDARD_CAN,    IdFormat_e::STANDARD_CAN },
+      { ICanMessage::IdFormat::EXTENDED_CAN,    IdFormat_e::EXTENDED_CAN },
+      { ICanMessage::IdFormat::STANDARD_CAN_FD, IdFormat_e::STANDARD_CAN_FD },
+      { ICanMessage::IdFormat::EXTENDED_CAN_FD, IdFormat_e::EXTENDED_CAN_FD },
+      { ICanMessage::IdFormat::RESERVED,        IdFormat_e::RESERVED }
+   };
+
+   static const inline std::map<std::string_view, TxMethod_e> TX_METHODS
+   {
+      { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, TxMethod_e::NO_MSG_SEND_TYPE },
+      { ICanMessage::TxMethod::CYCLIC,           TxMethod_e::CYCLIC },
+      { ICanMessage::TxMethod::IF_ACTIVE,        TxMethod_e::IF_ACTIVE },
+      { ICanMessage::TxMethod::NOT_USED,         TxMethod_e::NOT_USED },
+   };
 
 private:
    uint32_t id {};

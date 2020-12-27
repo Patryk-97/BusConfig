@@ -33,6 +33,8 @@ public:
       static constexpr const char * RESERVED = "reserved";
 
       static constexpr const char * DEFAULT = STANDARD_CAN;
+
+      static constexpr ICanAttribute::IValueType_e VALUE_TYPE = ICanAttribute::IValueType_e::ENUM;
    };
 
    enum class TxMethod_e
@@ -54,9 +56,19 @@ public:
       static constexpr const char * NOT_USED = "not_used";
 
       static constexpr const char * DEFAULT = NO_MSG_SEND_TYPE;
+
+      static constexpr ICanAttribute::IValueType_e VALUE_TYPE = ICanAttribute::IValueType_e::ENUM;
    };
 
    using cycle_time_t = uint16_t;
+
+   class CycleTime
+   {
+   public:
+      CycleTime() = delete;
+
+      static constexpr ICanAttribute::IValueType_e VALUE_TYPE = ICanAttribute::IValueType_e::INT;
+   };
 
    static constexpr IdFormat_e DEFAULT_ID_FORMAT { IdFormat_e::STANDARD_CAN };
    static constexpr TxMethod_e DEFAULT_TX_METHOD { TxMethod_e::NO_MSG_SEND_TYPE };

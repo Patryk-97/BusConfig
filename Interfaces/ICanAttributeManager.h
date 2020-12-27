@@ -1,11 +1,9 @@
 #pragma once
 
 #include "ICanAttributeOwner.h"
-#include "ICanIntAttributeValue.h"
-#include "ICanHexAttributeValue.h"
-#include "ICanFloatAttributeValue.h"
-#include "ICanStringAttributeValue.h"
-#include "ICanEnumAttributeValue.h"
+#include "ICanAttributeType.h"
+#include "ICanAttributeValueType.h"
+#include "ICanAttributeCppValueType.h"
 #include "helpers.h"
 #include <string>
 #include <sstream>
@@ -88,5 +86,26 @@ public:
                fun(enumAttributeValue->GetValue());
             });
       }
+   }
+
+   template <ICanAttribute::IValueType_e ValueType>
+   static typename ICanAttributeType_t<ValueType>
+      GetAttribute(const ICanAttribute* attribute)
+   {
+      if constexpr (ValueType == ICanAttribute::IValueType_e::UNDEFINED)
+      {
+         return nullptr;
+      }
+      return dynamic_cast<ICanAttributeType_t<ValueType>>(attribute);
+   }
+
+   template <ICanAttribute::IValueType_e ValueType,
+      typename Derived = typename ICanAttributeValueType_t<ValueType>,
+      typename Base = ICanAttributeValue*>
+   static typename ICanAttributeCppValueType_t<ValueType>
+      GetAttributeValue(const Base attributeValue)
+   {
+      auto specificAttributeValue = dynamic_cast<const Derived>(attributeValue);
+      return specificAttributeValue->GetValue();
    }
 };

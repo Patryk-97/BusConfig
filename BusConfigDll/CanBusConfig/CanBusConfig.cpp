@@ -3,6 +3,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include "helpers.h"
 #include "CanAttributeManager.h"
+#include "ICanAttributeManager.h"
 #include "CanIntAttribute.h"
 #include "CanHexAttribute.h"
 #include "CanFloatAttribute.h"
@@ -1411,4 +1412,53 @@ bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, 
    }
 
    return rV;
+}
+
+void CanBusConfig::SetMainAttributes(void)
+{
+   for (size_t i = 0; i < this->messages.size(); i++)
+   {
+      if (auto message = this->messages[i]; message)
+      {
+         for (size_t j = 0; j < message->GetAttributesCount(); j++)
+         {
+            if (auto attribute = message->GetAttributeByIndex(j); attribute)
+            {
+               std::string_view attributeName = attribute->GetName();
+               if (attributeName == ICanMessage::ID_FORMAT)
+               {
+                  auto attributeValue = message->GetAttributeValue(attributeName.data());
+                  if (attributeValue)
+                  {
+                     auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::IdFormat::VALUE_TYPE>
+                        (attributeValue);
+                     const auto idFormat = CanMessage::ID_FORMATS.at(value);
+                     message->SetIdFormat(idFormat);
+                  }
+               }
+               else if (attributeName == ICanMessage::TX_METHOD)
+               {
+                  auto attributeValue = message->GetAttributeValue(attributeName.data());
+                  if (attributeValue)
+                  {
+                     auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::TxMethod::VALUE_TYPE>
+                        (attributeValue);
+                     const auto txMethod = CanMessage::TX_METHODS.at(value);
+                     message->SetTxMethod(txMethod);
+                  }
+               }
+               else if (attributeName == ICanMessage::CYCLE_TIME)
+               {
+                  auto attributeValue = message->GetAttributeValue(attributeName.data());
+                  if (attributeValue)
+                  {
+                     auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::CycleTime::VALUE_TYPE>
+                        (attributeValue);
+                     message->SetCycleTime(value);
+                  }
+               }
+            }
+         }
+      }
+   }
 }
