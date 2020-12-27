@@ -1203,7 +1203,33 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                            ICanAttributeValueFactory::CreateAttributeValue(attribute->GetValueType());
                         if (attributeValue)
                         {
-                           CanAttributeManager::SetValue(attributeValue, token);
+                           std::string value = token;
+
+                           // exception to the rule, so handle it
+                           if (attribute->GetValueType() == ICanAttribute::IValueType_e::ENUM)
+                           {
+                              uint32_t potentialEnumaratorIndex {};
+                              try
+                              {
+                                 potentialEnumaratorIndex = std::stoul(token);
+                                 const auto enumAttribute = dynamic_cast<CanEnumAttribute*>(attribute);
+                                 if (enumAttribute)
+                                 {
+                                    const char* enumarator = enumAttribute->GetEnumarator(potentialEnumaratorIndex);
+                                    if (enumarator != nullptr)
+                                    {
+                                       value = enumarator;
+                                    }
+                                 }
+                              }
+                              catch (...)
+                              {
+                                 // token is not enumarator index
+                              }
+                           }
+                           // end of exception to the rule
+
+                           CanAttributeManager::SetValue(attributeValue, value);
                            attributeOwner->AddAttributeValue(attribute->GetName(), attributeValue);
                         }
                         break;

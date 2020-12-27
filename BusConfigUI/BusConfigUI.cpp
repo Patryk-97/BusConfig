@@ -6,6 +6,7 @@
 #include <qtoolbutton.h>
 #include <sstream>
 #include <concepts>
+#include <qlabel.h>
 #include "ICanAttributeManager.h"
 
 DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
@@ -144,6 +145,11 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
    size_t itemIndex = (size_t)-1;
    this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+   this->ui.tableWidget_Properties->clear();
+   this->ui.tableWidget_Properties->setRowCount(0);
+   this->ui.tableWidget_Properties->setColumnCount(0);
+   this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
+
    if (current != nullptr)
    {
       const auto text = current->text(0);
@@ -153,6 +159,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       const auto parentItemType = (parent ? parent->whatsThis(0) : "");
       if (itemType == "CanMessage")
       {
+         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
          this->BuildCanMessageProperties(text.toUtf8());
       }
       else if (itemType == "CanMessages")
@@ -161,6 +168,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       }
       else if (itemType == "CanSignal")
       {
+         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
          this->BuildCanSignalProperties(text.toUtf8());
       }
       else if (itemType == "CanSignals")
@@ -544,22 +552,23 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
             headerLabels << attribute->GetName();
          }
       }
-      this->ui.tableWidget_Properties->setRowCount(1);
-      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-      
-      uint8_t col = 0;
-      const auto fillAttributeValuesRow = [this, attributeOwner, &col]
+      this->ui.tableWidget_Properties->setRowCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setColumnCount(1);
+      this->ui.tableWidget_Properties->setVerticalHeaderLabels(headerLabels);
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(QStringList { "Value" });
+
+      uint16_t row = 0;
+      const auto fillAttributeValuesRow = [this, attributeOwner, &row]
          (const ICanAttribute* attribute)
       {
          const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName());
          if (attributeValue != nullptr)
          {
-            const auto fillAttributeValueColumn = [this, &col]
+            const auto fillAttributeValueColumn = [this, &row]
             (const std::string& value)
             {
-               this->ui.tableWidget_Properties->setItem(0, col, new QTableWidgetItem { value.c_str() });
-               ++col;
+               this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem { value.c_str() });
+               ++row;
             };
             ICanAttributeManager::ForAttributeStrValue(attributeValue, fillAttributeValueColumn);
          }
