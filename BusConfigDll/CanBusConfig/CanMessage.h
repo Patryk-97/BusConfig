@@ -36,6 +36,15 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   IdFormat_e GetIdFormat(void) const override;
+   void SetIdFormat(IdFormat_e idFormat);
+
+   TxMethod_e GetTxMethod(void) const override;
+   void SetTxMethod(TxMethod_e txMethod);
+
+   cycle_time_t GetCycleTime(void) const override;
+   void SetCycleTime(cycle_time_t cycleTime);
+
    const char* ToString(void) override;
 
 private:
@@ -44,5 +53,11 @@ private:
    uint32_t size {};
    std::string mainTransmitter;
    std::vector<CanSignal*> signals;
+
+   // Main attributes
+   IdFormat_e idFormat { ICanMessage::DEFAULT_ID_FORMAT };
+   TxMethod_e txMethod { ICanMessage::DEFAULT_TX_METHOD };
+   cycle_time_t cycleTime { ICanMessage::DEFAULT_CYCLE_TIME };
+
    std::string stringRepresentation;
 };

@@ -17,6 +17,9 @@ void CanMessage::Clear(void)
    this->size = 0;
    this->mainTransmitter = "";
    this->signals.clear();
+   this->idFormat = ICanMessage::DEFAULT_ID_FORMAT;
+   this->txMethod = ICanMessage::DEFAULT_TX_METHOD;
+   this->cycleTime =  ICanMessage::DEFAULT_CYCLE_TIME;
    this->stringRepresentation = "";
 }
 
@@ -102,6 +105,36 @@ ICanAttribute* CanMessage::GetAttributeByName(const char* name) const
 ICanAttributeValue* CanMessage::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);
+}
+
+ICanMessage::IdFormat_e CanMessage::GetIdFormat(void) const
+{
+   return this->idFormat;
+}
+
+void CanMessage::SetIdFormat(IdFormat_e idFormat)
+{
+   this->idFormat = idFormat;
+}
+
+ICanMessage::TxMethod_e CanMessage::GetTxMethod(void) const
+{
+   return this->txMethod;
+}
+
+void CanMessage::SetTxMethod(TxMethod_e txMethod)
+{
+   this->txMethod = txMethod;
+}
+
+ICanMessage::cycle_time_t CanMessage::GetCycleTime(void) const
+{
+   return this->cycleTime;
+}
+
+void CanMessage::SetCycleTime(cycle_time_t cycleTime)
+{
+   this->cycleTime = cycleTime;
 }
 
 const char* CanMessage::ToString(void)
