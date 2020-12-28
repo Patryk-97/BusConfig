@@ -34,7 +34,42 @@ ICanEnvVar::AccessType_e CanStringEnvVar::GetAccessType(void) const
    return CanEnvVar::GetAccessType();
 }
 
-ICanNode* CanStringEnvVar::GetAccessNode(void) const
+size_t CanStringEnvVar::GetAccessNodesCount(void) const
 {
-   return CanEnvVar::GetAccessNode();
+   return CanEnvVar::GetAccessNodesCount();
+}
+
+ICanNode* CanStringEnvVar::GetAccessNodeByIndex(size_t index) const
+{
+   return CanEnvVar::GetAccessNodeByIndex(index);
+}
+
+ICanNode* CanStringEnvVar::GetAccessNodeByName(const char* name) const
+{
+   return CanEnvVar::GetAccessNodeByName(name);
+}
+
+ICanValueTable* CanStringEnvVar::GetValueTable(void) const
+{
+   return CanEnvVar::GetValueTable();
+}
+
+size_t CanStringEnvVar::GetAttributesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesCount();
+}
+
+ICanAttribute* CanStringEnvVar::GetAttributeByIndex(size_t index) const
+{
+   return CanAttributeOwner::GetAttributeByIndex(index);
+}
+
+ICanAttribute* CanStringEnvVar::GetAttributeByName(const char* name) const
+{
+   return CanAttributeOwner::GetAttributeByName(name);
+}
+
+ICanAttributeValue* CanStringEnvVar::GetAttributeValue(const char* attributeName) const
+{
+   return CanAttributeOwner::GetAttributeValue(attributeName);
 }

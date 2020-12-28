@@ -37,9 +37,24 @@ ICanEnvVar::AccessType_e CanIntEnvVar::GetAccessType(void) const
    return CanEnvVar::GetAccessType();
 }
 
-ICanNode* CanIntEnvVar::GetAccessNode(void) const
+size_t CanIntEnvVar::GetAccessNodesCount(void) const
 {
-   return CanEnvVar::GetAccessNode();
+   return CanEnvVar::GetAccessNodesCount();
+}
+
+ICanNode* CanIntEnvVar::GetAccessNodeByIndex(size_t index) const
+{
+   return CanEnvVar::GetAccessNodeByIndex(index);
+}
+
+ICanNode* CanIntEnvVar::GetAccessNodeByName(const char* name) const
+{
+   return CanEnvVar::GetAccessNodeByName(name);
+}
+
+ICanValueTable* CanIntEnvVar::GetValueTable(void) const
+{
+   return CanEnvVar::GetValueTable();
 }
 
 int32_t CanIntEnvVar::GetMinimum(void) const
@@ -70,4 +85,24 @@ int32_t CanIntEnvVar::GetInitialValue(void) const
 void CanIntEnvVar::SetInitialValue(int32_t initialValue)
 {
    this->initialValue = initialValue;
+}
+
+size_t CanIntEnvVar::GetAttributesCount(void) const
+{
+   return CanEnvVar::GetAttributesCount();
+}
+
+ICanAttribute* CanIntEnvVar::GetAttributeByIndex(size_t index) const
+{
+   return CanEnvVar::GetAttributeByIndex(index);
+}
+
+ICanAttribute* CanIntEnvVar::GetAttributeByName(const char* name) const
+{
+   return CanEnvVar::GetAttributeByName(name);
+}
+
+ICanAttributeValue* CanIntEnvVar::GetAttributeValue(const char* attributeName) const
+{
+   return CanEnvVar::GetAttributeValue(attributeName);
 }

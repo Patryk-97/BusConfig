@@ -6,7 +6,7 @@
 class CanIntEnvVar : public CanEnvVar, public ICanIntEnvVar
 {
 public:
-   CanIntEnvVar() = default;
+   CanIntEnvVar() : CanEnvVar(Type_e::INTEGER) {}
    ~CanIntEnvVar();
 
    void Clear(void) override;
@@ -15,7 +15,10 @@ public:
    const char* GetUnit(void) const override;
    uint32_t GetId(void) const override;   // obsolete
    AccessType_e GetAccessType(void) const override;
-   ICanNode* GetAccessNode(void) const override;
+   size_t GetAccessNodesCount(void) const override;
+   ICanNode* GetAccessNodeByIndex(size_t index) const override;
+   ICanNode* GetAccessNodeByName(const char* name) const override;
+   ICanValueTable* GetValueTable(void) const override;
    
    int32_t GetMinimum(void) const override;
    void SetMinimum(int32_t minimum);
@@ -25,6 +28,12 @@ public:
    
    int32_t GetInitialValue(void) const override;
    void SetInitialValue(int32_t initialValue);
+
+   size_t GetAttributesCount(void) const override;
+   ICanAttribute* GetAttributeByIndex(size_t index) const override;
+   ICanAttribute* GetAttributeByName(const char* name) const override;
+
+   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
 private:
    int32_t minimum {};

@@ -2,6 +2,8 @@
 
 #include <span>
 #include <functional>
+#include <string_view>
+#include <string>
 
 namespace helpers
 {
@@ -105,5 +107,23 @@ namespace helpers
       {
          typecase(base, rest...);
       }
+   }
+
+   static std::string RemovePhrases(const std::string& word, std::string_view phrase)
+   {
+      std::string rV = word;
+
+      while (true)
+      {
+         size_t index = rV.find(phrase);
+         if (index == std::string::npos)
+         {
+            break;
+         }
+
+         rV.erase(index, phrase.size());
+      }
+
+      return rV;
    }
 }

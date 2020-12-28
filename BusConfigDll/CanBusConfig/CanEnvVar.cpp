@@ -1,5 +1,6 @@
 #include "CanEnvVar.h"
 #include "helpers.h"
+#include <algorithm>
 
 namespace ranges = std::ranges;
 
@@ -16,7 +17,7 @@ void CanEnvVar::Clear(void)
    this->unit = "";
    this->id = 0;
    this->accessType = AccessType_e::UNDEFINED;
-   this->accessNode = nullptr;
+   this->accessNodes.clear();
    helpers::ClearPtr(this->valueTable);
 }
 
@@ -70,14 +71,40 @@ void CanEnvVar::SetAccessType(AccessType_e accessType)
    this->accessType = accessType;
 }
 
-ICanNode* CanEnvVar::GetAccessNode(void) const
+void CanEnvVar::SetAccessTypeValue(uint32_t accessTypeValue)
 {
-   return this->accessNode;
+   if (accessTypeValue & 0x8000)
+   {
+      this->type = Type_e::STRING;
+   }
+   if (accessTypeValue < 4)
+   {
+      this->accessType = static_cast<AccessType_e>(accessTypeValue & 0x000F);
+   }
 }
 
-void CanEnvVar::SetAccessNode(CanNode* accessNode)
+size_t CanEnvVar::GetAccessNodesCount(void) const
 {
-   this->accessNode = accessNode;
+   return this->accessNodes.size();
+}
+
+ICanNode* CanEnvVar::GetAccessNodeByIndex(size_t index) const
+{
+   return (index < this->accessNodes.size() ? this->accessNodes[index] : nullptr);
+}
+
+ICanNode* CanEnvVar::GetAccessNodeByName(const char* name) const
+{
+   auto it = ranges::find_if(this->accessNodes, [&name](CanNode* accessNode) { return !std::strcmp(accessNode->GetName(), name); });
+   return (it != this->accessNodes.end() ? *it : nullptr);
+}
+
+void CanEnvVar::AddAccessNode(CanNode* accessNode)
+{
+   if (accessNode != nullptr)
+   {
+      this->accessNodes.push_back(accessNode);
+   }
 }
 
 ICanValueTable* CanEnvVar::GetValueTable(void) const

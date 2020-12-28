@@ -10,6 +10,11 @@
 #include "CanStringAttribute.h"
 #include "CanEnumAttribute.h"
 #include "ICanAttributeValueFactory.h"
+#include "CanEnvVarFactory.h"
+#include "CanIntEnvVar.h"
+#include "CanFloatEnvVar.h"
+#include "CanStringEnvVar.h"
+#include "CanDataEnvVar.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -75,6 +80,10 @@ bool CanBusConfig::Load(const char* filename)
          else if (line.starts_with(CanBusConfig::NODE_DEFINITION_HEADER))
          {
             this->ParseNodeDefinition(file, lineData);
+         }
+         else if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DEFINITION_HEADER))
+         {
+            this->ParseEnvironmentVariableDefinition(file, lineData);
          }
          else if (line.starts_with(CanBusConfig::VALUE_TABLE_DEFINITION_HEADER))
          {
@@ -249,13 +258,6 @@ void CanBusConfig::AddEnvVar(CanEnvVar* envVar)
    {
       this->envVars.push_back(envVar);
    }
-}
-
-CanEnvVar* CanBusConfig::CreateAndAddEnvVar(void)
-{
-   CanEnvVar* envVar = new CanEnvVar {};
-   this->envVars.push_back(envVar);
-   return envVar;
 }
 
 size_t CanBusConfig::GetAttributesCount(void) const
@@ -610,6 +612,227 @@ bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData
    else
    {
       this->log += "Node definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV { true };
+
+   if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DEFINITION_HEADER))
+   {
+      boost_escaped_separator sep("\\", " :[|];", "\"");
+      boost_escaped_separator_tokenizer tokenizer{ line, sep }; // remains empty tokens
+      std::vector<std::string> tokens;
+      CanEnvVar* envVar { nullptr };
+      std::string envVarName;
+
+      // prepare environment variable definition tokens
+      std::invoke([&tokenizer, &tokens, this]
+      {
+         for (size_t pos{}; const auto& token : tokenizer)
+         {
+            if (token != "")
+            {
+               tokens.push_back(token);
+            }
+         }
+      });
+
+      // If everything's okay
+      const auto elementsCount = ranges::distance(tokens);
+      if (elementsCount >= ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         for (uint8_t pos{}; const auto& token : tokens)
+         {
+            switch (pos)
+            {
+               case ENVIRONMENT_VARIABLE_DEFINITION_HEADER_POS:
+               {
+                  // do nothing
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_NAME_POS:
+               {
+                  envVarName = token;
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_TYPE_POS:
+               {
+                  try
+                  {
+                     uint32_t type = std::stoul(token);
+                     if (envVar = CanEnvVarFactory::CreateEnvVar(type); !envVar)
+                     {
+                        rV = false;
+                        this->log += "Invalid environment variable type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Environment variable type conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_MINIMUM_POS:
+               {
+                  helpers::typecase(envVar,
+                     [&token, &rV, this, &lineData](CanIntEnvVar* intEnvVar)
+                     {
+                        try
+                        {
+                           uint32_t minimum = std::stoul(token);
+                           intEnvVar->SetMinimum(minimum);
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Environment variable minimum conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     },
+                     [&token, &rV, this, &lineData](CanFloatEnvVar* floatEnvVar)
+                     {
+                        try
+                        {
+                           double minimum = std::stod(token);
+                           floatEnvVar->SetMinimum(minimum);
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Environment variable minimum conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     });
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_MAXIMUM_POS:
+               {
+                  helpers::typecase(envVar,
+                     [&token, &rV, this, &lineData] (CanIntEnvVar* intEnvVar)
+                     {
+                        try
+                        {
+                           uint32_t maximum = std::stoul(token);
+                           intEnvVar->SetMaximum(maximum);
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Environment variable maximum conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     },
+                     [&token, &rV, this, &lineData] (CanFloatEnvVar* floatEnvVar)
+                     {
+                        try
+                        {
+                           double maximum = std::stod(token);
+                           floatEnvVar->SetMaximum(maximum);
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Environment variable maximum conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     });
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_UNIT_POS:
+               {
+                  envVar->SetUnit(token.c_str());
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_INITIAL_VALUE_POS:
+               {
+                  helpers::typecase(envVar,
+                     [&token, &rV, this, &lineData](CanIntEnvVar* intEnvVar)
+                     {
+                        try
+                        {
+                           uint32_t initialValue = std::stoul(token);
+                           intEnvVar->SetInitialValue(initialValue);
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Environment variable initial value conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     },
+                     [&token, &rV, this, &lineData](CanFloatEnvVar* floatEnvVar)
+                     {
+                        try
+                        {
+                           double initialValue = std::stod(token);
+                           floatEnvVar->SetInitialValue(initialValue);
+                        }
+                        catch (...)
+                        {
+                           rV = false;
+                           this->log += "Environment variable initial value conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     });
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_ID_POS:
+               {
+                  try
+                  {
+                     uint32_t id = std::stoul(token);
+                     envVar->SetId(id);
+                  }
+                  catch (...)
+                  {
+                     rV = false;
+                     this->log += "Environment variable id conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_ACCESS_TYPE_POS:
+               {
+                  const auto accessTypeStr = helpers::RemovePhrases(token, ICanEnvVar::ACCESS_TYPE_PREFIX);
+                  try
+                  {
+                     uint32_t accessTypeValue = std::stoul(accessTypeStr, nullptr, 16);
+                     envVar->SetAccessTypeValue(accessTypeValue);
+                  }
+                  catch (...)
+                  {
+                     this->log += "Environment variable access type conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                  }
+                  break;
+               }
+               default:
+               {
+                  if (ICanNode* accessNode = this->GetNodeByName(token.c_str()); accessNode)
+                  {
+                     envVar->AddAccessNode(dynamic_cast<CanNode*>(accessNode));
+                  }
+                  break;
+               }
+            }
+
+            // If something went wrong
+            if (!rV)
+            {
+               break;
+            }
+            ++pos;
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid environment variable definition elements count: " + std::to_string(elementsCount);
+         this->log += " [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Environment variable definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 

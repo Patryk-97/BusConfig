@@ -37,9 +37,24 @@ ICanEnvVar::AccessType_e CanFloatEnvVar::GetAccessType(void) const
    return CanEnvVar::GetAccessType();
 }
 
-ICanNode* CanFloatEnvVar::GetAccessNode(void) const
+size_t CanFloatEnvVar::GetAccessNodesCount(void) const
 {
-   return CanEnvVar::GetAccessNode();
+   return CanEnvVar::GetAccessNodesCount();
+}
+
+ICanNode* CanFloatEnvVar::GetAccessNodeByIndex(size_t index) const
+{
+   return CanEnvVar::GetAccessNodeByIndex(index);
+}
+
+ICanNode* CanFloatEnvVar::GetAccessNodeByName(const char* name) const
+{
+   return CanEnvVar::GetAccessNodeByName(name);
+}
+
+ICanValueTable* CanFloatEnvVar::GetValueTable(void) const
+{
+   return CanEnvVar::GetValueTable();
 }
 
 double CanFloatEnvVar::GetMinimum(void) const
@@ -70,4 +85,24 @@ double CanFloatEnvVar::GetInitialValue(void) const
 void CanFloatEnvVar::SetInitialValue(double initialValue)
 {
    this->initialValue = initialValue;
+}
+
+size_t CanFloatEnvVar::GetAttributesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesCount();
+}
+
+ICanAttribute* CanFloatEnvVar::GetAttributeByIndex(size_t index) const
+{
+   return CanAttributeOwner::GetAttributeByIndex(index);
+}
+
+ICanAttribute* CanFloatEnvVar::GetAttributeByName(const char* name) const
+{
+   return CanAttributeOwner::GetAttributeByName(name);
+}
+
+ICanAttributeValue* CanFloatEnvVar::GetAttributeValue(const char* attributeName) const
+{
+   return CanAttributeOwner::GetAttributeValue(attributeName);
 }

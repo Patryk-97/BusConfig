@@ -51,7 +51,6 @@ public:
    ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
    ICanEnvVar* GetEnvVarByName(const char* name) const override;
    void AddEnvVar(CanEnvVar* envVar);
-   CanEnvVar* CreateAndAddEnvVar(void);
 
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
@@ -63,6 +62,7 @@ private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseSignalDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseNodeDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseEnvironmentVariableDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData);
@@ -88,6 +88,7 @@ private:
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";
    static constexpr std::string_view SIGNAL_DEFINITION_HEADER = "SG_ ";
    static constexpr std::string_view NODE_DEFINITION_HEADER = "BU_: ";
+   static constexpr std::string_view ENVIRONMENT_VARIABLE_DEFINITION_HEADER = "EV_ ";
    static constexpr std::string_view VALUE_TABLE_DEFINITION_HEADER = "VAL_ ";
    static constexpr std::string_view ATTRIBUTE_DEFINITION_HEADER = "BA_DEF_ ";
    static constexpr std::string_view ATTRIBUTE_DEFAULT_DEFINITION_HEADER = "BA_DEF_DEF_ ";
@@ -124,6 +125,19 @@ private:
 
    // node definition
    static constexpr uint8_t NODE_DEFINITION_ELEMENTS_MIN_COUNT = 2;
+
+   // environment variable definition
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_MIN_COUNT = 10;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_DEFINITION_HEADER_POS = 0;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_NAME_POS = 1;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_TYPE_POS = 2;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_MINIMUM_POS = 3;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_MAXIMUM_POS = 4;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_UNIT_POS = 5;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_INITIAL_VALUE_POS = 6;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_ID_POS = 7;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_ACCESS_TYPE_POS = 8;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_ACCESS_NODE_POS = 9;
 
    // value table definition
    static constexpr uint8_t VALUE_TABLE_DEFINITION_ELEMENTS_MIN_COUNT = 4;
