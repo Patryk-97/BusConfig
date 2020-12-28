@@ -26,7 +26,7 @@ namespace helpers
    inline constexpr bool is_stl_container_v = is_stl_container<T>::value;
    
    template <typename T>
-   inline void ClearPtr(T* ptr) { delete ptr; ptr = nullptr; }
+   inline void ClearPtr(T* ptr) { if (ptr) { delete ptr; ptr = nullptr; }}
 
    template <typename StlContainer, typename = std::enable_if_t<is_stl_container_v<StlContainer>>,
       typename = std::enable_if_t<std::is_pointer_v<typename StlContainer::value_type>>>

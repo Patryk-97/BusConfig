@@ -402,7 +402,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                   tokens.push_back(token);
                   pos += 2;
                }
-               else if (token.size() == 2 && token.ends_with("+")) // split byte order and value type
+               else if (token.size() == 2 && (token.ends_with("+") || token.ends_with("-"))) // split byte order and value type
                {
                   tokens.push_back(std::string{ 1, token[0] });
                   tokens.push_back(std::string{ 1, token[1] });
@@ -636,16 +636,30 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
       {
          for (size_t pos{}; const auto& token : tokenizer)
          {
+            if (pos == ENVIRONMENT_VARIABLE_UNIT_POS)
+            {
+               try
+               {
+                  std::stod(token);
+                  tokens.push_back(std::string{ "" });
+                  ++pos;
+               }
+               catch (...)
+               {
+                  ;
+               }
+            }
             if (token != "")
             {
                tokens.push_back(token);
+               ++pos;
             }
          }
       });
 
       // If everything's okay
       const auto elementsCount = ranges::distance(tokens);
-      if (elementsCount >= ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_MIN_COUNT)
+      if (elementsCount == ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_MIN_COUNT)
       {
          for (uint8_t pos{}; const auto& token : tokens)
          {
@@ -670,6 +684,11 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
                      {
                         rV = false;
                         this->log += "Invalid environment variable type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                     else
+                     {
+                        envVar->SetName(envVarName.c_str());
+                        this->AddEnvVar(envVar);
                      }
                   }
                   catch (...)

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="BusConfigUI">
+    <file>Icons/environment-variable.png</file>
     <file>Icons/communication-matrix.png</file>
     <file>Icons/signal.png</file>
     <file>Icons/database.png</file>

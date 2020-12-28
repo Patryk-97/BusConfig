@@ -47,6 +47,7 @@ private:
        SIGNAL = 1,
        NETWORK_NODE = 2,
        NETWORK = 3,
+       ENVIRONMENT_VARIABLE = 4,
        HEX = 10,
        DEC = 11,
        COMMUNICATION_MATRIX = 12

@@ -63,6 +63,7 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->icons[Icon_e::HEX] = QIcon{ ":/BusConfigUI/Icons/hex.ico" };
        this->icons[Icon_e::DEC] = QIcon{ ":/BusConfigUI/Icons/dec.ico" };
        this->icons[Icon_e::COMMUNICATION_MATRIX] = QIcon{ ":/BusConfigUI/Icons/communication-matrix.png" };
+       this->icons[Icon_e::ENVIRONMENT_VARIABLE] = QIcon{ ":/BusConfigUI/Icons/environment-variable.png" };
 
        foreach(QToolButton * button, ui.mainToolBar->findChildren<QToolButton*>())
        {
@@ -383,6 +384,29 @@ void BusConfigUI::BuildTree(void)
          attributesItem->setText(0, "Attributes");
          attributesItem->setWhatsThis(0, "Attributes");
          attributesItem->setToolTip(0, "Attributes");
+      }
+   }
+
+   auto canEnvironmentVariablesTreeItem = new QTreeWidgetItem{ networkTreeItem };
+   canEnvironmentVariablesTreeItem->setText(0, "Environment variables");
+   canEnvironmentVariablesTreeItem->setWhatsThis(0, "CanEnvironmentVariables");
+   canEnvironmentVariablesTreeItem->setToolTip(0, "Can environment variables");
+   canEnvironmentVariablesTreeItem->setIcon(0, this->icons[Icon_e::ENVIRONMENT_VARIABLE]);
+   size_t canEnvironmentVariablesCount = this->canBusConfig->GetEnvVarsCount();
+   for (size_t i = 0; i < canEnvironmentVariablesCount; i++)
+   {
+      if (const auto canEnvVar = this->canBusConfig->GetEnvVarByIndex(i); canEnvVar != nullptr)
+      {
+         auto canEnvironmentVariableTreeItem = new QTreeWidgetItem{ canEnvironmentVariablesTreeItem };
+         canEnvironmentVariableTreeItem->setText(0, canEnvVar->GetName());
+         canEnvironmentVariableTreeItem->setIcon(0, this->icons[Icon_e::ENVIRONMENT_VARIABLE]);
+         canEnvironmentVariableTreeItem->setWhatsThis(0, "CanEnvironmentVariable");
+         canEnvironmentVariableTreeItem->setToolTip(0, "Can environment variable");
+
+         //auto attributesItem = new QTreeWidgetItem{ canSignalTreeItem };
+         //attributesItem->setText(0, "Attributes");
+         //attributesItem->setWhatsThis(0, "Attributes");
+         //attributesItem->setToolTip(0, "Attributes");
       }
    }
 

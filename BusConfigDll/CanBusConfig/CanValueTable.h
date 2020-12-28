@@ -3,7 +3,7 @@
 #include "ICanValueTable.h"
 #include <vector>
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class CanValueTable : public ICanValueTable
 {
@@ -25,11 +25,11 @@ public:
    size_t GetValuesCount(void) const override;
    uint32_t GetValue(size_t index) const override;
    const char * GetValueDescription(uint32_t value) const override;
-   void AddValue(uint32_t value, std::string_view valueDescription);
+   void AddValue(uint32_t value, std::string valueDescription);
 
 private:
    std::string name;
    uint32_t minValue {};
    uint32_t maxValue {};
-   std::map<uint32_t, std::string_view> values;
+   std::unordered_map<uint32_t, std::string> values;
 };
