@@ -28,6 +28,8 @@ public:
    ICanNode* GetNodeByIndex(size_t index) const override;
    ICanNode* GetNodeByName(const char* name) const override;
    size_t GetNodeIndex(const char* name) const override;
+   bool RemoveNodeByIndex(size_t index) override;
+   bool RemoveNodeByName(const char* name) override;
    void AddNode(CanNode* node);
    CanNode* CreateAndAddNode(void);
 
@@ -37,6 +39,8 @@ public:
    ICanMessage* GetMessageByIndex(size_t index) const override;
    ICanMessage* GetMessageFront(void) const override;
    ICanMessage* GetMessageBack(void) const override;
+   bool RemoveMessageByIndex(size_t index) override;
+   bool RemoveMessageByName(const char* name) override;
    void AddMessage(CanMessage* message);
    CanMessage* CreateAndAddMessage(void);
 
@@ -44,12 +48,16 @@ public:
    ICanSignal* GetSignalByIndex(size_t index) const override;
    ICanSignal* GetSignalByName(const char* name) const override;
    size_t GetSignalIndex(const char* name) const override;
+   bool RemoveSignalByIndex(size_t index) override;
+   bool RemoveSignalByName(const char* name) override;
    void AddSignal(CanSignal* signal);
    CanSignal* CreateAndAddSignal(void);
 
    size_t GetEnvVarsCount(void) const override;
    ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
    ICanEnvVar* GetEnvVarByName(const char* name) const override;
+   bool RemoveEnvVarByIndex(size_t index) override;
+   bool RemoveEnvVarByName(const char* name) override;
    void AddEnvVar(CanEnvVar* envVar);
 
    size_t GetAttributesCount(void) const override;
@@ -67,6 +75,7 @@ private:
    bool ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseEnvironmentVariableDataDefinition(std::ifstream& file, LineData_t& lineData);
 
    // helpers for ParseAttributeDefinition() function
    bool ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
@@ -93,6 +102,7 @@ private:
    static constexpr std::string_view ATTRIBUTE_DEFINITION_HEADER = "BA_DEF_ ";
    static constexpr std::string_view ATTRIBUTE_DEFAULT_DEFINITION_HEADER = "BA_DEF_DEF_ ";
    static constexpr std::string_view ATTRIBUTE_VALUE_DEFINITION_HEADER = "BA_ ";
+   static constexpr std::string_view ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER = "ENVVAR_DATA_ ";
 
    static constexpr std::string_view DBC_KEYWORD_NETWORK_NODE = "BU_";
    static constexpr std::string_view DBC_KEYWORD_MESSAGE = "BO_";
@@ -127,7 +137,7 @@ private:
    static constexpr uint8_t NODE_DEFINITION_ELEMENTS_MIN_COUNT = 2;
 
    // environment variable definition
-   static constexpr uint8_t ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_MIN_COUNT = 10;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_COUNT = 10;
    static constexpr uint8_t ENVIRONMENT_VARIABLE_DEFINITION_HEADER_POS = 0;
    static constexpr uint8_t ENVIRONMENT_VARIABLE_NAME_POS = 1;
    static constexpr uint8_t ENVIRONMENT_VARIABLE_TYPE_POS = 2;
@@ -189,4 +199,10 @@ private:
    static constexpr uint8_t ATTRIBUTE_VALUE_ENVIRONMENT_VARIABLE_NAME_POS = 3;
    static constexpr uint8_t ATTRIBUTE_VALUE_SIGNAL_NAME_POS = 4;
    static constexpr uint8_t ATTRIBUTE_VALUE_POS = 5;
+
+   // environment variable data definition
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_DATA_DEFINITION_ELEMENTS_COUNT = 3;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER_POS = 0;
+   //static constexpr uint8_t ENVIRONMENT_VARIABLE_NAME_POS = 1;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_DATA_SIZE_POS = 2;
 };

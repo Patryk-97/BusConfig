@@ -101,6 +101,10 @@ bool CanBusConfig::Load(const char* filename)
          {
             this->ParseAttributeValueDefinition(file, lineData);
          }
+         else if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER))
+         {
+            this->ParseEnvironmentVariableDataDefinition(file, lineData);
+         }
          lineNr++;
       }
    }
@@ -134,6 +138,25 @@ size_t CanBusConfig::GetNodeIndex(const char* name) const
    auto it = ranges::find_if(this->nodes, [&name](CanNode* node) { return !std::strcmp(node->GetName(), name); });
    return (it != this->nodes.end() ? std::distance(this->nodes.begin(), it) :
       ICanBusConfig::INVALID_INDEX);
+}
+
+bool CanBusConfig::RemoveNodeByIndex(size_t index)
+{
+   if (index < this->nodes.size())
+   {
+      this->nodes.erase(this->nodes.begin() + index);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+bool CanBusConfig::RemoveNodeByName(const char* name)
+{
+   return (0 != std::erase_if(this->nodes, [&name] (CanNode* node)
+      { return !std::strcmp(node->GetName(), name); }));
 }
 
 void CanBusConfig::AddNode(CanNode* node)
@@ -183,6 +206,25 @@ ICanMessage* CanBusConfig::GetMessageBack(void) const
    return (this->messages.size() > 0 ? this->messages.back() : nullptr);
 }
 
+bool CanBusConfig::RemoveMessageByIndex(size_t index)
+{
+   if (index < this->messages.size())
+   {
+      this->messages.erase(this->messages.begin() + index);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+bool CanBusConfig::RemoveMessageByName(const char* name)
+{
+   return (0 != std::erase_if(this->messages, [&name](CanMessage* message)
+      { return !std::strcmp(message->GetName(), name); }));
+}
+
 size_t CanBusConfig::GetSignalsCount(void) const
 {
    return this->signals.size();
@@ -204,6 +246,25 @@ size_t CanBusConfig::GetSignalIndex(const char* name) const
    auto it = ranges::find_if(this->signals, [&name](CanSignal* signal) { return !std::strcmp(signal->GetName(), name); });
    return (it != this->signals.end() ? std::distance(this->signals.begin(), it) :
       ICanBusConfig::INVALID_INDEX);
+}
+
+bool CanBusConfig::RemoveSignalByIndex(size_t index)
+{
+   if (index < this->signals.size())
+   {
+      this->signals.erase(this->signals.begin() + index);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+bool CanBusConfig::RemoveSignalByName(const char* name)
+{
+   return (0 != std::erase_if(this->signals, [&name](CanSignal* signal)
+      { return !std::strcmp(signal->GetName(), name); }));
 }
 
 void CanBusConfig::AddSignal(CanSignal* signal)
@@ -250,6 +311,25 @@ ICanEnvVar* CanBusConfig::GetEnvVarByName(const char* name) const
 {
    auto it = ranges::find_if(this->envVars, [&name](CanEnvVar* envVar) { return !std::strcmp(envVar->GetName(), name); });
    return (it != this->envVars.end() ? *it : nullptr);
+}
+
+bool CanBusConfig::RemoveEnvVarByIndex(size_t index)
+{
+   if (index < this->envVars.size())
+   {
+      this->envVars.erase(this->envVars.begin() + index);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+bool CanBusConfig::RemoveEnvVarByName(const char* name)
+{
+   return (0 != std::erase_if(this->envVars, [&name](CanEnvVar* envVar)
+      { return !std::strcmp(envVar->GetName(), name); }));
 }
 
 void CanBusConfig::AddEnvVar(CanEnvVar* envVar)
@@ -659,7 +739,7 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
 
       // If everything's okay
       const auto elementsCount = ranges::distance(tokens);
-      if (elementsCount == ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_MIN_COUNT)
+      if (elementsCount == ENVIRONMENT_VARIABLE_DEFINITION_ELEMENTS_COUNT)
       {
          for (uint8_t pos{}; const auto& token : tokens)
          {
@@ -1517,6 +1597,81 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
    else
    {
       this->log += "Attribute value definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV { true };
+
+   if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER))
+   {
+      boost_char_separator sep(" :;");
+      boost_char_separator_tokenizer tokenizer { line, sep };
+      CanDataEnvVar* dataEnvVar { nullptr };
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) == ENVIRONMENT_VARIABLE_DATA_DEFINITION_ELEMENTS_COUNT)
+      {
+         for (size_t pos{}; const auto& token : tokenizer)
+         {
+            switch (pos)
+            {
+               case ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER_POS:
+               {
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_NAME_POS:
+               {
+                  this->RemoveEnvVarByName(token.c_str());
+                  dataEnvVar = new CanDataEnvVar {};
+                  dataEnvVar->SetName(token.c_str());
+                  this->AddEnvVar(dataEnvVar);
+                  break;
+               }
+               case ENVIRONMENT_VARIABLE_DATA_SIZE_POS:
+               {
+                  if (dataEnvVar)
+                  {
+                     try
+                     {
+                        uint32_t dataSize = std::stoul(token);
+                        dataEnvVar->SetLength(dataSize);
+                     }
+                     catch (...)
+                     {
+                        this->log += "Environment variable data size conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                  }
+                  break;
+               }
+               default:
+               {
+                  break;
+               }
+            }
+
+            // If something went wrong
+            if (!rV)
+            {
+               break;
+            }
+            ++pos;
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid environment variable data definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Environment variable data definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 
