@@ -404,8 +404,8 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                }
                else if (token.size() == 2 && (token.ends_with("+") || token.ends_with("-"))) // split byte order and value type
                {
-                  tokens.push_back(std::string{ 1, token[0] });
-                  tokens.push_back(std::string{ 1, token[1] });
+                  tokens.push_back(std::string{ token[0] });
+                  tokens.push_back(std::string{ token[1] });
                   pos += 2;
                }
                else

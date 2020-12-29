@@ -77,9 +77,10 @@ void CanEnvVar::SetAccessTypeValue(uint32_t accessTypeValue)
    {
       this->type = Type_e::STRING;
    }
+   accessTypeValue &= 0x000F;
    if (accessTypeValue < 4)
    {
-      this->accessType = static_cast<AccessType_e>(accessTypeValue & 0x000F);
+      this->accessType = static_cast<AccessType_e>(accessTypeValue);
    }
 }
 

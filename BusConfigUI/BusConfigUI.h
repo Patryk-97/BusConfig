@@ -34,6 +34,8 @@ private:
    void BuildCanMessagesProperties(void);
    void BuildCanSignalProperties(const char* signalName);
    void BuildCanSignalsProperties(void);
+   void BuildCanEnvironmentVariableProperties(const char* envVarName);
+   void BuildCanEnvironmentVariablesProperties(void);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
    // member variables

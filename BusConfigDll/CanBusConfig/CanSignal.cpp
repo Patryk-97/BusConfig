@@ -143,13 +143,13 @@ void CanSignal::SetByteOrderSymbol(uint8_t byteOrderSymbol)
 {
    this->byteOrderSymbol = byteOrderSymbol;
    byteOrderSymbol -= '0';
-   if (byteOrderSymbol < 1)
+   if (byteOrderSymbol <= 1)
    {
-      this->byteOrder = static_cast<ICanSignal::IByteOrder_e>(byteOrderSymbol);
+      this->byteOrder = static_cast<IByteOrder_e>(byteOrderSymbol);
    }
    else
    {
-      this->byteOrder = ICanSignal::IByteOrder_e::UNDEFINED;
+      this->byteOrder = IByteOrder_e::UNDEFINED;
    }
 }
 
