@@ -179,6 +179,9 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       const auto parent = current->parent();
       const auto parentText = (parent ? parent->text(0) : "");
       const auto parentItemType = (parent ? parent->whatsThis(0) : "");
+
+      this->ui.tableWidget_Properties->setWhatsThis(itemType);
+
       if (itemType == "CanMessage")
       {
          this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
@@ -232,15 +235,38 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
    //create right click menu item
    QMenu* itemMenu = new QMenu { this->ui.tableWidget_Properties };
    QAction* itemMenuEntry{ nullptr };
-   itemMenuEntry = new QAction{ "Remove", itemMenu };
+   itemMenuEntry = new QAction { "Remove", itemMenu };
    itemMenu->addAction(itemMenuEntry);
 
-   /*connect(itemMenuEntry, &QAction::triggered, this, [this, &newScopedFindRoot]
+   const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+
+   connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, &item]
+   {
+      if (itemType == "CanMessage")
       {
-         this->scopedFindRoot = newScopedFindRoot;
-         this->findResList.clear();
-         this->findIndex = 0;
-      });*/
+         this->RemoveCanMessage(this->ui.tableWidget_Properties->item(0, 0)->text());
+      }
+      else if (itemType == "CanMessages")
+      {
+         this->RemoveCanMessage(item->row());
+      }
+      else if (itemType == "CanSignal")
+      {
+         this->RemoveCanSignal(this->ui.tableWidget_Properties->item(0, 0)->text());
+      }
+      else if (itemType == "CanSignals")
+      {
+         this->RemoveCanSignal(item->row());
+      }
+      else if (itemType == "CanEnvironmentVariable")
+      {
+         this->RemoveCanEnvVar(this->ui.tableWidget_Properties->item(0, 0)->text());
+      }
+      else if (itemType == "CanEnvironmentVariables")
+      {
+         this->RemoveCanEnvVar(item->row());
+      }
+   });
 
    QAction* input = itemMenu->exec(globalPos);
 }

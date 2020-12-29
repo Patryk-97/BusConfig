@@ -39,6 +39,39 @@ private:
    void BuildCanEnvironmentVariablesProperties(void);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
+   template <std::integral Integral>
+   inline void RemoveCanMessage(const Integral& integral)
+   {
+      this->canBusConfig->RemoveMessageByIndex(integral);
+   }
+
+   inline void RemoveCanMessage(const QString& name)
+   {
+      this->canBusConfig->RemoveMessageByName(name.toUtf8());
+   }
+
+   template <std::integral Integral>
+   inline void RemoveCanSignal(const Integral& integral)
+   {
+      this->canBusConfig->RemoveSignalByIndex(integral);
+   }
+
+   inline void RemoveCanSignal(const QString& name)
+   {
+      this->canBusConfig->RemoveSignalByName(name.toUtf8());
+   }
+
+   template <std::integral Integral>
+   inline void RemoveCanEnvVar(const Integral& integral)
+   {
+      this->canBusConfig->RemoveEnvVarByIndex(integral);
+   }
+
+   inline void RemoveCanEnvVar(const QString& name)
+   {
+      this->canBusConfig->RemoveEnvVarByName(name.toUtf8());
+   }
+
    // member variables
     Ui::BusConfigUIClass ui;
     ICanBusConfig* canBusConfig { nullptr };
