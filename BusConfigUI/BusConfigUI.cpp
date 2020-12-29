@@ -83,6 +83,10 @@ BusConfigUI::BusConfigUI(QWidget *parent)
           }
        }
 
+       // add menu for right click for table widget
+       this->ui.tableWidget_Properties->setContextMenuPolicy(Qt::CustomContextMenu);
+       connect(this->ui.tableWidget_Properties, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowMenuForTableWidgetItem(const QPoint&)));
+
        this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 0 10px; border: 0; }");
        this->ui.tableWidget_Properties->horizontalHeader()->setStyleSheet(
          "QHeaderView::section { padding: 0 10px; border: 0; }");
@@ -217,6 +221,28 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
          this->BuildAttributesProperties(canNetworkNode);
       }
    }
+}
+
+// menu for right click for table widget
+void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
+{
+   QPoint globalPos = this->ui.tableWidget_Properties->mapToGlobal(pos);
+   QTableWidgetItem* item = this->ui.tableWidget_Properties->itemAt(pos);
+
+   //create right click menu item
+   QMenu* itemMenu = new QMenu { this->ui.tableWidget_Properties };
+   QAction* itemMenuEntry{ nullptr };
+   itemMenuEntry = new QAction{ "Remove", itemMenu };
+   itemMenu->addAction(itemMenuEntry);
+
+   /*connect(itemMenuEntry, &QAction::triggered, this, [this, &newScopedFindRoot]
+      {
+         this->scopedFindRoot = newScopedFindRoot;
+         this->findResList.clear();
+         this->findIndex = 0;
+      });*/
+
+   QAction* input = itemMenu->exec(globalPos);
 }
 
 bool BusConfigUI::LoadFile(const QString& fileName)

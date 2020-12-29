@@ -21,6 +21,7 @@ private slots:
    void on_actionBase_triggered();
    void on_actionCommunication_matrix_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+   void ShowMenuForTableWidgetItem(const QPoint& pos);
 private:
 
    bool LoadFile(const QString& fileName);

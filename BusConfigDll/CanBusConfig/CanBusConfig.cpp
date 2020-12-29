@@ -503,7 +503,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
          CanSignal* signal = this->CreateAndAddSignal();
          message->AddSignal(signal);
          signal->SetMessage(message);
-         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(this->GetNodeByName(message->GetMainTransmitter())); transmitterNode != nullptr)
+         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(this->GetNodeByName(message->GetMainTransmitter())); transmitterNode)
          {
             transmitterNode->AddMappedTxSignal(signal);
          }
