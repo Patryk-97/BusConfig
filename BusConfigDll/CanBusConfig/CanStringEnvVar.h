@@ -25,4 +25,6 @@ public:
    ICanAttribute* GetAttributeByName(const char* name) const override;
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
+
+   const char* GetComment(void) const override;
 };

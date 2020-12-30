@@ -106,3 +106,8 @@ ICanAttributeValue* CanIntEnvVar::GetAttributeValue(const char* attributeName) c
 {
    return CanEnvVar::GetAttributeValue(attributeName);
 }
+
+const char* CanIntEnvVar::GetComment(void) const
+{
+   return CanEnvVar::GetComment();
+}

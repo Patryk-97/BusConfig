@@ -84,3 +84,8 @@ ICanAttributeValue* CanDataEnvVar::GetAttributeValue(const char* attributeName) 
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);
 }
+
+const char* CanDataEnvVar::GetComment(void) const
+{
+   return CanEnvVar::GetComment();
+}

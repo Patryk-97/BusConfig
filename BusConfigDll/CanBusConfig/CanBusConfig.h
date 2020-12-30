@@ -66,6 +66,9 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   const char* GetComment(void) const override;
+   void SetComment(const char* comment);
+
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseSignalDefinition(std::ifstream& file, LineData_t& lineData);
@@ -76,6 +79,7 @@ private:
    bool ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData);
    bool ParseEnvironmentVariableDataDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseCommentDefinition(std::ifstream& file, LineData_t& lineData);
 
    // helpers for ParseAttributeDefinition() function
    bool ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);
@@ -92,6 +96,7 @@ private:
    std::vector<CanNode*> nodes;
    std::vector<CanSignal*> signals;
    std::vector<CanEnvVar*> envVars;
+   std::string comment;
 
    // static variables
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";
@@ -103,6 +108,7 @@ private:
    static constexpr std::string_view ATTRIBUTE_DEFAULT_DEFINITION_HEADER = "BA_DEF_DEF_ ";
    static constexpr std::string_view ATTRIBUTE_VALUE_DEFINITION_HEADER = "BA_ ";
    static constexpr std::string_view ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER = "ENVVAR_DATA_ ";
+   static constexpr std::string_view COMMENT_DEFINITION_HEADER = "CM_ ";
 
    static constexpr std::string_view DBC_KEYWORD_NETWORK_NODE = "BU_";
    static constexpr std::string_view DBC_KEYWORD_MESSAGE = "BO_";
@@ -205,4 +211,17 @@ private:
    static constexpr uint8_t ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER_POS = 0;
    //static constexpr uint8_t ENVIRONMENT_VARIABLE_NAME_POS = 1;
    static constexpr uint8_t ENVIRONMENT_VARIABLE_DATA_SIZE_POS = 2;
+
+   // comment definition
+   static constexpr uint8_t COMMENT_DEFINITION_ELEMENTS_MIN_COUNT = 2;
+   static constexpr uint8_t NETWORK_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT = 2;
+   static constexpr uint8_t NODE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT = 4;
+   static constexpr uint8_t MESSAGE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT = 4;
+   static constexpr uint8_t SIGNAL_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT = 5;
+   static constexpr uint8_t ENVIRONMENT_VARIABLE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT = 4;
+   static constexpr uint8_t COMMENT_DEFINITION_HEADER_POS = 0;
+   static constexpr uint8_t COMMENT_OBJECT_TYPE_POS = 1;
+   static constexpr uint8_t COMMENT_OBJECT_TYPE_NAME_POS = 2;
+   static constexpr uint8_t COMMENT_SIGNAL_NAME_POS = 3;
+   static constexpr uint8_t COMMENT_DATA_POS = 4;
 };

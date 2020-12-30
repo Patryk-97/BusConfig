@@ -37,6 +37,9 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   const char* GetComment(void) const override;
+   void SetComment(const char* comment);
+
 private:
 
    template <typename T>
@@ -53,4 +56,5 @@ private:
    std::set<CanMessage*, Comparator<CanMessage>> rxMessages;
    std::set<CanSignal*, Comparator<CanSignal>> mappedTxSignals;
    std::set<CanSignal*, Comparator<CanSignal>> mappedRxSignals;
+   std::string comment;
 };

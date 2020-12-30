@@ -58,6 +58,7 @@ public:
    virtual const char* GetReceiver(size_t index) const = 0;
    virtual ICanMessage* GetMessage(void) const = 0;
    virtual ICanValueTable* GetValueTable(void) const = 0;
+   virtual const char* GetComment(void) const = 0;
 
    virtual const char* ToString(void) = 0;
 

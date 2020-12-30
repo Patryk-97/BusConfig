@@ -51,5 +51,7 @@ public:
    virtual bool RemoveEnvVarByIndex(size_t index) = 0;
    virtual bool RemoveEnvVarByName(const char* name) = 0;
 
+   virtual const char * GetComment(void) const = 0;
+
    static constexpr size_t INVALID_INDEX = (size_t)(-1);
 };

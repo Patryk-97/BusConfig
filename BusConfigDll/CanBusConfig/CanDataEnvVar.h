@@ -29,6 +29,8 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   const char* GetComment(void) const override;
+
 private:
    uint32_t length {};
 };

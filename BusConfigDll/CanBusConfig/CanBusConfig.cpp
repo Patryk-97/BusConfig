@@ -43,11 +43,12 @@ CanBusConfig::~CanBusConfig()
 void CanBusConfig::Clear()
 {
    CanAttributeOwner::Clear();
-   this->log = "";
+   this->log.clear();
    helpers::ClearContainer(this->messages);
    helpers::ClearContainer(this->nodes);
    helpers::ClearContainer(this->signals);
    helpers::ClearContainer(this->envVars);
+   this->comment.clear();
 }
 
 const char* CanBusConfig::GetLog(void) const
@@ -104,6 +105,10 @@ bool CanBusConfig::Load(const char* filename)
          else if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER))
          {
             this->ParseEnvironmentVariableDataDefinition(file, lineData);
+         }
+         else if (line.starts_with(CanBusConfig::COMMENT_DEFINITION_HEADER))
+         {
+            this->ParseCommentDefinition(file, lineData);
          }
          lineNr++;
       }
@@ -358,6 +363,16 @@ ICanAttribute* CanBusConfig::GetAttributeByName(const char* name) const
 ICanAttributeValue* CanBusConfig::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);
+}
+
+const char* CanBusConfig::GetComment(void) const
+{
+   return this->comment.c_str();
+}
+
+void CanBusConfig::SetComment(const char* comment)
+{
+   this->comment = comment;
 }
 
 bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)
@@ -1486,7 +1501,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                            else
                            {
                               rV = false;
-                              this->log += "Node not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                              this->log += "Environment variable not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
                            }
                         }
                         break;
@@ -1672,6 +1687,257 @@ bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, L
    else
    {
       this->log += "Environment variable data definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      rV = false;
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineData)
+{
+   // locals
+   bool rV { true };
+
+   if (line.starts_with(CanBusConfig::COMMENT_DEFINITION_HEADER))
+   {
+      boost_char_separator sep(" ");
+      boost_char_separator_tokenizer tokenizer { line, sep };
+
+      CanAttributeOwner* commentOwner { nullptr };
+      uint32_t messageId {};
+      size_t elementsMinCount {};
+      ICanAttribute::IObjectType_e objectType { ICanAttribute::IObjectType_e::UNDEFINED };
+      bool endingQuote { false };
+      std::string comment;
+
+      // If everything's okay
+      if (ranges::distance(tokenizer) >= COMMENT_DEFINITION_ELEMENTS_MIN_COUNT)
+      {
+         const auto commentObjectType = *std::next(tokenizer.begin(), COMMENT_OBJECT_TYPE_POS);
+         if (commentObjectType == DBC_KEYWORD_NETWORK_NODE)
+         {
+            elementsMinCount = NODE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::NODE;
+         }
+         else if (commentObjectType == DBC_KEYWORD_MESSAGE)
+         {
+            elementsMinCount = MESSAGE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::MESSAGE;
+         }
+         else if (commentObjectType == DBC_KEYWORD_SIGNAL)
+         {
+            elementsMinCount = SIGNAL_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::SIGNAL;
+         }
+         else if (commentObjectType == DBC_KEYWORD_ENVIRONMENT_VARIABLE)
+         {
+            elementsMinCount = ENVIRONMENT_VARIABLE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE;
+         }
+         else if (commentObjectType.starts_with("\""))
+         {
+            elementsMinCount = NETWORK_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT;
+            objectType = ICanAttribute::IObjectType_e::NETWORK;
+         }
+         else
+         {
+            rV = false;
+            this->log += "Wrong comment object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+
+         if (rV && ranges::distance(tokenizer) == elementsMinCount)
+         {
+            for (size_t pos{}; const auto& token : tokenizer)
+            {
+               if (pos == COMMENT_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
+               {
+                  pos = COMMENT_DATA_POS;
+                  commentOwner = this;
+               }
+
+               switch (pos)
+               {
+                  case COMMENT_DEFINITION_HEADER_POS:
+                  {
+                     break;
+                  }
+                  case COMMENT_OBJECT_TYPE_POS:
+                  {
+                     break;
+                  }
+                  case COMMENT_OBJECT_TYPE_NAME_POS:
+                  {
+                     switch (objectType)
+                     {
+                        case ICanAttribute::IObjectType_e::NODE:
+                        {
+                           ICanNode* node = this->GetNodeByName(token.c_str());
+                           if (node)
+                           {
+                              commentOwner = dynamic_cast<CanNode*>(node);
+                              ++pos;
+                           }
+                           else
+                           {
+                              rV = false;
+                              this->log += "Node not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                           break;
+                        }
+                        case ICanAttribute::IObjectType_e::MESSAGE:
+                        {
+                           try
+                           {
+                              messageId = std::stoul(token);
+                              if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                              {
+                                 commentOwner = message;
+                                 ++pos;
+                              }
+                              else
+                              {
+                                 rV = false;
+                                 this->log += "Message not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                              }
+                           }
+                           catch (...)
+                           {
+                              rV = false;
+                              this->log += "Message id conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                           break;
+                        }
+                        case ICanAttribute::IObjectType_e::SIGNAL:
+                        {
+                           try
+                           {
+                              messageId = std::stoul(token);
+                           }
+                           catch (...)
+                           {
+                              rV = false;
+                              this->log += "Message id conversion failed [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                           break;
+                        }
+                        case ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE:
+                        {
+                           ICanEnvVar* envVar = this->GetEnvVarByName(token.c_str());
+                           if (envVar)
+                           {
+                              commentOwner = dynamic_cast<CanEnvVar*>(envVar);
+                              ++pos;
+                           }
+                           else
+                           {
+                              rV = false;
+                              this->log += "Environment variable not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                           break;
+                        }
+                     }
+                     break;
+                  }
+                  case COMMENT_SIGNAL_NAME_POS:
+                  {
+                     if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
+                     {
+                        if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                        {
+                           if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
+                           {
+                              commentOwner = signal;
+                           }
+                           else
+                           {
+                              rV = false;
+                              this->log += "Signal not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                           }
+                        }
+                        else
+                        {
+                           rV = false;
+                           this->log += "Message not found [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                        }
+                     }
+                     else
+                     {
+                        rV = false;
+                        this->log += "Wrong algorithm. Check it! [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+                     }
+                     break;
+                  }
+                  default:
+                  {
+                     if (token.ends_with(";"))
+                     {
+                        endingQuote = true;
+                     }
+                     comment += token;
+                  }
+               }
+
+               // If something went wrong
+               if (!rV)
+               {
+                  break;
+               }
+               ++pos;
+            }
+
+            while (!endingQuote)
+            {
+               std::getline(file, line);
+               boost::algorithm::trim(line);
+               if (line.ends_with(";"))
+               {
+                  endingQuote = true;
+               }
+               comment += "\n" + line;
+            }
+
+            if (comment.size() > 3)
+            {
+               comment = comment.substr(1, comment.size() - 3);
+            }
+
+            helpers::typecase(commentOwner,
+               [&comment] (CanBusConfig* network)
+               {
+                  network->SetComment(comment.c_str());
+               },
+               [&comment] (CanNode* networkNode)
+               {
+                  networkNode->SetComment(comment.c_str());
+               },
+               [&comment] (CanMessage* message)
+               {
+                  message->SetComment(comment.c_str());
+               },
+               [&comment] (CanSignal* signal)
+               {
+                  signal->SetComment(comment.c_str());
+               },
+               [&comment] (CanEnvVar* envVar)
+               {
+                  envVar->SetComment(comment.c_str());
+               });
+         }
+         else
+         {
+            rV = false;
+            this->log += "Invalid comment definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+         }
+      }
+      else
+      {
+         rV = false;
+         this->log += "Invalid comment definition elements count [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
+      }
+   }
+   else
+   {
+      this->log += "Comment definition header invalid [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
       rV = false;
    }
 

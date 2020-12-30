@@ -14,11 +14,11 @@ CanSignal::~CanSignal()
 void CanSignal::Clear(void)
 {
    CanAttributeOwner::Clear();
-   this->name = "";
+   this->name.clear();
    this->muxType = IMuxType_e::NOT_MULTIPLEXED;
-   this->muxTypeStr = "";
+   this->muxTypeStr.clear();
    this->multiplexValue = ICanSignal::NOT_MULTIPLEX_VALUE;
-   this->muxIndicator = "";
+   this->muxIndicator.clear();
    this->startBit = 0;
    this->size = 0;
    this->byteOrderSymbol = ICanSignal::UNDEFINED_BYTE_ORDER_SYMBOL;
@@ -29,11 +29,12 @@ void CanSignal::Clear(void)
    this->offset = 0.0;
    this->minimum = 0.0;
    this->maximum = 0.0;
-   this->unit = "";
+   this->unit.clear();
    this->receivers.clear();
    this->message = nullptr;
    helpers::ClearPtr(this->valueTable);
-   this->stringRepresentation = "";
+   this->comment.clear();
+   this->stringRepresentation.clear();
 }
 
 const char* CanSignal::GetName(void) const
@@ -292,6 +293,16 @@ ICanAttribute* CanSignal::GetAttributeByName(const char* name) const
 ICanAttributeValue* CanSignal::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);
+}
+
+const char* CanSignal::GetComment(void) const
+{
+   return this->comment.c_str();
+}
+
+void CanSignal::SetComment(const char* comment)
+{
+   this->comment = comment;
 }
 
 const char* CanSignal::ToString(void)

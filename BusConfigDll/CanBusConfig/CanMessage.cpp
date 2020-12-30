@@ -13,14 +13,15 @@ void CanMessage::Clear(void)
 {
    CanAttributeOwner::Clear();
    this->id = 0;
-   this->name = "";
+   this->name.clear();
    this->size = 0;
-   this->mainTransmitter = "";
+   this->mainTransmitter.clear();
    this->signals.clear();
    this->idFormat = ICanMessage::DEFAULT_ID_FORMAT;
    this->txMethod = ICanMessage::DEFAULT_TX_METHOD;
    this->cycleTime =  ICanMessage::DEFAULT_CYCLE_TIME;
-   this->stringRepresentation = "";
+   this->comment.clear();
+   this->stringRepresentation.clear();
 }
 
 uint32_t CanMessage::GetId(void) const
@@ -135,6 +136,16 @@ ICanMessage::cycle_time_t CanMessage::GetCycleTime(void) const
 void CanMessage::SetCycleTime(cycle_time_t cycleTime)
 {
    this->cycleTime = cycleTime;
+}
+
+const char* CanMessage::GetComment(void) const
+{
+   return this->comment.c_str();
+}
+
+void CanMessage::SetComment(const char* comment)
+{
+   this->comment = comment;
 }
 
 const char* CanMessage::ToString(void)

@@ -94,6 +94,8 @@ public:
    virtual TxMethod_e GetTxMethod(void) const = 0;
    virtual cycle_time_t GetCycleTime(void) const = 0;
 
+   virtual const char* GetComment(void) const = 0;
+
    virtual const char* ToString(void) = 0;
 
    static constexpr const char * ID_FORMAT = "VFrameFormat";

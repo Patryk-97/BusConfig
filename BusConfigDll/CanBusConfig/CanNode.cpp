@@ -11,11 +11,12 @@ CanNode::~CanNode()
 void CanNode::Clear(void)
 {
    CanAttributeOwner::Clear();
-   this->name = "";
+   this->name.clear();
    this->txMessages.clear();
    this->rxMessages.clear();
    this->mappedRxSignals.clear();
    this->mappedTxSignals.clear();
+   this->comment.clear();
 }
 
 const char* CanNode::GetName(void) const
@@ -118,4 +119,14 @@ ICanAttribute* CanNode::GetAttributeByName(const char* name) const
 ICanAttributeValue* CanNode::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);
+}
+
+const char* CanNode::GetComment(void) const
+{
+   return this->comment.c_str();
+}
+
+void CanNode::SetComment(const char* comment)
+{
+   this->comment = comment;
 }

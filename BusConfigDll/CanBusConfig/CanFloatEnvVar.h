@@ -35,6 +35,8 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   const char* GetComment(void) const override;
+
 private:
    double minimum {};
    double maximum {};

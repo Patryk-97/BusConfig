@@ -26,6 +26,8 @@ public:
 
    virtual ICanAttributeValue* GetAttributeValue(const char* attributeName) const = 0;
 
+   virtual const char* GetComment(void) const = 0;
+
    // static variables
    constexpr static const char * PSEUDO_NODE_NAME = "Vector__XXX";
 };

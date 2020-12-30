@@ -12,13 +12,14 @@ CanEnvVar::~CanEnvVar()
 void CanEnvVar::Clear(void)
 {
    CanAttributeOwner::Clear();
-   this->name = "";
+   this->name.clear();
    this->type = Type_e::UNDEFINED;
-   this->unit = "";
+   this->unit.clear();
    this->id = 0;
    this->accessType = AccessType_e::UNDEFINED;
    this->accessNodes.clear();
    helpers::ClearPtr(this->valueTable);
+   this->comment.clear();
 }
 
 const char* CanEnvVar::GetName(void) const
@@ -136,4 +137,14 @@ ICanAttribute* CanEnvVar::GetAttributeByName(const char* name) const
 ICanAttributeValue* CanEnvVar::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);
+}
+
+const char* CanEnvVar::GetComment(void) const
+{
+   return this->comment.c_str();
+}
+
+void CanEnvVar::SetComment(const char* comment)
+{
+   this->comment = comment;
 }

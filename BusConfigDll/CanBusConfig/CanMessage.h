@@ -46,6 +46,9 @@ public:
    cycle_time_t GetCycleTime(void) const override;
    void SetCycleTime(cycle_time_t cycleTime);
 
+   const char* GetComment(void) const override;
+   void SetComment(const char* comment);
+
    const char* ToString(void) override;
 
    static const inline std::map<std::string_view, IdFormat_e> ID_FORMATS
@@ -71,6 +74,7 @@ private:
    uint32_t size {};
    std::string mainTransmitter;
    std::vector<CanSignal*> signals;
+   std::string comment;
 
    // Main attributes
    IdFormat_e idFormat { ICanMessage::DEFAULT_ID_FORMAT };

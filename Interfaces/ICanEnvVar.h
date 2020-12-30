@@ -39,6 +39,7 @@ public:
    virtual ICanNode* GetAccessNodeByIndex(size_t index) const = 0;
    virtual ICanNode* GetAccessNodeByName(const char* name) const = 0;
    virtual ICanValueTable* GetValueTable(void) const = 0;
+   virtual const char* GetComment(void) const = 0;
 
    static constexpr const char * ACCESS_TYPE_PREFIX = "DUMMY_NODE_VECTOR";
 };

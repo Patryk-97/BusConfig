@@ -45,6 +45,9 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   const char* GetComment(void) const override;
+   void SetComment(const char* comment);
+
 private:
    std::string name;
    Type_e type { Type_e::UNDEFINED };
@@ -53,4 +56,5 @@ private:
    AccessType_e accessType { AccessType_e::UNDEFINED };
    std::vector<CanNode*> accessNodes;
    CanValueTable* valueTable { nullptr };
+   std::string comment;
 };

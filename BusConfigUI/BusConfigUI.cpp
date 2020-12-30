@@ -166,7 +166,7 @@ void BusConfigUI::on_actionExit_triggered()
 void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
    size_t itemIndex = (size_t)-1;
-   this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
    this->ui.tableWidget_Properties->clear();
    this->ui.tableWidget_Properties->setRowCount(0);
@@ -501,6 +501,7 @@ void BusConfigUI::BuildCanMessageProperties(const char* messageName)
    {
       QStringList headerLabels;
       headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
+      headerLabels << "Comment";
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -555,11 +556,12 @@ void BusConfigUI::BuildCanMessageProperties(const char* messageName)
          return ICanMessage::TxMethod::DEFAULT;
       });
 
-      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ idFormat });
+      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ idFormat + "\nfdfdfdf\n" });
       this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(message->GetSize()) });
       this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ txMethod });
       this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(message->GetCycleTime()) });
-      this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+      this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ message->GetComment() });
+      //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
    }
 }
 
@@ -568,6 +570,7 @@ void BusConfigUI::BuildCanMessagesProperties(void)
    size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
    QStringList headerLabels;
    headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
+   headerLabels << "Comment";
    this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -637,6 +640,7 @@ void BusConfigUI::BuildCanMessagesProperties(void)
          this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(message->GetSize()) });
          this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ txMethod });
          this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(message->GetCycleTime()) });
+         this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ message->GetComment() });
       }
    }
 }
@@ -647,7 +651,7 @@ void BusConfigUI::BuildCanSignalProperties(const char* signalName)
    {
       QStringList headerLabels;
       headerLabels << "Name" << "Start bit" << "Size" << "Byte order" << "Value type" << "Factor" << "Offset" << "Minimum" << "Maximum";
-      headerLabels << "Unit" << "Value table";
+      headerLabels << "Unit" << "Value table" << "Comment";
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -688,7 +692,8 @@ void BusConfigUI::BuildCanSignalProperties(const char* signalName)
       this->ui.tableWidget_Properties->setItem(0, 8, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
       this->ui.tableWidget_Properties->setItem(0, 9, new QTableWidgetItem{ signal->GetUnit() });
       this->ui.tableWidget_Properties->setItem(0, 10, new QTableWidgetItem{ valueTableName });
-      this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+      this->ui.tableWidget_Properties->setItem(0, 11, new QTableWidgetItem{ signal->GetComment() });
+      //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
    }
 }
 
@@ -697,7 +702,7 @@ void BusConfigUI::BuildCanSignalsProperties(void)
    size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
    QStringList headerLabels;
    headerLabels << "Name" << "Start bit" << "Size" << "Byte order" << "Value type" << "Factor" << "Offset" << "Minimum" << "Maximum";
-   headerLabels << "Unit" << "Value table";
+   headerLabels << "Unit" << "Value table" << "Comment";
    this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -743,7 +748,8 @@ void BusConfigUI::BuildCanSignalsProperties(void)
          this->ui.tableWidget_Properties->setItem(i, 8, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
          this->ui.tableWidget_Properties->setItem(i, 9, new QTableWidgetItem{ signal->GetUnit() });
          this->ui.tableWidget_Properties->setItem(i, 10, new QTableWidgetItem{ valueTableName });
-         this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+         this->ui.tableWidget_Properties->setItem(i, 11, new QTableWidgetItem{ signal->GetComment() });
+         //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
       }
    }
 }
@@ -756,7 +762,7 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const char* envVarName)
       std::variant<const ICanEnvVar*, ICanIntEnvVar*, ICanFloatEnvVar*, ICanStringEnvVar*, ICanDataEnvVar*>
          envVar = canEnvVar;
       headerLabels << "Name" << "Type" << "Unit" << "Minimum" << "Maximum" << "Initial value";
-      headerLabels << "Length (Bytes)" << "Access" << "Value table";
+      headerLabels << "Length (Bytes)" << "Access" << "Value table" << "Comment";
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -857,7 +863,8 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const char* envVarName)
 
       this->ui.tableWidget_Properties->setItem(0, 7, new QTableWidgetItem{ accessType });
       this->ui.tableWidget_Properties->setItem(0, 8, new QTableWidgetItem{ valueTableName });
-      this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+      this->ui.tableWidget_Properties->setItem(0, 9, new QTableWidgetItem{ canEnvVar->GetComment() });
+      //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
    }
 }
 
@@ -866,7 +873,7 @@ void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
    size_t canEnvVarsCount = this->canBusConfig->GetEnvVarsCount();
    QStringList headerLabels;
    headerLabels << "Name" << "Type" << "Unit" << "Minimum" << "Maximum" << "Initial value";
-   headerLabels << "Length (Bytes)" << "Access" << "Value table";
+   headerLabels << "Length (Bytes)" << "Access" << "Value table" << "Comment";
    this->ui.tableWidget_Properties->setRowCount(canEnvVarsCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -975,7 +982,8 @@ void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
 
          this->ui.tableWidget_Properties->setItem(i, 7, new QTableWidgetItem{ accessType });
          this->ui.tableWidget_Properties->setItem(i, 8, new QTableWidgetItem{ valueTableName });
-         this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+         this->ui.tableWidget_Properties->setItem(i, 9, new QTableWidgetItem{ canEnvVar->GetComment() });
+         //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
       }
    }
 }

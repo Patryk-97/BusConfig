@@ -79,6 +79,9 @@ public:
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
+   const char* GetComment(void) const override;
+   void SetComment(const char* comment);
+
    const char* ToString(void) override;
 
 private:
@@ -108,12 +111,9 @@ private:
    std::string unit;
 
    std::vector<std::string> receivers; //  nodes_names | 'Vector__XXX'
-
    CanMessage* message { nullptr };
-
    CanValueTable* valueTable { nullptr };
-
    std::vector<CanAttribute*> attributes;
-
+   std::string comment;
    std::string stringRepresentation;
 };
