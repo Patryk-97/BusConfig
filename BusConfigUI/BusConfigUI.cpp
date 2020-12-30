@@ -7,6 +7,7 @@
 #include <sstream>
 #include <concepts>
 #include <qlabel.h>
+#include <qlist.h>
 #include <variant>
 #include "ICanAttributeManager.h"
 #include "ICanIntEnvVar.h"
@@ -240,32 +241,36 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
 
    const auto itemType = this->ui.tableWidget_Properties->whatsThis();
 
-   connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, &item]
+   connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row = item->row()]
    {
+      QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
       if (itemType == "CanMessage")
       {
-         this->RemoveCanMessage(this->ui.tableWidget_Properties->item(0, 0)->text());
+         this->RemoveCanMessage(name);
       }
       else if (itemType == "CanMessages")
       {
-         this->RemoveCanMessage(item->row());
+         this->RemoveCanMessage(row);
       }
       else if (itemType == "CanSignal")
       {
-         this->RemoveCanSignal(this->ui.tableWidget_Properties->item(0, 0)->text());
+         this->RemoveCanSignal(name);
       }
       else if (itemType == "CanSignals")
       {
-         this->RemoveCanSignal(item->row());
+         this->RemoveCanSignal(row);
       }
       else if (itemType == "CanEnvironmentVariable")
       {
-         this->RemoveCanEnvVar(this->ui.tableWidget_Properties->item(0, 0)->text());
+         this->RemoveCanEnvVar(name);
       }
       else if (itemType == "CanEnvironmentVariables")
       {
-         this->RemoveCanEnvVar(item->row());
+         this->RemoveCanEnvVar(row);
       }
+
+      this->ui.tableWidget_Properties->removeRow(row);
+      this->RemoveFromTreeWidget(name);
    });
 
    QAction* input = itemMenu->exec(globalPos);
@@ -699,7 +704,7 @@ void BusConfigUI::BuildCanSignalsProperties(void)
 
    for (size_t i = 0; i < canSignalsCount; i++)
    {
-      if (const auto signal = this->canBusConfig->GetSignalByIndex(i); signal != nullptr)
+      if (const auto signal = this->canBusConfig->GetSignalByIndex(i); signal)
       {
          this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ this->icons[Icon_e::SIGNAL], signal->GetName() });
          this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
@@ -1010,5 +1015,15 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
          }
       };
       ICanAttributeManager::ForEachAttribute(attributeOwner, fillAttributeValuesRow);
+   }
+}
+
+void BusConfigUI::RemoveFromTreeWidget(const QString& itemName)
+{
+   auto treeItems = this->ui.treeWidget_MainView->findItems(itemName, Qt::MatchExactly | Qt::MatchRecursive, 0);
+   for (auto& treeItem : treeItems)
+   {
+      auto parent = treeItem->parent();
+      parent->removeChild(treeItem);
    }
 }
