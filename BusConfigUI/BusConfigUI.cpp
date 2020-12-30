@@ -14,6 +14,7 @@
 #include "ICanFloatEnvVar.h"
 #include "ICanStringEnvVar.h"
 #include "ICanDataEnvVar.h"
+#include "CanSignalManager.h"
 
 DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
@@ -166,7 +167,7 @@ void BusConfigUI::on_actionExit_triggered()
 void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
    size_t itemIndex = (size_t)-1;
-   //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   this->isTableWidgetFilled = false;
 
    this->ui.tableWidget_Properties->clear();
    this->ui.tableWidget_Properties->setRowCount(0);
@@ -186,7 +187,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       if (itemType == "CanMessage")
       {
          this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-         this->BuildCanMessageProperties(text.toUtf8());
+         this->BuildCanMessageProperties(text);
       }
       else if (itemType == "CanMessages")
       {
@@ -195,7 +196,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       else if (itemType == "CanSignal")
       {
          this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-         this->BuildCanSignalProperties(text.toUtf8());
+         this->BuildCanSignalProperties(text);
       }
       else if (itemType == "CanSignals")
       {
@@ -203,7 +204,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       }
       else if (itemType == "CanEnvironmentVariable")
       {
-         this->BuildCanEnvironmentVariableProperties(text.toUtf8());
+         this->BuildCanEnvironmentVariableProperties(text);
       }
       else if (itemType == "CanEnvironmentVariables")
       {
@@ -225,6 +226,47 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
          this->BuildAttributesProperties(canNetworkNode);
       }
    }
+
+   this->isTableWidgetFilled = true;
+}
+
+void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
+{
+   size_t itemIndex = (size_t)-1;
+   
+   if (this->isTableWidgetFilled)
+   {
+      const auto name = this->ui.tableWidget_Properties->item(item->row(), 0)->text();
+      const auto data = this->ui.tableWidget_Properties->item(item->row(), item->column())->text();
+      const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+      const int column = item->column();
+
+      if (itemType == "CanMessage")
+      {
+         //this->BuildCanMessageProperties(text);
+      }
+      else if (itemType == "CanMessages")
+      {
+         //this->BuildCanMessagesProperties();
+      }
+      else if (itemType == "CanSignal")
+      {
+         CanSignalManager::Modify(this->canBusConfig, name, data, column);
+      }
+      else if (itemType == "CanSignals")
+      {
+         CanSignalManager::Modify(this->canBusConfig, name, data, column);
+      }
+      else if (itemType == "CanEnvironmentVariable")
+      {
+         //this->BuildCanEnvironmentVariableProperties(text);
+      }
+      else if (itemType == "CanEnvironmentVariables")
+      {
+         //this->BuildCanEnvironmentVariablesProperties();
+      }
+   }
+
 }
 
 // menu for right click for table widget
@@ -495,9 +537,9 @@ void BusConfigUI::Clear(void)
    this->ui.tableWidget_Properties->setColumnCount(0);
 }
 
-void BusConfigUI::BuildCanMessageProperties(const char* messageName)
+void BusConfigUI::BuildCanMessageProperties(const QString& messageName)
 {
-   if (const auto message = this->canBusConfig->GetMessageByName(messageName); message != nullptr)
+   if (const auto message = this->canBusConfig->GetMessageByName(messageName.toUtf8()); message != nullptr)
    {
       QStringList headerLabels;
       headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
@@ -645,13 +687,16 @@ void BusConfigUI::BuildCanMessagesProperties(void)
    }
 }
 
-void BusConfigUI::BuildCanSignalProperties(const char* signalName)
+void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
 {
-   if (const auto signal = this->canBusConfig->GetSignalByName(signalName); signal != nullptr)
+   if (const auto signal = this->canBusConfig->GetSignalByName(signalName.toUtf8()); signal != nullptr)
    {
       QStringList headerLabels;
-      headerLabels << "Name" << "Start bit" << "Size" << "Byte order" << "Value type" << "Factor" << "Offset" << "Minimum" << "Maximum";
-      headerLabels << "Unit" << "Value table" << "Comment";
+      for (const auto& property : CanSignalManager::PROPERTIES)
+      {
+         headerLabels << property.data();
+      }
+
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -701,8 +746,11 @@ void BusConfigUI::BuildCanSignalsProperties(void)
 {
    size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
    QStringList headerLabels;
-   headerLabels << "Name" << "Start bit" << "Size" << "Byte order" << "Value type" << "Factor" << "Offset" << "Minimum" << "Maximum";
-   headerLabels << "Unit" << "Value table" << "Comment";
+   for (const auto& property : CanSignalManager::PROPERTIES)
+   {
+      headerLabels << property.data();
+   }
+
    this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -754,9 +802,9 @@ void BusConfigUI::BuildCanSignalsProperties(void)
    }
 }
 
-void BusConfigUI::BuildCanEnvironmentVariableProperties(const char* envVarName)
+void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarName)
 {
-   if (const auto canEnvVar = this->canBusConfig->GetEnvVarByName(envVarName); canEnvVar)
+   if (const auto canEnvVar = this->canBusConfig->GetEnvVarByName(envVarName.toUtf8()); canEnvVar)
    {
       QStringList headerLabels;
       std::variant<const ICanEnvVar*, ICanIntEnvVar*, ICanFloatEnvVar*, ICanStringEnvVar*, ICanDataEnvVar*>

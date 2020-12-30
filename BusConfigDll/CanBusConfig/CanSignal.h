@@ -18,6 +18,7 @@ public:
    void Clear(void) override;
 
    const char* GetName(void) const override;
+   bool ModifyName(const char* name) override;
    void SetName(const char* name);
 
    bool IsNotMultiplexed(void) const override;
@@ -35,32 +36,41 @@ public:
    void SetMultiplexValue(uint32_t multiplexValue);
 
    uint32_t GetStartBit(void) const override;
+   void ModifyStartBit(uint32_t startBit) override;
    void SetStartBit(uint32_t startBit);
 
    uint32_t GetSize(void) const override;
+   void ModifySize(uint32_t size) override;
    void SetSize(uint32_t size);
 
    IByteOrder_e GetByteOrder(void) const override;
+   void ModifyByteOrder(IByteOrder_e byteOrder) override;
    uint8_t GetByteOrderSymbol(void) const override;
    void SetByteOrderSymbol(uint8_t byteOrderSymbol);
 
    IValueType_e GetValueType(void) const override;
+   void ModifyValueType(IValueType_e valueType) override;
    uint8_t GetValueTypeSymbol(void) const override;
    void SetValueTypeSymbol(uint8_t valueTypeSymbol);
 
    double GetFactor(void) const override;
+   void ModifyFactor(double factor) override;
    void SetFactor(double factor);
 
    double GetOffset(void) const override;
+   void ModifyOffset(double offset) override;
    void SetOffset(double offset);
 
    double GetMinimum(void) const override;
+   void ModifyMinimum(double minimum) override;
    void SetMinimum(double minimum);
 
    double GetMaximum(void) const override;
+   void ModifyMaximum(double maximum) override;
    void SetMaximum(double maximum);
 
    const char* GetUnit(void) const override;
+   void ModifyUnit(const char* unit) override;
    void SetUnit(const char* unit);
 
    size_t GetReceiversCount(void) const override;

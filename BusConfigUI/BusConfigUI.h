@@ -21,6 +21,7 @@ private slots:
    void on_actionBase_triggered();
    void on_actionCommunication_matrix_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+   void on_tableWidget_Properties_itemChanged(QTableWidgetItem* item);
    void ShowMenuForTableWidgetItem(const QPoint& pos);
 private:
 
@@ -31,11 +32,11 @@ private:
    void Clear(void);
    
    // Table widget properties
-   void BuildCanMessageProperties(const char * messageName);
+   void BuildCanMessageProperties(const QString& messageName);
    void BuildCanMessagesProperties(void);
-   void BuildCanSignalProperties(const char* signalName);
+   void BuildCanSignalProperties(const QString& signalName);
    void BuildCanSignalsProperties(void);
-   void BuildCanEnvironmentVariableProperties(const char* envVarName);
+   void BuildCanEnvironmentVariableProperties(const QString& envVarName);
    void BuildCanEnvironmentVariablesProperties(void);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
@@ -78,6 +79,7 @@ private:
     Ui::BusConfigUIClass ui;
     ICanBusConfig* canBusConfig { nullptr };
     CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
+    bool isTableWidgetFilled { false };
 
     enum class Icon_e
     {

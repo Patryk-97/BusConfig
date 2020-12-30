@@ -35,7 +35,10 @@ public:
    };
 
    virtual void Clear(void) = 0;
+
    virtual const char* GetName(void) const = 0;
+   virtual bool ModifyName(const char* name) = 0;
+
    virtual bool IsNotMultiplexed(void) const = 0;
    virtual bool IsMultiplexerSwitch(void) const = 0;
    virtual bool IsMultiplexedSignal(void) const = 0;
@@ -43,17 +46,36 @@ public:
    virtual const char* GetMuxTypeStr(void) const = 0;
    virtual const char* GetMuxIndicator(void) const = 0;
    virtual uint32_t GetMultiplexValue(void) const = 0;
+
    virtual uint32_t GetStartBit(void) const = 0;
+   virtual void ModifyStartBit(uint32_t startBit) = 0;
+
    virtual uint32_t GetSize(void) const = 0;
+   virtual void ModifySize(uint32_t size) = 0;
+
    virtual IByteOrder_e GetByteOrder(void) const = 0;
+   virtual void ModifyByteOrder(IByteOrder_e byteOrder) = 0;
    virtual uint8_t GetByteOrderSymbol(void) const = 0;
+
    virtual IValueType_e GetValueType(void) const = 0;
+   virtual void ModifyValueType(IValueType_e valueType) = 0;
    virtual uint8_t GetValueTypeSymbol(void) const = 0;
+
    virtual double GetFactor(void) const = 0;
+   virtual void ModifyFactor(double factor) = 0;
+
    virtual double GetOffset(void) const = 0;
+   virtual void ModifyOffset(double offset) = 0;
+
    virtual double GetMinimum(void) const = 0;
+   virtual void ModifyMinimum(double minimum) = 0;
+
    virtual double GetMaximum(void) const = 0;
+   virtual void ModifyMaximum(double maximum) = 0;
+
    virtual const char* GetUnit(void) const = 0;
+   virtual void ModifyUnit(const char * unit) = 0;
+
    virtual size_t GetReceiversCount(void) const = 0;
    virtual const char* GetReceiver(size_t index) const = 0;
    virtual ICanMessage* GetMessage(void) const = 0;

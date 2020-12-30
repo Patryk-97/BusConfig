@@ -42,6 +42,11 @@ const char* CanSignal::GetName(void) const
    return this->name.c_str();
 }
 
+bool CanSignal::ModifyName(const char* name)
+{
+   this->name = name;
+}
+
 void CanSignal::SetName(const char* name)
 {
    this->name = name;
@@ -115,6 +120,11 @@ uint32_t CanSignal::GetStartBit(void) const
    return this->startBit;
 }
 
+void CanSignal::ModifyStartBit(uint32_t startBit)
+{
+   this->startBit = startBit;
+}
+
 void CanSignal::SetStartBit(uint32_t startBit)
 {
    this->startBit = startBit;
@@ -125,6 +135,11 @@ uint32_t CanSignal::GetSize(void) const
    return this->size;
 }
 
+void CanSignal::ModifySize(uint32_t size)
+{
+   this->size = size;
+}
+
 void CanSignal::SetSize(uint32_t size)
 {
    this->size = size;
@@ -133,6 +148,11 @@ void CanSignal::SetSize(uint32_t size)
 ICanSignal::IByteOrder_e CanSignal::GetByteOrder(void) const
 {
    return this->byteOrder;
+}
+
+void CanSignal::ModifyByteOrder(IByteOrder_e byteOrder)
+{
+   this->byteOrder = byteOrder;
 }
 
 uint8_t CanSignal::GetByteOrderSymbol(void) const
@@ -157,6 +177,11 @@ void CanSignal::SetByteOrderSymbol(uint8_t byteOrderSymbol)
 ICanSignal::IValueType_e CanSignal::GetValueType(void) const
 {
    return this->valueType;
+}
+
+void CanSignal::ModifyValueType(IValueType_e valueType)
+{
+   this->valueType = valueType;
 }
 
 uint8_t CanSignal::GetValueTypeSymbol(void) const
@@ -192,6 +217,11 @@ double CanSignal::GetFactor(void) const
    return this->factor;
 }
 
+void CanSignal::ModifyFactor(double factor)
+{
+   this->factor = factor;
+}
+
 void CanSignal::SetFactor(double factor)
 {
    this->factor = factor;
@@ -200,6 +230,11 @@ void CanSignal::SetFactor(double factor)
 double CanSignal::GetOffset(void) const
 {
    return this->offset;
+}
+
+void CanSignal::ModifyOffset(double offset)
+{
+   this->offset = offset;
 }
 
 void CanSignal::SetOffset(double offset)
@@ -212,6 +247,11 @@ double CanSignal::GetMinimum(void) const
    return this->minimum;
 }
 
+void CanSignal::ModifyMinimum(double minimum)
+{
+   this->minimum = minimum;
+}
+
 void CanSignal::SetMinimum(double minimum)
 {
    this->minimum = minimum;
@@ -222,6 +262,11 @@ double CanSignal::GetMaximum(void) const
    return this->maximum;  
 }
 
+void CanSignal::ModifyMaximum(double maximum)
+{
+   this->maximum = maximum;
+}
+
 void CanSignal::SetMaximum(double maximum)
 {
    this->maximum = maximum;
@@ -230,6 +275,11 @@ void CanSignal::SetMaximum(double maximum)
 const char* CanSignal::GetUnit(void) const
 {
    return this->unit.c_str();
+}
+
+void CanSignal::ModifyUnit(const char* unit)
+{
+   this->unit = unit;
 }
 
 void CanSignal::SetUnit(const char* unit)
