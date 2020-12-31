@@ -1,11 +1,11 @@
 #include "CanSignalManager.h"
 
-void CanSignalManager::Modify(ICanBusConfig* canBusConfig, const QString& canSignalName,
-   const QString& data, uint8_t column)
+void CanSignalManager::Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
+   uint8_t column)
 {
    if (canBusConfig)
    {
-      if (auto canSignal = canBusConfig->GetSignalByName(canSignalName.toUtf8()); canSignal)
+      if (auto canSignal = canBusConfig->GetSignalByIndex(index); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {

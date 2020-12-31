@@ -44,6 +44,6 @@ public:
       constexpr static std::string_view DEFAULT = STANDARD_CAN;
    };
 
-   static void Modify(ICanBusConfig* canBusConfig, const QString& canMessageName,
-      const QString& data, uint8_t column);
+   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
+      uint8_t column);
 };

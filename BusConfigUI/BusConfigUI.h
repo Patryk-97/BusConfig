@@ -17,6 +17,7 @@ public:
 private slots:
    void on_actionClear_triggered();
    void on_actionOpen_triggered();
+   void on_actionExport_triggered();
    void on_actionExit_triggered();
    void on_actionBase_triggered();
    void on_actionCommunication_matrix_triggered();

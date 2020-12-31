@@ -128,6 +128,12 @@ void BusConfigUI::on_actionOpen_triggered()
    }
 }
 
+void BusConfigUI::on_actionExport_triggered()
+{
+   QString path = QFileDialog::getSaveFileName(0, tr("Save file (dbc)"), "", tr("dbc files (*.dbc)"));
+   bool rV = this->canBusConfig->Export(path.toUtf8());
+}
+
 void BusConfigUI::on_actionBase_triggered()
 {
    if (this->base == Base_e::DEC)
@@ -240,26 +246,26 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
    
    if (this->isTableWidgetFilled)
    {
-      const auto name = this->ui.tableWidget_Properties->item(item->row(), 0)->text();
-      const auto data = this->ui.tableWidget_Properties->item(item->row(), item->column())->text();
-      const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+      const int row = item->row();
       const int column = item->column();
+      const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
+      const auto itemType = this->ui.tableWidget_Properties->whatsThis();
 
       if (itemType == "CanMessage")
       {
-         //this->BuildCanMessageProperties(text);
+         CanMessageManager::Modify(this->canBusConfig, row, data, column);
       }
       else if (itemType == "CanMessages")
       {
-         //this->BuildCanMessagesProperties();
+         CanMessageManager::Modify(this->canBusConfig, row, data, column);
       }
       else if (itemType == "CanSignal")
       {
-         CanSignalManager::Modify(this->canBusConfig, name, data, column);
+         CanSignalManager::Modify(this->canBusConfig, row, data, column);
       }
       else if (itemType == "CanSignals")
       {
-         CanSignalManager::Modify(this->canBusConfig, name, data, column);
+         CanSignalManager::Modify(this->canBusConfig, row, data, column);
       }
       else if (itemType == "CanEnvironmentVariable")
       {

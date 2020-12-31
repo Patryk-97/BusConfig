@@ -61,7 +61,7 @@ bool CanBusConfig::Load(const char* fileName)
    // locals
    bool rV { false };
    LineData_t lineData;
-   std::ifstream file(fileName);
+   std::ifstream file { fileName };
    this->fileName = fileName;
 
    if (file.is_open())
@@ -133,7 +133,7 @@ bool CanBusConfig::Export(const char* fileName) const
    // locals
    bool rV { false };
    std::string lineStr;
-   std::ofstream file(this->fileName);
+   std::ofstream file { fileName };
 
    if (file.is_open())
    {
@@ -2172,11 +2172,13 @@ bool CanBusConfig::WriteMessageDefinition(std::string& lineStr) const
          lineStr += std::to_string(message->GetId()) + " ";
          lineStr += message->GetName() + ": "s;
          lineStr += std::to_string(message->GetSize()) + " ";
-         lineStr += message->GetMainTransmitter() + "\r\n"s;
+         lineStr += message->GetMainTransmitter() + "\n"s;
 
          WriteSignalDefinition(message, lineStr);
       }
    }
+
+   return false;
 }
 
 bool CanBusConfig::WriteSignalDefinition(CanMessage* message, std::string& lineStr) const
@@ -2190,20 +2192,23 @@ bool CanBusConfig::WriteSignalDefinition(CanMessage* message, std::string& lineS
          lineStr += signal->GetMuxIndicator() + " : "s;
          lineStr += std::to_string(signal->GetStartBit()) + "|"s;
          lineStr += std::to_string(signal->GetSize()) + "@"s;
-         lineStr += std::to_string(signal->GetByteOrderSymbol());
-         lineStr += std::to_string(signal->GetValueTypeSymbol()) + " ";
+         lineStr += (char)signal->GetByteOrderSymbol();
+         lineStr += (char)signal->GetValueTypeSymbol() + " ";
          lineStr += "(" + std::to_string(signal->GetFactor()) + ",";
          lineStr += std::to_string(signal->GetOffset()) + ") ";
          lineStr += "[" + std::to_string(signal->GetMinimum()) + "|";
          lineStr += std::to_string(signal->GetMaximum()) + "] ";
-         lineStr += "\""s + signal->GetUnit() + "\"";
+         lineStr += "\""s + signal->GetUnit() + "\" ";
          for (size_t i = 0; i < signal->GetReceiversCount(); i++)
          {
             lineStr += signal->GetReceiver(i) + " "s;
          }
-         lineStr += "\r\n";
+         lineStr += "\n";
       }
+      lineStr += "\n";
    }
+   
+   return false;
 }
 
 bool CanBusConfig::WriteNodeDefinition(std::string& lineStr) const
@@ -2216,40 +2221,42 @@ bool CanBusConfig::WriteNodeDefinition(std::string& lineStr) const
          lineStr += " "s + node->GetName();
       }
    }
-   lineStr += "\r\n\r\n";
+   lineStr += "\n\n";
+
+   return false;
 }
 
 bool CanBusConfig::WriteEnvironmentVariableDefinition(std::string& lineStr) const
 {
-
+   return false;
 }
 
 bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
 {
-
+   return false;
 }
 
 bool CanBusConfig::WriteAttributeDefinition(std::string& lineStr) const
 {
-
+   return false;
 }
 
 bool CanBusConfig::WriteAttributeDefaultDefinition(std::string& lineStr) const
 {
-
+   return false;
 }
 
 bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
 {
-
+   return false;
 }
 
 bool CanBusConfig::WriteEnvironmentVariableDataDefinition(std::string& lineStr) const
 {
-
+   return false;
 }
 
 bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
 {
-   
+   return false;
 }

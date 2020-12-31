@@ -1,11 +1,11 @@
 #include "CanMessageManager.h"
 
-void CanMessageManager::Modify(ICanBusConfig* canBusConfig, const QString& canMessageName,
-   const QString& data, uint8_t column)
+void CanMessageManager::Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
+   uint8_t column)
 {
    if (canBusConfig)
    {
-      if (auto canMessage = canBusConfig->GetMessageByName(canMessageName.toUtf8()); canMessage)
+      if (auto canMessage = canBusConfig->GetMessageByIndex(index); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {

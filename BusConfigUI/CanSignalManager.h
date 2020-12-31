@@ -59,6 +59,6 @@ public:
       constexpr static std::string_view DEFAULT = SIGNED;
    };
 
-   static void Modify(ICanBusConfig* canBusConfig, const QString& canSignalName,
-      const QString& data, uint8_t column);
+   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
+      uint8_t column);
 };
