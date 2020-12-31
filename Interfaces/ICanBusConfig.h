@@ -23,6 +23,7 @@ public:
 
    virtual bool Load(const char* fileName) = 0;
    virtual bool Save(void) const = 0;
+   virtual bool Export(const char* fileName) const = 0;
 
    virtual size_t GetNodesCount(void) const = 0;
    virtual ICanNode* GetNodeByIndex(size_t index) const = 0;

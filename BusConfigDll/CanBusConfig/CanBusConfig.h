@@ -25,6 +25,7 @@ public:
 
    bool Load(const char* fileName) override;
    bool Save(void) const override;
+   bool Export(const char* fileName) const override;
 
    size_t GetNodesCount(void) const override;
    ICanNode* GetNodeByIndex(size_t index) const override;

@@ -125,6 +125,11 @@ bool CanBusConfig::Load(const char* fileName)
 
 bool CanBusConfig::Save(void) const
 {
+   return this->Export(this->fileName.c_str());
+}
+
+bool CanBusConfig::Export(const char* fileName) const
+{
    // locals
    bool rV { false };
    std::string lineStr;
