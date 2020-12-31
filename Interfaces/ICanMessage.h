@@ -75,9 +75,16 @@ public:
    static constexpr cycle_time_t DEFAULT_CYCLE_TIME { 0 };
 
    virtual void Clear(void) = 0;
+
    virtual uint32_t GetId(void) const = 0;
+   virtual void ModifyId(uint32_t id) = 0;
+
    virtual const char* GetName(void) const = 0;
+   virtual void ModifyName(const char* name) = 0;
+
    virtual uint32_t GetSize(void) const = 0;
+   virtual void ModifySize(uint32_t) = 0;
+
    virtual const char* GetMainTransmitter(void) const = 0;
 
    virtual size_t GetSignalsCount(void) const = 0;
@@ -91,10 +98,16 @@ public:
    virtual ICanAttributeValue* GetAttributeValue(const char* attributeName) const = 0;
 
    virtual IdFormat_e GetIdFormat(void) const = 0;
+   virtual void ModifyIdFormat(IdFormat_e idFormat) = 0;
+
    virtual TxMethod_e GetTxMethod(void) const = 0;
+   virtual void ModifyTxMethod(TxMethod_e txMethod) = 0;
+
    virtual cycle_time_t GetCycleTime(void) const = 0;
+   virtual void ModifyCycleTime(cycle_time_t cycleTime) = 0;
 
    virtual const char* GetComment(void) const = 0;
+   virtual void ModifyComment(const char* comment) = 0;
 
    virtual const char* ToString(void) = 0;
 

@@ -18,7 +18,7 @@ public:
    void Clear(void) override;
 
    const char* GetName(void) const override;
-   bool ModifyName(const char* name) override;
+   void ModifyName(const char* name) override;
    void SetName(const char* name);
 
    bool IsNotMultiplexed(void) const override;

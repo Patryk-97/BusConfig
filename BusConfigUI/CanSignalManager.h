@@ -39,14 +39,24 @@ public:
 
    class ByteOrder
    {
+   public:
+      ByteOrder() = delete;
+
       constexpr static std::string_view LITTLE_ENDIAN = "Little endian";
       constexpr static std::string_view BIG_ENDIAN = "Big endian";
+
+      constexpr static std::string_view DEFAULT = LITTLE_ENDIAN;
    };
 
    class ValueType
    {
+   public:
+      ValueType() = delete;
+
       constexpr static std::string_view UNSIGNED = "Unsigned";
       constexpr static std::string_view SIGNED = "Signed";
+
+      constexpr static std::string_view DEFAULT = SIGNED;
    };
 
    static void Modify(ICanBusConfig* canBusConfig, const QString& canSignalName,

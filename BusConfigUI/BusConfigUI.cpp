@@ -15,6 +15,10 @@
 #include "ICanStringEnvVar.h"
 #include "ICanDataEnvVar.h"
 #include "CanSignalManager.h"
+#include "CanMessageManager.h"
+#include <algorithm>
+
+namespace ranges = std::ranges;
 
 DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate", "CanBusConfigInstanceDelete" };
 
@@ -542,8 +546,9 @@ void BusConfigUI::BuildCanMessageProperties(const QString& messageName)
    if (const auto message = this->canBusConfig->GetMessageByName(messageName.toUtf8()); message != nullptr)
    {
       QStringList headerLabels;
-      headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
-      headerLabels << "Comment";
+      ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels](const std::string_view property)
+         { headerLabels << property.data(); });
+
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -556,22 +561,22 @@ void BusConfigUI::BuildCanMessageProperties(const QString& messageName)
          {
             case ICanMessage::IdFormat_e::STANDARD_CAN:
             {
-               return "CAN Standard";
+               return CanMessageManager::IdFormat::STANDARD_CAN.data();
             }
             case ICanMessage::IdFormat_e::EXTENDED_CAN:
             {
-               return "CAN Extended";
+               return CanMessageManager::IdFormat::EXTENDED_CAN.data();
             }
             case ICanMessage::IdFormat_e::STANDARD_CAN_FD:
             {
-               return "CAN FD Standard";
+               return CanMessageManager::IdFormat::STANDARD_CAN_FD.data();
             }
             case ICanMessage::IdFormat_e::EXTENDED_CAN_FD:
             {
-               return "CAN FD Extended";
+               return CanMessageManager::IdFormat::EXTENDED_CAN_FD.data();
             }
          }
-         return ICanMessage::IdFormat::DEFAULT;
+         return CanMessageManager::IdFormat::DEFAULT.data();
       });
 
       const QString txMethod = std::invoke([&message]() -> QString
@@ -598,7 +603,7 @@ void BusConfigUI::BuildCanMessageProperties(const QString& messageName)
          return ICanMessage::TxMethod::DEFAULT;
       });
 
-      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ idFormat + "\nfdfdfdf\n" });
+      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ idFormat });
       this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(message->GetSize()) });
       this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ txMethod });
       this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(message->GetCycleTime()) });
@@ -611,8 +616,9 @@ void BusConfigUI::BuildCanMessagesProperties(void)
 {
    size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
    QStringList headerLabels;
-   headerLabels << "Name" << "ID" << "ID-Format" << "Size (Bytes)" << "Tx Method" << "Cycle Time";
-   headerLabels << "Comment";
+   ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels] (const std::string_view property)
+      { headerLabels << property.data(); });
+
    this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
@@ -631,28 +637,28 @@ void BusConfigUI::BuildCanMessagesProperties(void)
             this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toHexQString(message->GetId()) });
          }
 
-         const QString idFormat = std::invoke([&message]() -> QString
+         const QString idFormat = std::invoke([&message] () -> QString
          {
             switch (message->GetIdFormat())
             {
-               case ICanMessage::IdFormat_e::STANDARD_CAN:
-               {
-                  return "CAN Standard";
-               }
-               case ICanMessage::IdFormat_e::EXTENDED_CAN:
-               {
-                  return "CAN Extended";
-               }
-               case ICanMessage::IdFormat_e::STANDARD_CAN_FD:
-               {
-                  return "CAN FD Standard";
-               }
-               case ICanMessage::IdFormat_e::EXTENDED_CAN_FD:
-               {
-                  return "CAN FD Extended";
-               }
+            case ICanMessage::IdFormat_e::STANDARD_CAN:
+            {
+               return CanMessageManager::IdFormat::STANDARD_CAN.data();
             }
-            return "CAN Standard";
+            case ICanMessage::IdFormat_e::EXTENDED_CAN:
+            {
+               return CanMessageManager::IdFormat::EXTENDED_CAN.data();
+            }
+            case ICanMessage::IdFormat_e::STANDARD_CAN_FD:
+            {
+               return CanMessageManager::IdFormat::STANDARD_CAN_FD.data();
+            }
+            case ICanMessage::IdFormat_e::EXTENDED_CAN_FD:
+            {
+               return CanMessageManager::IdFormat::EXTENDED_CAN_FD.data();
+            }
+            }
+            return CanMessageManager::IdFormat::DEFAULT.data();
          });
 
          const QString txMethod = std::invoke([&message]() -> QString
@@ -692,10 +698,8 @@ void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
    if (const auto signal = this->canBusConfig->GetSignalByName(signalName.toUtf8()); signal != nullptr)
    {
       QStringList headerLabels;
-      for (const auto& property : CanSignalManager::PROPERTIES)
-      {
-         headerLabels << property.data();
-      }
+      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](const std::string_view property)
+         { headerLabels << property.data(); });
 
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
@@ -708,19 +712,28 @@ void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
       {
          if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
          {
-            return "Big endian";
+            return CanSignalManager::ByteOrder::BIG_ENDIAN.data();
          }
-         return "Little endian";
+         else if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
+         {
+            return CanSignalManager::ByteOrder::LITTLE_ENDIAN.data();
+         }
+         return CanSignalManager::ByteOrder::DEFAULT.data();
       });
 
       const QString valueType = std::invoke([&signal]
       {
          if (signal->GetValueType() == ICanSignal::IValueType_e::UNSIGNED_TYPE)
          {
-            return "Unsigned";
+            return CanSignalManager::ValueType::UNSIGNED.data();
          }
-         return "Signed";
+         else if (signal->GetValueType() == ICanSignal::IValueType_e::SIGNED_TYPE)
+         {
+            return CanSignalManager::ValueType::SIGNED.data();
+         }
+         return CanSignalManager::ValueType::DEFAULT.data();
       });
+
       const QString valueTableName = std::invoke([&signal]
       {
          if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable != nullptr)
@@ -746,10 +759,8 @@ void BusConfigUI::BuildCanSignalsProperties(void)
 {
    size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
    QStringList headerLabels;
-   for (const auto& property : CanSignalManager::PROPERTIES)
-   {
-      headerLabels << property.data();
-   }
+   ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](const std::string_view property)
+      { headerLabels << property.data(); });
 
    this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
@@ -767,19 +778,28 @@ void BusConfigUI::BuildCanSignalsProperties(void)
          {
             if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
             {
-               return "Big endian";
+               return CanSignalManager::ByteOrder::BIG_ENDIAN.data();
             }
-            return "Little endian";
+            else if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
+            {
+               return CanSignalManager::ByteOrder::LITTLE_ENDIAN.data();
+            }
+            return CanSignalManager::ByteOrder::DEFAULT.data();
          });
 
          const QString valueType = std::invoke([&signal]
          {
             if (signal->GetValueType() == ICanSignal::IValueType_e::UNSIGNED_TYPE)
             {
-               return "Unsigned";
+               return CanSignalManager::ValueType::UNSIGNED.data();
             }
-            return "Signed";
+            else if (signal->GetValueType() == ICanSignal::IValueType_e::SIGNED_TYPE)
+            {
+               return CanSignalManager::ValueType::SIGNED.data();
+            }
+            return CanSignalManager::ValueType::DEFAULT.data();
          });
+
          const QString valueTableName = std::invoke([&signal]
          {
             if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable != nullptr)
@@ -788,6 +808,7 @@ void BusConfigUI::BuildCanSignalsProperties(void)
             }
             return "";
          });
+
          this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ byteOrder });
          this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ valueType });
          this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(signal->GetFactor()) });

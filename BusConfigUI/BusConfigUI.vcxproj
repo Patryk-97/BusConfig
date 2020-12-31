@@ -102,6 +102,8 @@
     <QtUic Include="BusConfigUI.ui" />
     <QtMoc Include="BusConfigUI.h" />
     <ClCompile Include="BusConfigUI.cpp" />
+    <ClCompile Include="CanMessageManager.cpp" />
+    <ClCompile Include="CanSignalManager.cpp" />
     <ClCompile Include="CommunicationMatrix.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="CommunicationMatrix.ui" />
@@ -109,6 +111,8 @@
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <ClInclude Include="CanMessageManager.h" />
+    <ClInclude Include="CanSignalManager.h" />
     <ClInclude Include="ICanManager.h" />
     <QtMoc Include="CommunicationMatrix.h" />
     <ClInclude Include="ICanAttributeManager.h" />

@@ -29,6 +29,11 @@ uint32_t CanMessage::GetId(void) const
    return this->id;
 }
 
+void CanMessage::ModifyId(uint32_t id)
+{
+   this->id = id;
+}
+
 void CanMessage::SetId(uint32_t id)
 {
    this->id = id;
@@ -39,6 +44,11 @@ const char* CanMessage::GetName(void) const
    return this->name.c_str();
 }
 
+void CanMessage::ModifyName(const char* name)
+{
+   this->name = name;
+}
+
 void CanMessage::SetName(const char* name)
 {
    this->name = name;
@@ -47,6 +57,11 @@ void CanMessage::SetName(const char* name)
 uint32_t CanMessage::GetSize(void) const
 {
    return this->size;
+}
+
+void CanMessage::ModifySize(uint32_t size)
+{
+   this->size = size;
 }
 
 void CanMessage::SetSize(uint32_t size)
@@ -113,6 +128,11 @@ ICanMessage::IdFormat_e CanMessage::GetIdFormat(void) const
    return this->idFormat;
 }
 
+void CanMessage::ModifyIdFormat(IdFormat_e idFormat)
+{
+   this->idFormat = idFormat;
+}
+
 void CanMessage::SetIdFormat(IdFormat_e idFormat)
 {
    this->idFormat = idFormat;
@@ -121,6 +141,11 @@ void CanMessage::SetIdFormat(IdFormat_e idFormat)
 ICanMessage::TxMethod_e CanMessage::GetTxMethod(void) const
 {
    return this->txMethod;
+}
+
+void CanMessage::ModifyTxMethod(TxMethod_e txMethod)
+{
+   this->txMethod = txMethod;
 }
 
 void CanMessage::SetTxMethod(TxMethod_e txMethod)
@@ -133,6 +158,11 @@ ICanMessage::cycle_time_t CanMessage::GetCycleTime(void) const
    return this->cycleTime;
 }
 
+void CanMessage::ModifyCycleTime(cycle_time_t cycleTime)
+{
+   this->cycleTime = cycleTime;
+}
+
 void CanMessage::SetCycleTime(cycle_time_t cycleTime)
 {
    this->cycleTime = cycleTime;
@@ -141,6 +171,11 @@ void CanMessage::SetCycleTime(cycle_time_t cycleTime)
 const char* CanMessage::GetComment(void) const
 {
    return this->comment.c_str();
+}
+
+void CanMessage::ModifyComment(const char* comment)
+{
+   this->comment = comment;
 }
 
 void CanMessage::SetComment(const char* comment)

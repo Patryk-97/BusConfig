@@ -37,7 +37,7 @@ public:
    virtual void Clear(void) = 0;
 
    virtual const char* GetName(void) const = 0;
-   virtual bool ModifyName(const char* name) = 0;
+   virtual void ModifyName(const char* name) = 0;
 
    virtual bool IsNotMultiplexed(void) const = 0;
    virtual bool IsMultiplexerSwitch(void) const = 0;

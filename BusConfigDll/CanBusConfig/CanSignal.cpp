@@ -42,7 +42,7 @@ const char* CanSignal::GetName(void) const
    return this->name.c_str();
 }
 
-bool CanSignal::ModifyName(const char* name)
+void CanSignal::ModifyName(const char* name)
 {
    this->name = name;
 }

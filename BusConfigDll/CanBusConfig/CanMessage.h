@@ -15,13 +15,16 @@ public:
    void Clear(void);
 
    uint32_t GetId(void) const;
+   void ModifyId(uint32_t id) override;
    void SetId(uint32_t messageId);
 
    const char* GetName(void) const;
-   void SetName(const char* messageName);
+   void ModifyName(const char* name) override;
+   void SetName(const char* name);
 
    uint32_t GetSize(void) const;
-   void SetSize(uint32_t messageSize);
+   void ModifySize(uint32_t) override;
+   void SetSize(uint32_t size);
 
    const char* GetMainTransmitter(void) const;
    void SetMainTransmitter(const char* mainTransmitter);
@@ -38,15 +41,19 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    IdFormat_e GetIdFormat(void) const override;
+   void ModifyIdFormat(IdFormat_e idFormat) override;
    void SetIdFormat(IdFormat_e idFormat);
 
    TxMethod_e GetTxMethod(void) const override;
+   void ModifyTxMethod(TxMethod_e txMethod) override;
    void SetTxMethod(TxMethod_e txMethod);
 
    cycle_time_t GetCycleTime(void) const override;
+   void ModifyCycleTime(cycle_time_t cycleTime) override;
    void SetCycleTime(cycle_time_t cycleTime);
 
    const char* GetComment(void) const override;
+   void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
    const char* ToString(void) override;
