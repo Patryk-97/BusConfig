@@ -95,6 +95,11 @@ ICanSignal* CanMessage::GetSignalByIndex(size_t index) const
    return (index < this->signals.size() ? this->signals[index] : nullptr);
 }
 
+std::vector<CanSignal*> CanMessage::GetSignals(void)
+{
+   return this->signals;
+}
+
 void CanMessage::AddSignal(CanSignal* signal)
 {
    if (signal)

@@ -56,12 +56,13 @@ const char* CanBusConfig::GetLog(void) const
    return this->log.c_str();
 }
 
-bool CanBusConfig::Load(const char* filename)
+bool CanBusConfig::Load(const char* fileName)
 {
    // locals
    bool rV { false };
    LineData_t lineData;
-   std::ifstream file(filename);
+   std::ifstream file(fileName);
+   this->fileName = fileName;
 
    if (file.is_open())
    {
@@ -117,6 +118,31 @@ bool CanBusConfig::Load(const char* filename)
    if (rV)
    {
       this->SetMainAttributes();
+   }
+
+   return rV;
+}
+
+bool CanBusConfig::Save(void) const
+{
+   // locals
+   bool rV { false };
+   std::string lineStr;
+   std::ofstream file(this->fileName);
+
+   if (file.is_open())
+   {
+      rV = true;
+
+      this->WriteNodeDefinition(lineStr); file << lineStr;
+      this->WriteMessageDefinition(lineStr); file << lineStr;
+      this->WriteEnvironmentVariableDefinition(lineStr); file << lineStr;
+      this->WriteValueTableDefinition(lineStr); file << lineStr;
+      this->WriteAttributeDefinition(lineStr); file << lineStr;
+      this->WriteAttributeDefaultDefinition(lineStr); file << lineStr;
+      this->WriteAttributeValueDefinition(lineStr); file << lineStr;
+      this->WriteEnvironmentVariableDataDefinition(lineStr); file << lineStr;
+      this->WriteCommentDefinition(lineStr); file << lineStr;
    }
 
    return rV;
@@ -2129,4 +2155,96 @@ void CanBusConfig::SetMainAttributes(void)
          }
       }
    }
+}
+
+bool CanBusConfig::WriteMessageDefinition(std::string& lineStr) const
+{
+   for (const auto& message : this->messages)
+   {
+      if (message)
+      {
+         lineStr += DBC_KEYWORD_MESSAGE.data() + " "s;
+         lineStr += std::to_string(message->GetId()) + " ";
+         lineStr += message->GetName() + ": "s;
+         lineStr += std::to_string(message->GetSize()) + " ";
+         lineStr += message->GetMainTransmitter() + "\r\n"s;
+
+         WriteSignalDefinition(message, lineStr);
+      }
+   }
+}
+
+bool CanBusConfig::WriteSignalDefinition(CanMessage* message, std::string& lineStr) const
+{
+   if (message)
+   {
+      for (const auto& signal : message->GetSignals())
+      {
+         lineStr += " "s + DBC_KEYWORD_SIGNAL.data() + " ";
+         lineStr += signal->GetName() + " "s;
+         lineStr += signal->GetMuxIndicator() + " : "s;
+         lineStr += std::to_string(signal->GetStartBit()) + "|"s;
+         lineStr += std::to_string(signal->GetSize()) + "@"s;
+         lineStr += std::to_string(signal->GetByteOrderSymbol());
+         lineStr += std::to_string(signal->GetValueTypeSymbol()) + " ";
+         lineStr += "(" + std::to_string(signal->GetFactor()) + ",";
+         lineStr += std::to_string(signal->GetOffset()) + ") ";
+         lineStr += "[" + std::to_string(signal->GetMinimum()) + "|";
+         lineStr += std::to_string(signal->GetMaximum()) + "] ";
+         lineStr += "\""s + signal->GetUnit() + "\"";
+         for (size_t i = 0; i < signal->GetReceiversCount(); i++)
+         {
+            lineStr += signal->GetReceiver(i) + " "s;
+         }
+         lineStr += "\r\n";
+      }
+   }
+}
+
+bool CanBusConfig::WriteNodeDefinition(std::string& lineStr) const
+{
+   lineStr += NODE_DEFINITION_HEADER.data();
+   for (const auto& node : this->nodes)
+   {
+      if (node)
+      {
+         lineStr += " "s + node->GetName();
+      }
+   }
+   lineStr += "\r\n\r\n";
+}
+
+bool CanBusConfig::WriteEnvironmentVariableDefinition(std::string& lineStr) const
+{
+
+}
+
+bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
+{
+
+}
+
+bool CanBusConfig::WriteAttributeDefinition(std::string& lineStr) const
+{
+
+}
+
+bool CanBusConfig::WriteAttributeDefaultDefinition(std::string& lineStr) const
+{
+
+}
+
+bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
+{
+
+}
+
+bool CanBusConfig::WriteEnvironmentVariableDataDefinition(std::string& lineStr) const
+{
+
+}
+
+bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
+{
+   
 }

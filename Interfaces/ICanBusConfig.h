@@ -20,7 +20,9 @@ protected:
 public:
    virtual void Clear(void) = 0;
    virtual const char* GetLog(void) const = 0;
-   virtual bool Load(const char* filename) = 0;
+
+   virtual bool Load(const char* fileName) = 0;
+   virtual bool Save(void) const = 0;
 
    virtual size_t GetNodesCount(void) const = 0;
    virtual ICanNode* GetNodeByIndex(size_t index) const = 0;

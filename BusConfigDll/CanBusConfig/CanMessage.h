@@ -32,6 +32,7 @@ public:
    size_t GetSignalsCount(void) const override;
    ICanSignal* GetSignalByName(const char* name) const override;
    ICanSignal* GetSignalByIndex(size_t index) const override;
+   std::vector<CanSignal*> GetSignals(void);
    void AddSignal(CanSignal* signal);
 
    size_t GetAttributesCount(void) const override;
