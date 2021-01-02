@@ -29,9 +29,9 @@ public:
 
    enum class IValueType_e
    {
-      UNDEFINED_TYPE = 0,
-      UNSIGNED_TYPE = 1,
-      SIGNED_TYPE = 2
+      UNDEFINED_TYPE = -1,
+      UNSIGNED_TYPE = 0,
+      SIGNED_TYPE = 1
    };
 
    virtual void Clear(void) = 0;

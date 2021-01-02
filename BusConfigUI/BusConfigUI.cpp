@@ -17,6 +17,8 @@
 #include "CanSignalManager.h"
 #include "CanMessageManager.h"
 #include <algorithm>
+#include <qlocale.h>
+#include "LineEditFactory.h"
 
 namespace ranges = std::ranges;
 
@@ -63,6 +65,9 @@ BusConfigUI::BusConfigUI(QWidget *parent)
 
     if (LoadBusConfigDll())
     {
+       QLocale englishLocale { QLocale::English, QLocale::UnitedKingdom };
+       QLocale::setDefault(englishLocale);
+
        this->AddLog("Successfully loaded BusConfigDll.dll");
        this->setWindowState(Qt::WindowMaximized);
        this->canBusConfig = dllLoader.pfCreate();
@@ -241,9 +246,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
 }
 
 void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
-{
-   size_t itemIndex = (size_t)-1;
-   
+{   
    if (this->isTableWidgetFilled)
    {
       const int row = item->row();
@@ -279,6 +282,40 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
 
 }
 
+void BusConfigUI::on_tableWidget_Properties_cellChanged(int row, int column)
+{
+   if (this->isTableWidgetFilled)
+   {
+      const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
+      const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+
+      if (itemType == "CanMessage")
+      {
+         CanMessageManager::Modify(this->canBusConfig, row, data, column);
+      }
+      else if (itemType == "CanMessages")
+      {
+         CanMessageManager::Modify(this->canBusConfig, row, data, column);
+      }
+      else if (itemType == "CanSignal")
+      {
+         CanSignalManager::Modify(this->canBusConfig, row, data, column);
+      }
+      else if (itemType == "CanSignals")
+      {
+         CanSignalManager::Modify(this->canBusConfig, row, data, column);
+      }
+      else if (itemType == "CanEnvironmentVariable")
+      {
+         //this->BuildCanEnvironmentVariableProperties(text);
+      }
+      else if (itemType == "CanEnvironmentVariables")
+      {
+         //this->BuildCanEnvironmentVariablesProperties();
+      }
+   }
+}
+
 // menu for right click for table widget
 void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
 {
@@ -292,8 +329,9 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
    itemMenu->addAction(itemMenuEntry);
 
    const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+   const int row = item->row();
 
-   connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row = item->row()]
+   connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row]
    {
       QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
       if (itemType == "CanMessage")
@@ -341,7 +379,6 @@ bool BusConfigUI::LoadFile(const QString& fileName)
    {
       this->AddLog(QString{ "Ldf bus configuration file has not supported yet." });
    }
-
 
    return rV;
 }
@@ -711,34 +748,19 @@ void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
       this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ this->icons[Icon_e::SIGNAL], signal->GetName() });
-      this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
-      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ toQString(signal->GetSize()) });
+      
+      auto lineEditStartBit = LineEditFactory::CreateIntLineEdit(toQString(signal->GetStartBit()), this->ui.tableWidget_Properties,
+         0, 1);
+      auto lineEditSize = LineEditFactory::CreateIntLineEdit(toQString(signal->GetSize()), this->ui.tableWidget_Properties,
+         0, 2);
+      
+      this->ui.tableWidget_Properties->setCellWidget(0, 1, lineEditStartBit);
+      this->ui.tableWidget_Properties->setCellWidget(0, 2, lineEditSize);
 
-      const QString byteOrder = std::invoke([&signal]
-      {
-         if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
-         {
-            return CanSignalManager::ByteOrder::BIG_ENDIAN.data();
-         }
-         else if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
-         {
-            return CanSignalManager::ByteOrder::LITTLE_ENDIAN.data();
-         }
-         return CanSignalManager::ByteOrder::DEFAULT.data();
-      });
-
-      const QString valueType = std::invoke([&signal]
-      {
-         if (signal->GetValueType() == ICanSignal::IValueType_e::UNSIGNED_TYPE)
-         {
-            return CanSignalManager::ValueType::UNSIGNED.data();
-         }
-         else if (signal->GetValueType() == ICanSignal::IValueType_e::SIGNED_TYPE)
-         {
-            return CanSignalManager::ValueType::SIGNED.data();
-         }
-         return CanSignalManager::ValueType::DEFAULT.data();
-      });
+      int pos = static_cast<int>(signal->GetByteOrder()); if (pos == -1) pos = 0;
+      const QString byteOrder = CanSignalManager::BYTE_ORDERS[pos].data();
+      pos = static_cast<int>(signal->GetByteOrder()); if (pos == -1) pos = 0;
+      const QString valueType = CanSignalManager::VALUE_TYPES[pos].data();
 
       const QString valueTableName = std::invoke([&signal]
       {
@@ -750,10 +772,26 @@ void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
       });
       this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ byteOrder });
       this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ valueType });
+      
+      /*auto lineEditFactor = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetFactor()), this->ui.tableWidget_Properties,
+         0, 5);
+      auto lineEditOffset = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetOffset()), this->ui.tableWidget_Properties,
+         0, 6);
+      auto lineEditMinimum = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetMinimum()), this->ui.tableWidget_Properties,
+         0, 7);
+      auto lineEditMaximum = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetMaximum()), this->ui.tableWidget_Properties,
+         0, 8);
+
+      this->ui.tableWidget_Properties->setCellWidget(0, 5, lineEditFactor);
+      this->ui.tableWidget_Properties->setCellWidget(0, 6, lineEditOffset);
+      this->ui.tableWidget_Properties->setCellWidget(0, 7, lineEditMinimum);
+      this->ui.tableWidget_Properties->setCellWidget(0, 8, lineEditMaximum); */
+
       this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(signal->GetFactor()) });
       this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ toQString(signal->GetOffset()) });
       this->ui.tableWidget_Properties->setItem(0, 7, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
       this->ui.tableWidget_Properties->setItem(0, 8, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
+
       this->ui.tableWidget_Properties->setItem(0, 9, new QTableWidgetItem{ signal->GetUnit() });
       this->ui.tableWidget_Properties->setItem(0, 10, new QTableWidgetItem{ valueTableName });
       this->ui.tableWidget_Properties->setItem(0, 11, new QTableWidgetItem{ signal->GetComment() });
@@ -780,47 +818,42 @@ void BusConfigUI::BuildCanSignalsProperties(void)
          this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
          this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ toQString(signal->GetSize()) });
 
-         const QString byteOrder = std::invoke([&signal]
-         {
-            if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
-            {
-               return CanSignalManager::ByteOrder::BIG_ENDIAN.data();
-            }
-            else if (signal->GetByteOrder() == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
-            {
-               return CanSignalManager::ByteOrder::LITTLE_ENDIAN.data();
-            }
-            return CanSignalManager::ByteOrder::DEFAULT.data();
-         });
-
-         const QString valueType = std::invoke([&signal]
-         {
-            if (signal->GetValueType() == ICanSignal::IValueType_e::UNSIGNED_TYPE)
-            {
-               return CanSignalManager::ValueType::UNSIGNED.data();
-            }
-            else if (signal->GetValueType() == ICanSignal::IValueType_e::SIGNED_TYPE)
-            {
-               return CanSignalManager::ValueType::SIGNED.data();
-            }
-            return CanSignalManager::ValueType::DEFAULT.data();
-         });
+         int pos = static_cast<int>(signal->GetByteOrder()); if (pos == -1) pos = 0;
+         const QString byteOrder = CanSignalManager::BYTE_ORDERS[pos].data();
+         pos = static_cast<int>(signal->GetByteOrder()); if (pos == -1) pos = 0;
+         const QString valueType = CanSignalManager::VALUE_TYPES[pos].data();
 
          const QString valueTableName = std::invoke([&signal]
          {
-            if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable != nullptr)
+            if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable)
             {
                return valueTable->GetName();
             }
             return "";
          });
 
-         this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ byteOrder });
-         this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ valueType });
-         this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(signal->GetFactor()) });
+         this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem { byteOrder });
+         this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem { valueType });
+
+         /*auto lineEditFactor = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetFactor()), this->ui.tableWidget_Properties,
+            0, 5);
+         auto lineEditOffset = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetOffset()), this->ui.tableWidget_Properties,
+            0, 6);
+         auto lineEditMinimum = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetMinimum()), this->ui.tableWidget_Properties,
+            0, 7);
+         auto lineEditMaximum = LineEditFactory::CreateDoubleLineEdit(toQString(signal->GetMaximum()), this->ui.tableWidget_Properties,
+            0, 8);
+
+         this->ui.tableWidget_Properties->setCellWidget(i, 5, lineEditFactor);
+         this->ui.tableWidget_Properties->setCellWidget(i, 6, lineEditOffset);
+         this->ui.tableWidget_Properties->setCellWidget(i, 7, lineEditMinimum);
+         this->ui.tableWidget_Properties->setCellWidget(i, 8, lineEditMaximum);*/
+
+         this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem { toQString(signal->GetFactor()) });
          this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ toQString(signal->GetOffset()) });
          this->ui.tableWidget_Properties->setItem(i, 7, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
          this->ui.tableWidget_Properties->setItem(i, 8, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
+
          this->ui.tableWidget_Properties->setItem(i, 9, new QTableWidgetItem{ signal->GetUnit() });
          this->ui.tableWidget_Properties->setItem(i, 10, new QTableWidgetItem{ valueTableName });
          this->ui.tableWidget_Properties->setItem(i, 11, new QTableWidgetItem{ signal->GetComment() });

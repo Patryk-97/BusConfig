@@ -105,6 +105,7 @@
     <ClCompile Include="CanMessageManager.cpp" />
     <ClCompile Include="CanSignalManager.cpp" />
     <ClCompile Include="CommunicationMatrix.cpp" />
+    <ClCompile Include="LineEditFactory.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="CommunicationMatrix.ui" />
   </ItemGroup>
@@ -114,6 +115,7 @@
     <ClInclude Include="CanMessageManager.h" />
     <ClInclude Include="CanSignalManager.h" />
     <ClInclude Include="ICanManager.h" />
+    <ClInclude Include="LineEditFactory.h" />
     <QtMoc Include="CommunicationMatrix.h" />
     <ClInclude Include="ICanAttributeManager.h" />
   </ItemGroup>

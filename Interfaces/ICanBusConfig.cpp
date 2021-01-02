@@ -3,13 +3,12 @@
 
 ICanBusConfig* CanBusConfigInstanceCreate(void)
 {
-   auto canBusConfig = new CanBusConfig {};
-   return canBusConfig;
+   return new CanBusConfig {};
 }
 
 bool CanBusConfigInstanceDelete(ICanBusConfig* canBusConfig)
 {
-   if (const auto instance = dynamic_cast<CanBusConfig*>(canBusConfig); instance != nullptr)
+   if (const auto instance = dynamic_cast<CanBusConfig*>(canBusConfig); instance)
    {
       delete instance;
       return true;

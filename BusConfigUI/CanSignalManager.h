@@ -4,6 +4,7 @@
 #include "ICanBusConfig.h"
 #include <string_view>
 #include <array>
+#include <qtableview.h>
 
 class CanSignalManager
 {
@@ -42,10 +43,10 @@ public:
    public:
       ByteOrder() = delete;
 
-      constexpr static std::string_view LITTLE_ENDIAN = "Little endian";
       constexpr static std::string_view BIG_ENDIAN = "Big endian";
+      constexpr static std::string_view LITTLE_ENDIAN = "Little endian";
 
-      constexpr static std::string_view DEFAULT = LITTLE_ENDIAN;
+      constexpr static std::string_view DEFAULT = BIG_ENDIAN;
    };
 
    class ValueType
@@ -56,8 +57,14 @@ public:
       constexpr static std::string_view UNSIGNED = "Unsigned";
       constexpr static std::string_view SIGNED = "Signed";
 
-      constexpr static std::string_view DEFAULT = SIGNED;
+      constexpr static std::string_view DEFAULT = UNSIGNED;
    };
+
+   const static inline std::array<std::string_view, 2> BYTE_ORDERS
+      { ByteOrder::BIG_ENDIAN.data(), ByteOrder::LITTLE_ENDIAN.data() };
+
+   const static inline std::array<std::string_view, 2> VALUE_TYPES
+      { ValueType::UNSIGNED.data(), ValueType::SIGNED.data() };
 
    static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
       uint8_t column);

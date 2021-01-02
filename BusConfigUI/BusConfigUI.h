@@ -23,6 +23,7 @@ private slots:
    void on_actionCommunication_matrix_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
    void on_tableWidget_Properties_itemChanged(QTableWidgetItem* item);
+   void on_tableWidget_Properties_cellChanged(int row, int column);
    void ShowMenuForTableWidgetItem(const QPoint& pos);
 private:
 
