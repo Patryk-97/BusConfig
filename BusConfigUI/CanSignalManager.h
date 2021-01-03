@@ -3,8 +3,9 @@
 #include <qstring.h>
 #include "ICanBusConfig.h"
 #include <string_view>
-#include <array>
 #include <qtableview.h>
+#include <qmap.h>
+#include <array>
 
 class CanSignalManager
 {
@@ -47,6 +48,12 @@ public:
       constexpr static std::string_view LITTLE_ENDIAN = "Little endian";
 
       constexpr static std::string_view DEFAULT = BIG_ENDIAN;
+
+      const static inline QMap<QString, ICanSignal::IByteOrder_e> MAP
+      {
+         { BIG_ENDIAN.data(), ICanSignal::IByteOrder_e::BIG_ENDIAN },
+         { LITTLE_ENDIAN.data(), ICanSignal::IByteOrder_e::LITTLE_ENDIAN }
+      };
    };
 
    class ValueType
@@ -58,14 +65,19 @@ public:
       constexpr static std::string_view SIGNED = "Signed";
 
       constexpr static std::string_view DEFAULT = UNSIGNED;
+
+      const static inline QMap<QString, ICanSignal::IValueType_e> MAP
+      {
+         { UNSIGNED.data(), ICanSignal::IValueType_e::UNSIGNED_TYPE },
+         { SIGNED.data(), ICanSignal::IValueType_e::SIGNED_TYPE }
+      };
    };
 
-   const static inline std::array<std::string_view, 2> BYTE_ORDERS
-      { ByteOrder::BIG_ENDIAN.data(), ByteOrder::LITTLE_ENDIAN.data() };
+   const static inline QStringList BYTE_ORDERS { ByteOrder::BIG_ENDIAN.data(), ByteOrder::LITTLE_ENDIAN.data() };
 
-   const static inline std::array<std::string_view, 2> VALUE_TYPES
-      { ValueType::UNSIGNED.data(), ValueType::SIGNED.data() };
+   const static inline QStringList VALUE_TYPES { ValueType::UNSIGNED.data(), ValueType::SIGNED.data() };
 
-   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
-      uint8_t column);
+   static bool Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
+   static QString GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column);
+   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
 };

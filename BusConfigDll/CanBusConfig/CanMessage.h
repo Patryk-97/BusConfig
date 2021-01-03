@@ -68,6 +68,18 @@ public:
       { ICanMessage::IdFormat::RESERVED,        IdFormat_e::RESERVED }
    };
 
+   static inline std::string_view GetIdFormatKey(IdFormat_e idFormat)
+   {
+      for (const auto& [key, value] : ID_FORMATS)
+      {
+         if (value == idFormat)
+         {
+            return key;
+         }
+      }
+      return std::string_view {};
+   }
+
    static const inline std::map<std::string_view, TxMethod_e> TX_METHODS
    {
       { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, TxMethod_e::NO_MSG_SEND_TYPE },
@@ -75,6 +87,18 @@ public:
       { ICanMessage::TxMethod::IF_ACTIVE,        TxMethod_e::IF_ACTIVE },
       { ICanMessage::TxMethod::NOT_USED,         TxMethod_e::NOT_USED },
    };
+
+   static inline std::string_view GetTxMethodKey(TxMethod_e txMethod)
+   {
+      for (const auto& [key, value] : TX_METHODS)
+      {
+         if (value == txMethod)
+         {
+            return key;
+         }
+      }
+      return std::string_view{};
+   }
 
 private:
    uint32_t id {};

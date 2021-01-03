@@ -2,6 +2,7 @@
 
 #include <qstring.h>
 #include "ICanBusConfig.h"
+#include <qstringlist.h>
 #include <string_view>
 #include <array>
 
@@ -44,6 +45,13 @@ public:
       constexpr static std::string_view DEFAULT = STANDARD_CAN;
    };
 
-   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data,
-      uint8_t column);
+   const static inline QStringList ID_FORMATS { IdFormat::STANDARD_CAN.data(), IdFormat::EXTENDED_CAN.data(),
+      IdFormat::STANDARD_CAN_FD.data(), IdFormat::EXTENDED_CAN_FD.data() };
+
+   const static inline QStringList TX_METHODS { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod::CYCLIC,
+      ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod::NOT_USED };
+
+   static bool Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
+   static QString GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column);
+   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
 };

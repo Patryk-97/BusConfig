@@ -42,7 +42,9 @@ private:
    void BuildCanEnvironmentVariablesProperties(void);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
+   auto Find(const QString& itemName);
    void RemoveFromTreeWidget(const QString& itemName);
+   void ChangeTreeWidgetItemName(const QString& itemName, const QString& newItemName);
 
    template <std::integral Integral>
    inline void RemoveCanMessage(const Integral& integral)

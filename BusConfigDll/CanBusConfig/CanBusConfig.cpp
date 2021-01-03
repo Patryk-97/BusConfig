@@ -2193,8 +2193,8 @@ bool CanBusConfig::WriteSignalDefinition(CanMessage* message, std::string& lineS
          lineStr += std::to_string(signal->GetStartBit()) + "|"s;
          lineStr += std::to_string(signal->GetSize()) + "@"s;
          lineStr += (char)signal->GetByteOrderSymbol();
-         lineStr += (char)signal->GetValueTypeSymbol() + " ";
-         lineStr += "(" + std::to_string(signal->GetFactor()) + ",";
+         lineStr += (char)signal->GetValueTypeSymbol();
+         lineStr += " (" + std::to_string(signal->GetFactor()) + ",";
          lineStr += std::to_string(signal->GetOffset()) + ") ";
          lineStr += "[" + std::to_string(signal->GetMinimum()) + "|";
          lineStr += std::to_string(signal->GetMaximum()) + "] ";

@@ -1,6 +1,7 @@
 #include "CanMessage.h"
 #include <algorithm>
 #include "helpers.h"
+#include "CanAttributeManager.h"
 
 namespace ranges = std::ranges;
 
@@ -135,7 +136,14 @@ ICanMessage::IdFormat_e CanMessage::GetIdFormat(void) const
 
 void CanMessage::ModifyIdFormat(IdFormat_e idFormat)
 {
-   this->idFormat = idFormat;
+   if (this->idFormat != idFormat)
+   {
+      this->idFormat = idFormat;
+      const auto key = GetIdFormatKey(idFormat).data();
+      const auto attribute = this->GetAttributeByName(ICanMessage::ID_FORMAT);
+      auto attributeValue = this->GetAttributeValue(attribute->GetName());
+      CanAttributeManager::SetValue(attributeValue, key);
+   }
 }
 
 void CanMessage::SetIdFormat(IdFormat_e idFormat)
@@ -150,7 +158,14 @@ ICanMessage::TxMethod_e CanMessage::GetTxMethod(void) const
 
 void CanMessage::ModifyTxMethod(TxMethod_e txMethod)
 {
-   this->txMethod = txMethod;
+   if (this->txMethod != txMethod)
+   {
+      this->txMethod = txMethod;
+      const auto key = GetTxMethodKey(txMethod).data();
+      const auto attribute = this->GetAttributeByName(ICanMessage::TX_METHOD);
+      auto attributeValue = this->GetAttributeValue(attribute->GetName());
+      CanAttributeManager::SetValue(attributeValue, key);
+   }
 }
 
 void CanMessage::SetTxMethod(TxMethod_e txMethod)

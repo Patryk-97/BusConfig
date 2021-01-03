@@ -104,6 +104,7 @@
     <ClCompile Include="BusConfigUI.cpp" />
     <ClCompile Include="CanMessageManager.cpp" />
     <ClCompile Include="CanSignalManager.cpp" />
+    <ClCompile Include="ComboDelegate.cpp" />
     <ClCompile Include="CommunicationMatrix.cpp" />
     <ClCompile Include="LineEditFactory.cpp" />
     <ClCompile Include="main.cpp" />
@@ -114,6 +115,8 @@
     <ClInclude Include="..\Utils\helpers.h" />
     <ClInclude Include="CanMessageManager.h" />
     <ClInclude Include="CanSignalManager.h" />
+    <ClInclude Include="ComboDelegate.h" />
+    <ClInclude Include="Conversions.h" />
     <ClInclude Include="ICanManager.h" />
     <ClInclude Include="LineEditFactory.h" />
     <QtMoc Include="CommunicationMatrix.h" />

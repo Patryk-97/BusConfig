@@ -153,6 +153,7 @@ ICanSignal::IByteOrder_e CanSignal::GetByteOrder(void) const
 void CanSignal::ModifyByteOrder(IByteOrder_e byteOrder)
 {
    this->byteOrder = byteOrder;
+   this->byteOrderSymbol = (byteOrder == IByteOrder_e::BIG_ENDIAN ? '0' : '1');
 }
 
 uint8_t CanSignal::GetByteOrderSymbol(void) const
@@ -182,6 +183,7 @@ ICanSignal::IValueType_e CanSignal::GetValueType(void) const
 void CanSignal::ModifyValueType(IValueType_e valueType)
 {
    this->valueType = valueType;
+   this->valueTypeSymbol = (valueType == IValueType_e::UNSIGNED_TYPE ? '+' : '-');
 }
 
 uint8_t CanSignal::GetValueTypeSymbol(void) const
