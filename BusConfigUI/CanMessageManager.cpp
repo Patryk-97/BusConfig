@@ -172,7 +172,7 @@ void CanMessageManager::Modify(ICanBusConfig* canBusConfig, size_t index, const 
                }
                case ID_FORMAT_POS:
                {
-
+                  canMessage->ModifyIdFormat(IdFormat::MAP[data.toUtf8().data()]);
                   break;
                }
                case SIZE_POS:
@@ -182,7 +182,7 @@ void CanMessageManager::Modify(ICanBusConfig* canBusConfig, size_t index, const 
                }
                case TX_METHOD_POS:
                {
-
+                  canMessage->ModifyTxMethod(TxMethod::MAP[data.toUtf8().data()]);
                   break;
                }
                case CYCLE_TIME_POS:

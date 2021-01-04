@@ -5,6 +5,7 @@
 #include <qstringlist.h>
 #include <string_view>
 #include <array>
+#include <qmap.h>
 
 class CanMessageManager
 {
@@ -43,6 +44,28 @@ public:
       constexpr static std::string_view EXTENDED_CAN_FD = "CAN FD Extended";
 
       constexpr static std::string_view DEFAULT = STANDARD_CAN;
+
+      const static inline QMap<std::string_view, ICanMessage::IdFormat_e> MAP
+      {
+         { STANDARD_CAN, ICanMessage::IdFormat_e::STANDARD_CAN },
+         { EXTENDED_CAN, ICanMessage::IdFormat_e::EXTENDED_CAN },
+         { STANDARD_CAN_FD, ICanMessage::IdFormat_e::STANDARD_CAN_FD },
+         { EXTENDED_CAN_FD, ICanMessage::IdFormat_e::EXTENDED_CAN_FD },
+      };
+   };
+
+   class TxMethod
+   {
+   public:
+      TxMethod() = delete;
+
+      const static inline QMap<std::string_view, ICanMessage::TxMethod_e> MAP
+      {
+         { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod_e::NO_MSG_SEND_TYPE },
+         { ICanMessage::TxMethod::CYCLIC, ICanMessage::TxMethod_e::CYCLIC },
+         { ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod_e::IF_ACTIVE },
+         { ICanMessage::TxMethod::NOT_USED, ICanMessage::TxMethod_e::NOT_USED },
+      };
    };
 
    const static inline QStringList ID_FORMATS { IdFormat::STANDARD_CAN.data(), IdFormat::EXTENDED_CAN.data(),
