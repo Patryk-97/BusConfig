@@ -64,10 +64,12 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->icons[Icon_e::SIGNAL] = QIcon{ ":/BusConfigUI/Icons/signal.png" };
        this->icons[Icon_e::NETWORK_NODE] = QIcon{ ":/BusConfigUI/Icons/network-node.png" };
        this->icons[Icon_e::NETWORK] = QIcon{ ":/BusConfigUI/Icons/network.png" };
+       this->icons[Icon_e::ENVIRONMENT_VARIABLE] = QIcon{ ":/BusConfigUI/Icons/environment-variable.png" };
+       this->icons[Icon_e::VALUE_TABLE] = QIcon{ ":/BusConfigUI/Icons/value-table.png" };
+       this->icons[Icon_e::ATTRIBUTES] = QIcon{ ":/BusConfigUI/Icons/attributes-list.png" };
        this->icons[Icon_e::HEX] = QIcon{ ":/BusConfigUI/Icons/hex.ico" };
        this->icons[Icon_e::DEC] = QIcon{ ":/BusConfigUI/Icons/dec.ico" };
        this->icons[Icon_e::COMMUNICATION_MATRIX] = QIcon{ ":/BusConfigUI/Icons/communication-matrix.png" };
-       this->icons[Icon_e::ENVIRONMENT_VARIABLE] = QIcon{ ":/BusConfigUI/Icons/environment-variable.png" };
 
        foreach(QToolButton * button, ui.mainToolBar->findChildren<QToolButton*>())
        {
@@ -177,7 +179,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
    this->ui.tableWidget_Properties->setColumnCount(0);
    this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
 
-   if (current != nullptr)
+   if (current)
    {
       const auto text = current->text(0);
       const auto itemType = current->whatsThis(0);
@@ -187,43 +189,47 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
 
       this->ui.tableWidget_Properties->setWhatsThis(itemType);
 
-      if (itemType == "CanMessage")
+      if (itemType == ItemId::CAN_MESSAGE.data())
       {
          this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
          this->BuildCanMessageProperties(text);
       }
-      else if (itemType == "CanMessages")
+      else if (itemType == ItemId::CAN_MESSAGES.data())
       {
          this->BuildCanMessagesProperties();
       }
-      else if (itemType == "CanSignal")
+      else if (itemType == ItemId::CAN_SIGNAL.data())
       {
          this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
          this->BuildCanSignalProperties(text);
       }
-      else if (itemType == "CanSignals")
+      else if (itemType == ItemId::CAN_SIGNALS.data())
       {
          this->BuildCanSignalsProperties();
       }
-      else if (itemType == "CanEnvironmentVariable")
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
       {
          this->BuildCanEnvironmentVariableProperties(text);
       }
-      else if (itemType == "CanEnvironmentVariables")
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
       {
          this->BuildCanEnvironmentVariablesProperties();
       }
-      else if (itemType == "Attributes" && parentItemType == "CanSignal")
+      else if (itemType == ItemId::VALUE_TABLE.data())
+      {
+         this->BuildCanValueTableProperties(parentItemType, parentText);
+      }
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_SIGNAL.data())
       {
          const auto canSignal = this->canBusConfig->GetSignalByName(parentText.toUtf8());
          this->BuildAttributesProperties(canSignal);
       }
-      else if (itemType == "Attributes" && parentItemType == "CanMessage")
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_MESSAGE.data())
       {
          const auto canMessage = this->canBusConfig->GetMessageByName(parentText.toUtf8());
          this->BuildAttributesProperties(canMessage);
       }
-      else if (itemType == "Attributes" && parentItemType == "CanNetworkNode")
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_NETWORK_NODE.data())
       {
          const auto canNetworkNode = this->canBusConfig->GetNodeByName(parentText.toUtf8());
          this->BuildAttributesProperties(canNetworkNode);
@@ -242,12 +248,7 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
       const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
 
-      if (column == 4)
-      {
-         qDebug(data.toLatin1());
-      }
-
-      if (itemType == "CanMessage")
+      if (itemType == ItemId::CAN_MESSAGE.data())
       {
          if (CanMessageManager::Validate(this->canBusConfig, row, data, column))
          {
@@ -264,7 +265,7 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
             this->ui.tableWidget_Properties->item(row, column)->setText(data);
          }
       }
-      else if (itemType == "CanMessages")
+      else if (itemType == ItemId::CAN_MESSAGES.data())
       {
          if (CanMessageManager::Validate(this->canBusConfig, row, data, column))
          {
@@ -281,7 +282,7 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
             this->ui.tableWidget_Properties->item(row, column)->setText(data);
          }
       }
-      else if (itemType == "CanSignal")
+      else if (itemType == ItemId::CAN_SIGNAL.data())
       {
          if (CanSignalManager::Validate(this->canBusConfig, row, data, column))
          {
@@ -298,7 +299,7 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
             this->ui.tableWidget_Properties->item(row, column)->setText(data);
          }
       }
-      else if (itemType == "CanSignals")
+      else if (itemType == ItemId::CAN_SIGNALS.data())
       {
          if (CanSignalManager::Validate(this->canBusConfig, row, data, column))
          {
@@ -315,11 +316,11 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
             this->ui.tableWidget_Properties->item(row, column)->setText(data);
          }
       }
-      else if (itemType == "CanEnvironmentVariable")
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
       {
          //this->BuildCanEnvironmentVariableProperties(text);
       }
-      else if (itemType == "CanEnvironmentVariables")
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
       {
          //this->BuildCanEnvironmentVariablesProperties();
       }
@@ -460,20 +461,22 @@ void BusConfigUI::BuildTree(void)
 {
    auto networkTreeItem = new QTreeWidgetItem{ this->ui.treeWidget_MainView };
    this->ui.treeWidget_MainView->addTopLevelItem(networkTreeItem);
-   networkTreeItem->setText(0, "Network");
+   networkTreeItem->setText(0, ItemId::NETWORK.data());
    networkTreeItem->setIcon(0, this->icons[Icon_e::NETWORK]);
 
-   auto networkNodesTreeItem = new QTreeWidgetItem{ networkTreeItem };
-   networkNodesTreeItem->setText(0, "Network nodes");
-   networkNodesTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
+   auto canNetworkNodesTreeItem = new QTreeWidgetItem{ networkTreeItem };
+   canNetworkNodesTreeItem->setText(0, "Can network nodes");
+   canNetworkNodesTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
+   canNetworkNodesTreeItem->setWhatsThis(0, ItemId::CAN_NETWORK_NODES.data());
+   canNetworkNodesTreeItem->setToolTip(0, "Can network node");
    size_t canNodesCount = this->canBusConfig->GetNodesCount();
    for (size_t i = 0; i < canNodesCount; i++)
    {
       if (const auto canNode = this->canBusConfig->GetNodeByIndex(i); canNode != nullptr)
       {
-         auto canNodeTreeItem = new QTreeWidgetItem{ networkNodesTreeItem };
+         auto canNodeTreeItem = new QTreeWidgetItem{ canNetworkNodesTreeItem };
          canNodeTreeItem->setText(0, canNode->GetName());
-         canNodeTreeItem->setWhatsThis(0, "CanNetworkNode");
+         canNodeTreeItem->setWhatsThis(0, ItemId::CAN_NETWORK_NODE.data());
          canNodeTreeItem->setToolTip(0, "Can network node");
          canNodeTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
 
@@ -540,7 +543,8 @@ void BusConfigUI::BuildTree(void)
          // Can Network Node Attributes
          auto attributesItem = new QTreeWidgetItem{ canNodeTreeItem };
          attributesItem->setText(0, "Attributes");
-         attributesItem->setWhatsThis(0, "Attributes");
+         attributesItem->setIcon(0, this->icons[Icon_e::ATTRIBUTES]);
+         attributesItem->setWhatsThis(0, ItemId::ATTRIBUTES.data());
          attributesItem->setToolTip(0, "Attributes");
       }
    }
@@ -548,7 +552,7 @@ void BusConfigUI::BuildTree(void)
    auto canMessagesTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canMessagesTreeItem->setText(0, "Messages");
    canMessagesTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
-   canMessagesTreeItem->setWhatsThis(0, "CanMessages");
+   canMessagesTreeItem->setWhatsThis(0, ItemId::CAN_MESSAGES.data());
    canMessagesTreeItem->setToolTip(0, "Can messages");
    size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
    for (size_t i = 0; i < canMessagesCount; i++)
@@ -558,19 +562,20 @@ void BusConfigUI::BuildTree(void)
          auto canMessageTreeItem = new QTreeWidgetItem{ canMessagesTreeItem };
          canMessageTreeItem->setText(0, canMessage->GetName());
          canMessageTreeItem->setIcon(0, this->icons[Icon_e::MESSAGE]);
-         canMessageTreeItem->setWhatsThis(0, "CanMessage");
+         canMessageTreeItem->setWhatsThis(0, ItemId::CAN_MESSAGE.data());
          canMessageTreeItem->setToolTip(0, "Can message");
 
          auto attributesItem = new QTreeWidgetItem{ canMessageTreeItem };
          attributesItem->setText(0, "Attributes");
-         attributesItem->setWhatsThis(0, "Attributes");
+         attributesItem->setIcon(0, this->icons[Icon_e::ATTRIBUTES]);
+         attributesItem->setWhatsThis(0, ItemId::ATTRIBUTES.data());
          attributesItem->setToolTip(0, "Attributes");
       }
    }
 
    auto canSignalsTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canSignalsTreeItem->setText(0, "Signals");
-   canSignalsTreeItem->setWhatsThis(0, "CanSignals");
+   canSignalsTreeItem->setWhatsThis(0, ItemId::CAN_SIGNALS.data());
    canSignalsTreeItem->setToolTip(0, "Can signals");
    canSignalsTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
    size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
@@ -581,19 +586,26 @@ void BusConfigUI::BuildTree(void)
          auto canSignalTreeItem = new QTreeWidgetItem{ canSignalsTreeItem };
          canSignalTreeItem->setText(0, canSignal->GetName());
          canSignalTreeItem->setIcon(0, this->icons[Icon_e::SIGNAL]);
-         canSignalTreeItem->setWhatsThis(0, "CanSignal");
+         canSignalTreeItem->setWhatsThis(0, ItemId::CAN_SIGNAL.data());
          canSignalTreeItem->setToolTip(0, "Can signal");
 
          auto attributesItem = new QTreeWidgetItem{ canSignalTreeItem };
          attributesItem->setText(0, "Attributes");
-         attributesItem->setWhatsThis(0, "Attributes");
+         attributesItem->setIcon(0, this->icons[Icon_e::ATTRIBUTES]);
+         attributesItem->setWhatsThis(0, ItemId::ATTRIBUTES.data());
          attributesItem->setToolTip(0, "Attributes");
+
+         auto valueTableItem = new QTreeWidgetItem{ canSignalTreeItem };
+         valueTableItem->setText(0, "Value table");
+         valueTableItem->setIcon(0, this->icons[Icon_e::VALUE_TABLE]);
+         valueTableItem->setWhatsThis(0, ItemId::VALUE_TABLE.data());
+         valueTableItem->setToolTip(0, "Value table");
       }
    }
 
    auto canEnvironmentVariablesTreeItem = new QTreeWidgetItem{ networkTreeItem };
    canEnvironmentVariablesTreeItem->setText(0, "Environment variables");
-   canEnvironmentVariablesTreeItem->setWhatsThis(0, "CanEnvironmentVariables");
+   canEnvironmentVariablesTreeItem->setWhatsThis(0, ItemId::CAN_ENVIRONMENT_VARIABLES.data());
    canEnvironmentVariablesTreeItem->setToolTip(0, "Can environment variables");
    canEnvironmentVariablesTreeItem->setIcon(0, this->icons[Icon_e::ENVIRONMENT_VARIABLE]);
    size_t canEnvironmentVariablesCount = this->canBusConfig->GetEnvVarsCount();
@@ -604,7 +616,7 @@ void BusConfigUI::BuildTree(void)
          auto canEnvironmentVariableTreeItem = new QTreeWidgetItem{ canEnvironmentVariablesTreeItem };
          canEnvironmentVariableTreeItem->setText(0, canEnvVar->GetName());
          canEnvironmentVariableTreeItem->setIcon(0, this->icons[Icon_e::ENVIRONMENT_VARIABLE]);
-         canEnvironmentVariableTreeItem->setWhatsThis(0, "CanEnvironmentVariable");
+         canEnvironmentVariableTreeItem->setWhatsThis(0, ItemId::CAN_ENVIRONMENT_VARIABLE.data());
          canEnvironmentVariableTreeItem->setToolTip(0, "Can environment variable");
 
          //auto attributesItem = new QTreeWidgetItem{ canSignalTreeItem };
@@ -616,7 +628,7 @@ void BusConfigUI::BuildTree(void)
 
    auto attributesItem = new QTreeWidgetItem{ networkTreeItem };
    attributesItem->setText(0, "Attributes");
-   attributesItem->setWhatsThis(0, "Attributes");
+   attributesItem->setWhatsThis(0, ItemId::ATTRIBUTES.data());
    attributesItem->setToolTip(0, "Attributes");
 }
 
@@ -1046,23 +1058,55 @@ void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
    }
 }
 
+void BusConfigUI::BuildCanValueTableProperties(const QString& canValueTableOwnerType, const QString& canValueTableOwnerName)
+{
+   auto FillValueTable = [this] (const ICanValueTable* canValueTable)
+   {
+      if (canValueTable == nullptr) { return; }
+
+      QStringList headerLabels;
+      headerLabels << "Value" << "Description";
+
+      size_t valuesCount = canValueTable->GetValuesCount();
+      this->ui.tableWidget_Properties->setRowCount(valuesCount);
+      this->ui.tableWidget_Properties->setColumnCount(2);
+
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      for (size_t i = 0; i < valuesCount; i++)
+      {
+         auto value = canValueTable->GetValue(i);
+         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem { toQString(value) });
+         this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ canValueTable->GetValueDescription(value) });
+      }
+   };
+   if (canValueTableOwnerType == ItemId::CAN_SIGNAL.data())
+   {
+      if (const auto canSignal = this->canBusConfig->GetSignalByName(canValueTableOwnerName.toUtf8()); canSignal)
+      {
+         FillValueTable(canSignal->GetValueTable());
+      }
+   }
+   else if (canValueTableOwnerType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
+   {
+      if (const auto canEnvVar = this->canBusConfig->GetEnvVarByName(canValueTableOwnerName.toUtf8()); canEnvVar)
+      {
+         FillValueTable(canEnvVar->GetValueTable());
+      }
+   }
+}
+
 void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeOwner)
 {
    if (attributeOwner)
    {
       size_t attributesCount = attributeOwner->GetAttributesCount();
       QStringList headerLabels;
-      for (size_t i = 0; i < attributesCount; i++)
-      {
-         if (const auto attribute = attributeOwner->GetAttributeByIndex(i); attribute)
-         {
-            headerLabels << attribute->GetName();
-         }
-      }
-      this->ui.tableWidget_Properties->setRowCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setColumnCount(1);
-      this->ui.tableWidget_Properties->setVerticalHeaderLabels(headerLabels);
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(QStringList { "Value" });
+      headerLabels << "Name" << "Value";
+
+      this->ui.tableWidget_Properties->setRowCount(attributesCount);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
 
       uint16_t row = 0;
       const auto fillAttributeValuesRow = [this, attributeOwner, &row]
@@ -1071,10 +1115,11 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
          const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName());
          if (attributeValue != nullptr)
          {
+            this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::ATTRIBUTES], attribute->GetName() });
             const auto fillAttributeValueColumn = [this, &row]
                (const std::string& value)
             {
-               this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ value.c_str() });
+               this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ value.c_str() });
                ++row;
             };
             ICanAttributeManager::ForAttributeStrValue(attributeValue, fillAttributeValueColumn);

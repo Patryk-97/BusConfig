@@ -58,7 +58,7 @@ uint32_t CanValueTable::GetValue(size_t index) const
 const char * CanValueTable::GetValueDescription(uint32_t value) const
 {
    auto it = this->values.find(value);
-   return (it == this->values.end() ? it->second.c_str() : nullptr);
+   return (it != this->values.end() ? it->second.c_str() : nullptr);
 }
 
 void CanValueTable::AddValue(uint32_t value, std::string valueDescription)
