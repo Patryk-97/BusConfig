@@ -17,6 +17,7 @@ public:
    size_t GetAttributesCount(void) const override;
    ICanAttribute* GetAttributeByIndex(size_t index) const override;
    ICanAttribute* GetAttributeByName(const char* name) const override;
+   std::vector<CanAttribute*> GetAttributes(void) const;
    void AddAttribute(CanAttribute* attribute);
 
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;

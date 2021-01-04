@@ -30,6 +30,11 @@ ICanAttribute* CanAttributeOwner::GetAttributeByName(const char* name) const
    return (it != this->attributes.end() ? *it : nullptr);
 }
 
+std::vector<CanAttribute*> CanAttributeOwner::GetAttributes(void) const
+{
+   return this->attributes;
+}
+
 void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
 {
    /*if (attribute)

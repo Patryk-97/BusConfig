@@ -18,6 +18,11 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include "CanIntAttributeValue.h";
+#include "CanHexAttributeValue.h";
+#include "CanFloatAttributeValue.h";
+#include "CanStringAttributeValue.h";
+#include "CanEnumAttributeValue.h";
 
 #ifndef line
 #define line lineData.first
@@ -139,15 +144,15 @@ bool CanBusConfig::Export(const char* fileName) const
    {
       rV = true;
 
-      this->WriteNodeDefinition(lineStr); file << lineStr;
-      this->WriteMessageDefinition(lineStr); file << lineStr;
-      this->WriteEnvironmentVariableDefinition(lineStr); file << lineStr;
-      this->WriteValueTableDefinition(lineStr); file << lineStr;
-      this->WriteAttributeDefinition(lineStr); file << lineStr;
-      this->WriteAttributeDefaultDefinition(lineStr); file << lineStr;
-      this->WriteAttributeValueDefinition(lineStr); file << lineStr;
-      this->WriteEnvironmentVariableDataDefinition(lineStr); file << lineStr;
-      this->WriteCommentDefinition(lineStr); file << lineStr;
+      this->WriteNodeDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteMessageDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteEnvironmentVariableDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteValueTableDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteAttributeDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteAttributeDefaultDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteAttributeValueDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteEnvironmentVariableDataDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteCommentDefinition(lineStr); file << lineStr; lineStr.clear();
    }
 
    return rV;
@@ -2238,16 +2243,252 @@ bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteAttributeDefinition(std::string& lineStr) const
 {
+   for (const auto& attribute : this->GetAttributes())
+   {
+      if (attribute)
+      {
+         lineStr += ATTRIBUTE_DEFINITION_HEADER.data();
+
+         switch (attribute->GetObjectType())
+         {
+            case ICanAttribute::IObjectType_e::NODE:
+            {
+               lineStr += DBC_KEYWORD_NETWORK_NODE.data();
+               break;
+            }
+            case ICanAttribute::IObjectType_e::MESSAGE:
+            {
+               lineStr += DBC_KEYWORD_MESSAGE.data();
+               break;
+            }
+            case ICanAttribute::IObjectType_e::SIGNAL:
+            {
+               lineStr += DBC_KEYWORD_SIGNAL.data();
+               break;
+            }
+            case ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE:
+            {
+               lineStr += DBC_KEYWORD_ENVIRONMENT_VARIABLE.data();
+               break;
+            }
+            default:
+            {
+               break;
+            }
+         }
+
+         lineStr += " \""s + attribute->GetName() + "\" ";
+
+         helpers::typecase(attribute,
+            [&lineStr] (CanIntAttribute* intAttribute)
+            {
+               lineStr += ATTRIBUTE_INTEGER.data() + " "s;
+               lineStr += std::to_string(intAttribute->GetMinimum()) + " ";
+               lineStr += std::to_string(intAttribute->GetMaximum());
+            },
+            [&lineStr] (CanHexAttribute* hexAttribute)
+            {
+               lineStr += ATTRIBUTE_HEXADECIMAL.data() + " "s;
+               lineStr += std::to_string(hexAttribute->GetMinimum()) + " ";
+               lineStr += std::to_string(hexAttribute->GetMaximum());
+            },
+            [&lineStr] (CanFloatAttribute* floatAttribute)
+            {
+               lineStr += ATTRIBUTE_FLOAT.data() + " "s;
+               lineStr += std::to_string(floatAttribute->GetMinimum()) + " ";
+               lineStr += std::to_string(floatAttribute->GetMaximum());
+            },
+            [&lineStr] (CanStringAttribute* stringAttribute)
+            {
+               lineStr += ATTRIBUTE_STRING.data();
+            },
+            [&lineStr](CanEnumAttribute* enumAttribute)
+            {
+               lineStr += ATTRIBUTE_ENUM.data() + " "s;
+            
+               const size_t enumaratorsCount = enumAttribute->GetEnumaratorsCount();
+               for (size_t i = 0; i < enumaratorsCount; i++)
+               {
+                  const auto enumarator = enumAttribute->GetEnumarator(i);
+                  if (enumarator)
+                  {
+                     lineStr += "\""s + enumarator + "\"";
+                  }
+                  if (i < enumaratorsCount - 1)
+                  {
+                     lineStr += ", ";
+                  }
+               }
+            });
+
+         lineStr += ";\n";
+      }
+   }
+
    return false;
 }
 
 bool CanBusConfig::WriteAttributeDefaultDefinition(std::string& lineStr) const
 {
+   for (const auto& attribute : this->GetAttributes())
+   {
+      if (attribute)
+      {
+         lineStr += ATTRIBUTE_DEFAULT_DEFINITION_HEADER.data();
+
+         lineStr += " \""s + attribute->GetName() + "\" ";
+
+         helpers::typecase(attribute,
+            [&lineStr] (CanIntAttribute* intAttribute)
+            {
+               lineStr += std::to_string(intAttribute->GetDefaultValue());
+            },
+            [&lineStr] (CanHexAttribute* hexAttribute)
+            {
+               lineStr += std::to_string(hexAttribute->GetDefaultValue());
+            },
+            [&lineStr] (CanFloatAttribute* floatAttribute)
+            {
+               lineStr += std::to_string(floatAttribute->GetDefaultValue());
+            },
+            [&lineStr] (CanStringAttribute* stringAttribute)
+            {
+               lineStr += "\""s + stringAttribute->GetDefaultValue() + "\"";
+            },
+            [&lineStr] (CanEnumAttribute* enumAttribute)
+            {
+               lineStr += "\""s + enumAttribute->GetDefaultValue() + "\"";
+            });
+
+         lineStr += ";\n";
+      }
+   }
+
    return false;
 }
 
 bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
 {
+   auto WriteAttributeValue = [&lineStr, this] (const CanAttributeOwner* attributeOwner)
+   {
+      for (const auto& attribute : attributeOwner->GetAttributes())
+      {
+         if (attribute)
+         {
+            lineStr += ATTRIBUTE_VALUE_DEFINITION_HEADER.data();
+
+            lineStr += "\""s + attribute->GetName() + "\" ";
+
+            switch (attribute->GetObjectType())
+            {
+               case ICanAttribute::IObjectType_e::NODE:
+               {
+                  lineStr += DBC_KEYWORD_NETWORK_NODE.data() + " "s;
+                  break;
+               }
+               case ICanAttribute::IObjectType_e::MESSAGE:
+               {
+                  lineStr += DBC_KEYWORD_MESSAGE.data() + " "s;
+                  break;
+               }
+               case ICanAttribute::IObjectType_e::SIGNAL:
+               {
+                  lineStr += DBC_KEYWORD_SIGNAL.data() + " "s;
+                  break;
+               }
+               case ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE:
+               {
+                  lineStr += DBC_KEYWORD_ENVIRONMENT_VARIABLE.data() + " "s;
+                  break;
+               }
+               default:
+               {
+                  break;
+               }
+            }
+
+            helpers::typecase(attributeOwner,
+               [&lineStr] (const CanBusConfig* canBusConfig)
+               {
+                  ;
+               },
+               [&lineStr] (const CanNode* node)
+               {
+                  lineStr += node->GetName() + " "s;
+               },
+               [&lineStr] (const CanMessage* message)
+               {
+                  lineStr += std::to_string(message->GetId()) + " "s;
+               },
+               [&lineStr] (const CanSignal* signal)
+               {
+                  if (const auto message = signal->GetMessage(); message)
+                  {
+                     lineStr += std::to_string(message->GetId()) + " ";
+                  }
+                  lineStr += signal->GetName() + " "s;
+               },
+               [&lineStr] (const CanEnvVar* envVar)
+               {
+                  lineStr += envVar->GetName() + " "s;
+               });
+
+            const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName());
+            if (attributeValue == nullptr)
+            {
+               lineStr = "";
+               continue;
+            }
+
+            helpers::typecase(attributeValue,
+               [&lineStr] (const CanIntAttributeValue* intAttributeValue)
+               {
+                  lineStr += std::to_string(intAttributeValue->GetValue());
+               },
+               [&lineStr] (const CanHexAttributeValue* hexAttributeValue)
+               {
+                  lineStr += std::to_string(hexAttributeValue->GetValue());
+               },
+               [&lineStr] (const CanFloatAttributeValue* floatAttributeValue)
+               {
+                  lineStr += std::to_string(floatAttributeValue->GetValue());
+               },
+               [&lineStr] (const CanStringAttributeValue* stringAttributeValue)
+               {
+                  lineStr += "\""s + stringAttributeValue->GetValue() + "\"";
+               },
+               [&lineStr] (const CanEnumAttributeValue* enumAttributeValue)
+               {
+                  lineStr += "\""s + enumAttributeValue->GetValue() + "\"";
+               });
+
+            lineStr += ";\n";
+         }
+      }
+   };
+
+   WriteAttributeValue(this);
+
+   for (const auto& node : this->nodes)
+   {
+      WriteAttributeValue(node);
+   }
+
+   for (const auto& message : this->messages)
+   {
+      WriteAttributeValue(message);
+   }
+
+   for (const auto& signal : this->messages)
+   {
+      WriteAttributeValue(signal);
+   }
+
+   for (const auto& envVar : this->envVars)
+   {
+      WriteAttributeValue(envVar);
+   }
+
    return false;
 }
 
