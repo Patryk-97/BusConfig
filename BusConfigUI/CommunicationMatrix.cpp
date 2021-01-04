@@ -2,7 +2,6 @@
 #include "ui_CommunicationMatrix.h"
 #include "ICanManager.h"
 #include <QtWidgets/qabstractbutton.h>
-#include <qmessagebox.h>
 #include <qlabel.h>
 
 CommunicationMatrix::CommunicationMatrix(QWidget *parent) :

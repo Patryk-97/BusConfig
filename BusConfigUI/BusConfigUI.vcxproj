@@ -99,8 +99,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="BusConfigUI.qrc" />
+    <QtUic Include="AttributeDefinitions.ui" />
     <QtUic Include="BusConfigUI.ui" />
     <QtMoc Include="BusConfigUI.h" />
+    <ClCompile Include="AttributeDefinitions.cpp" />
     <ClCompile Include="BusConfigUI.cpp" />
     <ClCompile Include="CanMessageManager.cpp" />
     <ClCompile Include="CanSignalManager.cpp" />
@@ -113,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <QtMoc Include="AttributeDefinitions.h" />
     <ClInclude Include="CanMessageManager.h" />
     <ClInclude Include="CanSignalManager.h" />
     <ClInclude Include="ComboDelegate.h" />

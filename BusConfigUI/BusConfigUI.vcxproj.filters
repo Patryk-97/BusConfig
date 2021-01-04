@@ -59,6 +59,9 @@
     <ClCompile Include="ComboDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AttributeDefinitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h">
@@ -93,9 +96,15 @@
     <QtMoc Include="CommunicationMatrix.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="AttributeDefinitions.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="CommunicationMatrix.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+    <QtUic Include="AttributeDefinitions.ui">
       <Filter>Resource Files</Filter>
     </QtUic>
   </ItemGroup>

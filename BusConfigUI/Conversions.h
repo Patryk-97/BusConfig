@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qstring.h>
+#include <sstream>
 
 template <typename T>
 inline QString toQString(const T& parameter)

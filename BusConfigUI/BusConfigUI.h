@@ -4,6 +4,7 @@
 #include "ui_BusConfigUI.h"
 #include "ICanBusConfig.h"
 #include "CommunicationMatrix.h"
+#include "AttributeDefinitions.h"
 #include <qmap.h>
 
 class BusConfigUI : public QMainWindow
@@ -11,6 +12,7 @@ class BusConfigUI : public QMainWindow
     Q_OBJECT
 public:
     BusConfigUI(QWidget *parent = Q_NULLPTR);
+    ~BusConfigUI();
 
     friend CommunicationMatrix;
 
@@ -20,6 +22,7 @@ private slots:
    void on_actionExport_triggered();
    void on_actionExit_triggered();
    void on_actionBase_triggered();
+   void on_actionAttribute_definitions_triggered();
    void on_actionCommunication_matrix_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
    void on_tableWidget_Properties_itemChanged(QTableWidgetItem* item);
@@ -84,6 +87,7 @@ private:
     Ui::BusConfigUIClass ui;
     ICanBusConfig* canBusConfig { nullptr };
     CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
+    AttributeDefinitions* attributeDefinitions { new AttributeDefinitions {} };
     bool isTableWidgetFilled { false };
 
     enum class Icon_e

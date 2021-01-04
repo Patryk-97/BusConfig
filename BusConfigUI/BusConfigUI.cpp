@@ -82,6 +82,11 @@ BusConfigUI::BusConfigUI(QWidget *parent)
              button->setText("");
              button->setIcon(this->icons[Icon_e::COMMUNICATION_MATRIX]);
           }
+          if (button->text() == "Attribute definitions")
+          {
+             button->setText("");
+             button->setIcon(this->icons[Icon_e::ATTRIBUTES]);
+          }
        }
 
        // add menu for right click for table widget
@@ -101,6 +106,12 @@ BusConfigUI::BusConfigUI(QWidget *parent)
     {
       this->AddLog("Loading BusConfigDll.dll failed");
     }
+}
+
+BusConfigUI::~BusConfigUI()
+{
+   delete this->communicationMatrix;
+   delete this->attributeDefinitions;
 }
 
 void BusConfigUI::on_actionClear_triggered()
@@ -151,6 +162,12 @@ void BusConfigUI::on_actionBase_triggered()
          toolButton->setText("");
       }
    }
+}
+
+void BusConfigUI::on_actionAttribute_definitions_triggered()
+{
+   this->attributeDefinitions->Create(this->canBusConfig);
+   this->attributeDefinitions->show();
 }
 
 void BusConfigUI::on_actionCommunication_matrix_triggered()
