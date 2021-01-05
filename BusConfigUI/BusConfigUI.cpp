@@ -122,13 +122,14 @@ void BusConfigUI::on_actionClear_triggered()
 
 void BusConfigUI::on_actionOpen_triggered()
 {
-   QFileDialog dlgOpen(this);
+   QFileDialog dlgOpen { this };
    dlgOpen.setWindowTitle("Open bus configuration file");
    dlgOpen.setFileMode(QFileDialog::ExistingFile);
    dlgOpen.setNameFilter(trUtf8("Bus configuration files (*.dbc *.ldf)"));
    QStringList fileName;
    if (dlgOpen.exec())
    {
+      this->Clear();
       fileName = dlgOpen.selectedFiles();
       this->LoadFile(fileName[0]);
    }
@@ -740,10 +741,10 @@ void BusConfigUI::BuildCanMessagesProperties(void)
 
 void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
 {
-   if (const auto signal = this->canBusConfig->GetSignalByName(signalName.toUtf8()); signal != nullptr)
+   if (const auto signal = this->canBusConfig->GetSignalByName(signalName.toUtf8()); signal)
    {
       QStringList headerLabels;
-      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](const std::string_view property)
+      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels] (const std::string_view property)
          { headerLabels << property.data(); });
 
       this->ui.tableWidget_Properties->setRowCount(1);
@@ -814,7 +815,7 @@ void BusConfigUI::BuildCanSignalsProperties(void)
 
          const QString valueTableName = std::invoke([&signal]
          {
-            if (ICanValueTable* valueTable = signal->GetValueTable(); valueTable)
+            if (const auto valueTable = signal->GetValueTable(); valueTable)
             {
                return valueTable->GetName();
             }
@@ -855,7 +856,7 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarNam
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
       this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ this->icons[Icon_e::ENVIRONMENT_VARIABLE], canEnvVar->GetName() });
 
-      const QString type = std::invoke([&canEnvVar, &envVar] () -> QString
+      const QString type = std::invoke([&canEnvVar, &envVar]
       {
          switch (canEnvVar->GetType())
          {
@@ -907,9 +908,9 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarNam
          return "Unrestricted";
       });
 
-      const QString valueTableName = std::invoke([&canEnvVar] () -> QString
+      const QString valueTableName = std::invoke([&canEnvVar]
       {
-         if (ICanValueTable* valueTable = canEnvVar->GetValueTable(); valueTable)
+         if (const auto valueTable = canEnvVar->GetValueTable(); valueTable)
          {
             return valueTable->GetName();
          }
@@ -919,7 +920,40 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarNam
       this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ type });
       this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ canEnvVar->GetUnit() });
 
-      if (canEnvVar->GetType() == ICanEnvVar::Type_e::INTEGER)
+      std::visit([this] (auto&& arg)
+      {
+         using T = std::decay_t<decltype(arg)>;
+         if constexpr (std::is_same_v<T, ICanIntEnvVar*>)
+         {
+            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
+            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
+            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
+            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
+         }
+         else if constexpr (std::is_same_v<T, ICanFloatEnvVar*>)
+         {
+            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
+            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
+            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
+            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
+         }
+         else if constexpr (std::is_same_v<T, ICanDataEnvVar*>)
+         {
+            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ toQString(arg->GetLength()) });
+         }
+         else
+         {
+            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
+         }
+      }, envVar);
+
+      /*if (canEnvVar->GetType() == ICanEnvVar::Type_e::INTEGER)
       {
          this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMinimum()) });
          this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMaximum()) });
@@ -946,7 +980,7 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarNam
          this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
          this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
          this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-      }
+      }*/
 
       this->ui.tableWidget_Properties->setItem(0, 7, new QTableWidgetItem{ accessType });
       this->ui.tableWidget_Properties->setItem(0, 8, new QTableWidgetItem{ valueTableName });
@@ -1038,7 +1072,40 @@ void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
          this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ type });
          this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ canEnvVar->GetUnit() });
 
-         if (canEnvVar->GetType() == ICanEnvVar::Type_e::INTEGER)
+         std::visit([this, &i] (auto&& arg)
+         {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, ICanIntEnvVar*>)
+            {
+               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
+               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
+               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
+               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
+            }
+            else if constexpr (std::is_same_v<T, ICanFloatEnvVar*>)
+            {
+               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
+               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
+               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
+               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
+            }
+            else if constexpr (std::is_same_v<T, ICanDataEnvVar*>)
+            {
+               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ "-" });
+               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
+               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
+               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ toQString(arg->GetLength()) });
+            }
+            else
+            {
+               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ "-" });
+               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
+               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
+               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
+            }
+         }, envVar);
+
+         /*if (canEnvVar->GetType() == ICanEnvVar::Type_e::INTEGER)
          {
             this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMinimum()) });
             this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMaximum()) });
@@ -1065,7 +1132,7 @@ void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
             this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
             this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
             this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-         }
+         } */
 
          this->ui.tableWidget_Properties->setItem(i, 7, new QTableWidgetItem{ accessType });
          this->ui.tableWidget_Properties->setItem(i, 8, new QTableWidgetItem{ valueTableName });
