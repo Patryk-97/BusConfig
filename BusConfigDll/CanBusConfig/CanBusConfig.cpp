@@ -147,12 +147,12 @@ bool CanBusConfig::Export(const char* fileName) const
       this->WriteNodeDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteMessageDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteEnvironmentVariableDefinition(lineStr); file << lineStr; lineStr.clear();
-      this->WriteValueTableDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteEnvironmentVariableDataDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteCommentDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteAttributeDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteAttributeDefaultDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteAttributeValueDefinition(lineStr); file << lineStr; lineStr.clear();
-      this->WriteEnvironmentVariableDataDefinition(lineStr); file << lineStr; lineStr.clear();
-      this->WriteCommentDefinition(lineStr); file << lineStr; lineStr.clear();
+      this->WriteValueTableDefinition(lineStr); file << lineStr; lineStr.clear();
    }
 
    return rV;
@@ -2233,6 +2233,66 @@ bool CanBusConfig::WriteEnvironmentVariableDefinition(std::string& lineStr) cons
 
 bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
 {
+   for (const auto& signal : this->signals)
+   {
+      if (signal)
+      {
+         const auto valueTable = signal->GetValueTable();
+         if (const auto message = signal->GetMessage(); message && valueTable)
+         {
+            lineStr += VALUE_TABLE_DEFINITION_HEADER.data();
+            lineStr += std::to_string(message->GetId()) + " ";
+            lineStr += signal->GetName();
+
+            for (size_t i = 0; i < valueTable->GetValuesCount(); i++)
+            {
+               auto value = valueTable->GetValue(i);
+               if (const auto description = valueTable->GetValueDescription(value); description)
+               {
+                  lineStr += " " + std::to_string(value) + " ";
+                  lineStr += "\""s + description + "\"";
+               }
+               else
+               {
+                  lineStr = "";
+                  break;
+               }
+            }
+
+            lineStr += ";\n";
+         }
+      }
+   }
+
+   for (const auto& envVar : this->envVars)
+   {
+      if (envVar)
+      {
+         if (const auto valueTable = envVar->GetValueTable();  valueTable)
+         {
+            lineStr += VALUE_TABLE_DEFINITION_HEADER.data();
+            lineStr += envVar->GetName();
+
+            for (size_t i = 0; i < valueTable->GetValuesCount(); i++)
+            {
+               auto value = valueTable->GetValue(i);
+               if (const auto description = valueTable->GetValueDescription(value); description)
+               {
+                  lineStr += " " + std::to_string(value) + " ";
+                  lineStr += "\""s + description + "\"";
+               }
+               else
+               {
+                  lineStr = "";
+                  break;
+               }
+            }
+
+            lineStr += ";\n";
+         }
+      }
+   }
+
    return false;
 }
 
