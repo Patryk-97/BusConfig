@@ -156,7 +156,7 @@ void BusConfigUI::on_actionBase_triggered()
       this->ui.actionBase->setText(QString { "Hex base" });
    }
 
-   for(auto toolButton : this->ui.mainToolBar->findChildren<QToolButton*>())
+   for (auto toolButton : this->ui.mainToolBar->findChildren<QToolButton*>())
    {
       if (toolButton->text() == "Hex base" || toolButton->text() == "Dec base")
       {
@@ -637,10 +637,17 @@ void BusConfigUI::BuildTree(void)
          canEnvironmentVariableTreeItem->setWhatsThis(0, ItemId::CAN_ENVIRONMENT_VARIABLE.data());
          canEnvironmentVariableTreeItem->setToolTip(0, "Can environment variable");
 
-         //auto attributesItem = new QTreeWidgetItem{ canSignalTreeItem };
-         //attributesItem->setText(0, "Attributes");
-         //attributesItem->setWhatsThis(0, "Attributes");
-         //attributesItem->setToolTip(0, "Attributes");
+         auto attributesItem = new QTreeWidgetItem{ canEnvironmentVariableTreeItem };
+         attributesItem->setText(0, "Attributes");
+         attributesItem->setIcon(0, this->icons[Icon_e::ATTRIBUTES]);
+         attributesItem->setWhatsThis(0, ItemId::ATTRIBUTES.data());
+         attributesItem->setToolTip(0, "Attributes");
+
+         auto valueTableItem = new QTreeWidgetItem{ canEnvironmentVariableTreeItem };
+         valueTableItem->setText(0, "Value table");
+         valueTableItem->setIcon(0, this->icons[Icon_e::VALUE_TABLE]);
+         valueTableItem->setWhatsThis(0, ItemId::VALUE_TABLE.data());
+         valueTableItem->setToolTip(0, "Value table");
       }
    }
 
