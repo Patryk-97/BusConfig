@@ -6,7 +6,7 @@
 class CanAttribute : public ICanAttribute
 {
 public:
-   CanAttribute() = default;
+   CanAttribute(IValueType_e valueType) : valueType { valueType } {}
    ~CanAttribute();
 
    void Clear(void) override;
@@ -15,7 +15,6 @@ public:
    void SetName(const char * name);
 
    IValueType_e GetValueType(void) const override;
-   void SetValueType(IValueType_e valueType);
 
    IObjectType_e GetObjectType(void) const override;
    void SetObjectType(IObjectType_e objectType);

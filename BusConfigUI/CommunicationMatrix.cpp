@@ -13,6 +13,13 @@ CommunicationMatrix::CommunicationMatrix(QWidget *parent) :
       Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint };
    this->ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
    this->setWindowFlags(flags);
+
+   this->ui->tableWidget->setStyleSheet("QTableWidget::item { padding: 0 10px; border: 0; }");
+   this->ui->tableWidget->horizontalHeader()->setStyleSheet(
+      "QHeaderView::section { padding: 0 10px; border: 0; }");
+   this->ui->tableWidget->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+   // because without it is some border after clicking on item in table widget
+   this->ui->tableWidget->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 }
 
 CommunicationMatrix::~CommunicationMatrix()

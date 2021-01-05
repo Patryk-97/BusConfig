@@ -14,23 +14,23 @@
 void CanAttributeManager::SetDefaultValue(ICanAttribute* attribute, const std::string& defaultValue)
 {
    helpers::typecase(attribute,
-      [&defaultValue](CanIntAttribute* intAttribute)
+      [&defaultValue] (CanIntAttribute* intAttribute)
       {
          intAttribute->SetDefaultValue(std::stoi(defaultValue));
       },
-      [&defaultValue](CanHexAttribute* hexAttribute)
+      [&defaultValue] (CanHexAttribute* hexAttribute)
       {
          hexAttribute->SetDefaultValue(std::stoi(defaultValue));
       },
-      [&defaultValue](CanFloatAttribute* floatAttribute)
+      [&defaultValue] (CanFloatAttribute* floatAttribute)
       {
          floatAttribute->SetDefaultValue(std::stod(defaultValue));
       },
-      [&defaultValue](CanStringAttribute* stringAttribute)
+      [&defaultValue] (CanStringAttribute* stringAttribute)
       {
          stringAttribute->SetDefaultValue(defaultValue.c_str());
       },
-      [&defaultValue](CanEnumAttribute* enumAttribute)
+      [&defaultValue] (CanEnumAttribute* enumAttribute)
       {
          enumAttribute->SetDefaultValue(defaultValue.c_str());
       });

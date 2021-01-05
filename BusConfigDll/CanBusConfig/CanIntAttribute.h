@@ -6,7 +6,7 @@
 class CanIntAttribute : public CanAttribute, public ICanIntAttribute
 {
 public:
-   CanIntAttribute() = default;
+   CanIntAttribute() : CanAttribute { IValueType_e::INT } {}
    ~CanIntAttribute();
 
    void Clear(void) override;

@@ -3,10 +3,10 @@
 #include "ICanFloatAttribute.h"
 #include "CanAttribute.h"
 
-class CanFloatAttribute : public CanAttribute, ICanFloatAttribute
+class CanFloatAttribute : public CanAttribute, public ICanFloatAttribute
 {
 public:
-   CanFloatAttribute() = default;
+   CanFloatAttribute() : CanAttribute(IValueType_e::FLOAT) {}
    ~CanFloatAttribute();
 
    void Clear(void) override;
@@ -25,7 +25,7 @@ public:
    void SetDefaultValue(double defaultValue);
 
 private:
-   double minimum{};
-   double maximum{};
-   double defaultValue{};
+   double minimum {};
+   double maximum {};
+   double defaultValue {};
 };

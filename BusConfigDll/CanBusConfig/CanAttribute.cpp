@@ -27,11 +27,6 @@ ICanAttribute::IValueType_e CanAttribute::GetValueType(void) const
    return this->valueType;
 }
 
-void CanAttribute::SetValueType(IValueType_e valueType)
-{
-   this->valueType = valueType;
-}
-
 ICanAttribute::IObjectType_e CanAttribute::GetObjectType(void) const
 {
    return this->objectType;

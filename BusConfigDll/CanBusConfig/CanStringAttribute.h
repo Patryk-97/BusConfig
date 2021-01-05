@@ -3,10 +3,10 @@
 #include "ICanStringAttribute.h"
 #include "CanAttribute.h"
 
-class CanStringAttribute : public CanAttribute, ICanStringAttribute
+class CanStringAttribute : public CanAttribute, public ICanStringAttribute
 {
 public:
-   CanStringAttribute() = default;
+   CanStringAttribute() : CanAttribute { IValueType_e::STRING } {}
    ~CanStringAttribute();
 
    void Clear(void) override;

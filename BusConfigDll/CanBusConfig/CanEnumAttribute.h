@@ -4,10 +4,10 @@
 #include "CanAttribute.h"
 #include <vector>
 
-class CanEnumAttribute : public CanAttribute, ICanEnumAttribute
+class CanEnumAttribute : public CanAttribute, public ICanEnumAttribute
 {
 public:
-   CanEnumAttribute() = default;
+   CanEnumAttribute() : CanAttribute { IValueType_e::ENUM } {}
    ~CanEnumAttribute();
 
    void Clear(void) override;

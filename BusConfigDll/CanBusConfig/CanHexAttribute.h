@@ -3,10 +3,10 @@
 #include "ICanHexAttribute.h"
 #include "CanAttribute.h"
 
-class CanHexAttribute : public CanAttribute, ICanHexAttribute
+class CanHexAttribute : public CanAttribute, public ICanHexAttribute
 {
 public:
-   CanHexAttribute() = default;
+   CanHexAttribute() : CanAttribute { IValueType_e::HEX } {}
    ~CanHexAttribute();
 
    void Clear(void) override;

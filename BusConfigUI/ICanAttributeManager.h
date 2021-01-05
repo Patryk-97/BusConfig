@@ -6,6 +6,11 @@
 #include "ICanFloatAttributeValue.h"
 #include "ICanStringAttributeValue.h"
 #include "ICanEnumAttributeValue.h"
+#include "ICanIntAttribute.h"
+#include "ICanHexAttribute.h"
+#include "ICanFloatAttribute.h"
+#include "ICanStringAttribute.h"
+#include "ICanEnumAttribute.h"
 #include "helpers.h"
 #include <string>
 #include <sstream>
@@ -28,6 +33,34 @@ public:
             }
          }
       }
+   }
+
+   template <typename T>
+   static void ForAttributeDefaultValueStr(const ICanAttribute* attribute, const T& fun)
+   {
+      helpers::typecase(attribute,
+         [&fun] (const ICanIntAttribute* intAttribute)
+         {
+            fun(std::to_string(intAttribute->GetDefaultValue()));
+         },
+         [&fun] (const ICanHexAttribute* hexAttribute)
+         {
+            std::stringstream strStream;
+            strStream << "0x" << std::hex << hexAttribute->GetDefaultValue();
+            fun(strStream.str());
+         },
+         [&fun] (const ICanFloatAttribute* floatAttribute)
+         {
+            fun(std::to_string(floatAttribute->GetDefaultValue()));
+         },
+         [&fun] (const ICanStringAttribute* stringAttribute)
+         {
+            fun(stringAttribute->GetDefaultValue());
+         },
+         [&fun] (const ICanEnumAttribute* enumAttribute)
+         {
+            fun(enumAttribute->GetDefaultValue());
+         });
    }
 
    template <typename T>

@@ -1987,8 +1987,7 @@ bool CanBusConfig::ParseAttributeIntParams(std::span<std::string> paramTokens, C
 
    if (ranges::distance(paramTokens) == ATTRIBUTE_INT_PARAMS_COUNT)
    {
-      attribute = new CanIntAttribute{};
-      attribute->SetValueType(ICanAttribute::IValueType_e::INT);
+      attribute = new CanIntAttribute {};
 
       if (CanIntAttribute* intAttribute = dynamic_cast<CanIntAttribute*>(attribute); intAttribute != nullptr)
       {
@@ -2020,8 +2019,7 @@ bool CanBusConfig::ParseAttributeHexParams(std::span<std::string> paramTokens, C
 
    if (ranges::distance(paramTokens) == ATTRIBUTE_HEX_PARAMS_COUNT)
    {
-      attribute = new CanHexAttribute{};
-      attribute->SetValueType(ICanAttribute::IValueType_e::HEX);
+      attribute = new CanHexAttribute {};
 
       if (CanHexAttribute* hexAttribute = dynamic_cast<CanHexAttribute*>(attribute); hexAttribute != nullptr)
       {
@@ -2054,7 +2052,6 @@ bool CanBusConfig::ParseAttributeFloatParams(std::span<std::string> paramTokens,
    if (ranges::distance(paramTokens) == ATTRIBUTE_FLOAT_PARAMS_COUNT)
    {
       attribute = new CanFloatAttribute {};
-      attribute->SetValueType(ICanAttribute::IValueType_e::FLOAT);
 
       if (CanFloatAttribute* floatAttribute = dynamic_cast<CanFloatAttribute*>(attribute); floatAttribute != nullptr)
       {
@@ -2084,8 +2081,7 @@ bool CanBusConfig::ParseAttributeStringParams(CanAttribute*& attribute, LineData
    // locals
    bool rV{ true };
 
-   attribute = new CanStringAttribute{};
-   attribute->SetValueType(ICanAttribute::IValueType_e::STRING);
+   attribute = new CanStringAttribute {};
 
    return rV;
 }
@@ -2097,8 +2093,7 @@ bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, 
 
    if (ranges::distance(paramTokens) >= ATTRIBUTE_ENUM_PARAMS_MIN_COUNT)
    {
-      attribute = new CanEnumAttribute{};
-      attribute->SetValueType(ICanAttribute::IValueType_e::ENUM);
+      attribute = new CanEnumAttribute {};
 
 
       if (CanEnumAttribute* enumAttribute = dynamic_cast<CanEnumAttribute*>(attribute); enumAttribute != nullptr)
