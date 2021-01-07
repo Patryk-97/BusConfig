@@ -93,6 +93,7 @@ private:
 
    void SetMainAttributes(void);
 
+   bool WriteFileHeader(std::string& lineStr) const;
    bool WriteMessageDefinition(std::string& lineStr) const;
    bool WriteSignalDefinition(CanMessage* message, std::string& lineStr) const;
    bool WriteNodeDefinition(std::string& lineStr) const;

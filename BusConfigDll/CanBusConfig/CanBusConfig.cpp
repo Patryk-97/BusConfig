@@ -145,6 +145,7 @@ bool CanBusConfig::Export(const char* fileName) const
    {
       rV = true;
 
+      this->WriteFileHeader(lineStr); file << lineStr; lineStr.clear();
       this->WriteNodeDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteMessageDefinition(lineStr); file << lineStr; lineStr.clear();
       this->WriteEnvironmentVariableDefinition(lineStr); file << lineStr; lineStr.clear();
@@ -2161,6 +2162,45 @@ void CanBusConfig::SetMainAttributes(void)
          }
       }
    }
+}
+
+bool CanBusConfig::WriteFileHeader(std::string& lineStr) const
+{
+   lineStr += R"(VERSION "HNNBNNNYNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN/4/%%%/4/'%**4NNN///")";
+   lineStr += "\n\n\n";
+   lineStr += "NS_ :\n";
+   lineStr += "\tNS_DESC_\n";
+   lineStr += "CM_\n";
+   lineStr += "BA_DEF_\n";
+   lineStr += "BA_\n";
+   lineStr += "VAL_\n";
+   lineStr += "CAT_DEF_\n";
+   lineStr += "CAT_\n";
+   lineStr += "FILTER\n";
+   lineStr += "BA_DEF_DEF_\n";
+   lineStr += "EV_DATA_\n";
+   lineStr += "ENVVAR_DATA_\n";
+   lineStr += "SGTYPE_\n";
+   lineStr += "SGTYPE_VAL_\n";
+   lineStr += "BA_DEF_SGTYPE_\n";
+   lineStr += "BA_SGTYPE_\n";
+   lineStr += "SIG_TYPE_REF_\n";
+   lineStr += "VAL_TABLE_\n";
+   lineStr += "SIG_GROUP_\n";
+   lineStr += "SIG_VALTYPE_\n";
+   lineStr += "SIGTYPE_VALTYPE_\n";
+   lineStr += "BO_TX_BU_\n";
+   lineStr += "BA_DEF_REL_\n";
+   lineStr += "BA_REL_\n";
+   lineStr += "BA_DEF_DEF_REL_\n";
+   lineStr += "BU_SG_REL_\n";
+   lineStr += "BU_EV_REL_\n";
+   lineStr += "BU_BO_REL_\n";
+   lineStr += "\n";
+   lineStr += "BS_ :\n";
+   lineStr += "\n";
+
+   return false;
 }
 
 bool CanBusConfig::WriteMessageDefinition(std::string& lineStr) const
