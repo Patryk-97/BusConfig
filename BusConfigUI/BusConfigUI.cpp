@@ -854,7 +854,7 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarNam
    if (const auto canEnvVar = this->canBusConfig->GetEnvVarByName(envVarName.toUtf8()); canEnvVar)
    {
       QStringList headerLabels;
-      std::variant<const ICanEnvVar*, ICanIntEnvVar*, ICanFloatEnvVar*, ICanStringEnvVar*, ICanDataEnvVar*>
+      std::variant<ICanEnvVar*, ICanIntEnvVar*, ICanFloatEnvVar*, ICanStringEnvVar*, ICanDataEnvVar*>
          envVar = canEnvVar;
       headerLabels << "Name" << "Type" << "Unit" << "Minimum" << "Maximum" << "Initial value";
       headerLabels << "Length (Bytes)" << "Access" << "Value table" << "Comment";

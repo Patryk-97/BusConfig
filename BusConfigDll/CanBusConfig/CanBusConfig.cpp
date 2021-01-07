@@ -23,6 +23,7 @@
 #include "CanFloatAttributeValue.h";
 #include "CanStringAttributeValue.h";
 #include "CanEnumAttributeValue.h";
+#include <variant>
 
 #ifndef line
 #define line lineData.first
@@ -2228,38 +2229,182 @@ bool CanBusConfig::WriteNodeDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteEnvironmentVariableDefinition(std::string& lineStr) const
 {
+   for (const auto& envVar : this->envVars)
+   {
+      lineStr += ENVIRONMENT_VARIABLE_DEFINITION_HEADER.data();
+      lineStr += envVar->GetName() + ": "s;
+      auto type = envVar->GetType();
+      if (type == ICanEnvVar::Type_e::DATA)
+      {
+         lineStr += "0";
+      }
+      else
+      {
+         lineStr += std::to_string(static_cast<int>(type));
+      }
+
+      lineStr += " ";
+
+      std::variant<CanEnvVar*, CanIntEnvVar*, CanFloatEnvVar*, CanStringEnvVar*, CanDataEnvVar*> vEnvVar = envVar;
+
+      std::invoke([&type, &vEnvVar, &envVar]
+      {
+         switch (type)
+         {
+            case ICanEnvVar::Type_e::INTEGER:
+            {
+               vEnvVar = dynamic_cast<CanIntEnvVar*>(envVar);
+               break;
+            }
+            case ICanEnvVar::Type_e::FLOAT:
+            {
+               vEnvVar = dynamic_cast<CanFloatEnvVar*>(envVar);
+               break;
+            }
+            case ICanEnvVar::Type_e::STRING:
+            {
+               vEnvVar = dynamic_cast<CanStringEnvVar*>(envVar);
+               break;
+            }
+            case ICanEnvVar::Type_e::DATA:
+            {
+               vEnvVar = dynamic_cast<CanDataEnvVar*>(envVar);
+               break;
+            }
+         }
+      });
+
+      lineStr += "[";
+
+      std::visit([this, &lineStr](auto&& arg)
+         {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, CanIntEnvVar*> || std::is_same_v<T, CanFloatEnvVar*>)
+            {
+               lineStr += std::to_string(arg->GetMinimum()) + "|";
+               lineStr += std::to_string(arg->GetMaximum()) + "] ";
+               lineStr += "\""s + arg->GetUnit() + "\" ";
+               lineStr += std::to_string(arg->GetInitialValue()) + " ";
+            }
+            else
+            {
+               lineStr += "0|0] \""s + arg->GetUnit() + "\" 0 ";
+            }
+         }, vEnvVar);
+
+      lineStr += std::to_string(envVar->GetId()) + " ";
+
+      lineStr += ICanEnvVar::ACCESS_TYPE_PREFIX;
+
+      const auto accessType = static_cast<int>(envVar->GetAccessType());
+      if (type == ICanEnvVar::Type_e::STRING)
+      {
+         lineStr += std::to_string(8000 + accessType);
+      }
+      else
+      {
+         lineStr += std::to_string(accessType);
+      }
+
+      lineStr += " ";
+      size_t accessNodesCount = envVar->GetAccessNodesCount();
+      if (accessNodesCount == 0)
+      {
+         lineStr += ICanNode::PSEUDO_NODE_NAME;
+      }
+
+      for (size_t i{}; const auto & accessNode : envVar->GetAccessNodes())
+      {
+         if (accessNode)
+         {
+            lineStr += accessNode->GetName();
+         }
+         if (i < accessNodesCount - 1)
+         {
+            lineStr += ", ";
+         }
+      }
+
+      lineStr += ";\n";
+   }
+
    return false;
 }
 
-bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
+bool CanBusConfig::WriteEnvironmentVariableDataDefinition(std::string& lineStr) const
 {
+   for (const auto& envVar : this->envVars)
+   {
+      if (envVar)
+      {
+         if (envVar->GetType() == ICanEnvVar::Type_e::DATA)
+         {
+            lineStr += ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER.data();
+            lineStr += envVar->GetName() + ": "s;
+
+            if (const auto dataEnvVar = dynamic_cast<CanDataEnvVar*>(envVar); dataEnvVar)
+            {
+               lineStr += std::to_string(dataEnvVar->GetLength()) + ";\n";
+            }
+         }
+      }
+   }
+
+   return false;
+}
+
+bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
+{
+   const std::string commentHeader = COMMENT_DEFINITION_HEADER.data();
+   std::string comment = this->GetComment();
+   if (comment != "")
+   {
+      lineStr += commentHeader + "\"" + comment + "\";\n";
+   }
+
+   for (const auto& node : this->nodes)
+   {
+      if (node)
+      {
+         comment = node->GetComment();
+         if (comment != "")
+         {
+            lineStr += commentHeader;
+            lineStr += DBC_KEYWORD_NETWORK_NODE.data() + " "s;
+            lineStr += node->GetName() + " "s;
+            lineStr += "\"" + comment + "\";\n";
+         }
+      }
+   }
+
+   for (const auto& message : this->messages)
+   {
+      if (message)
+      {
+         comment = message->GetComment();
+         if (comment != "")
+         {
+            lineStr += commentHeader;
+            lineStr += DBC_KEYWORD_MESSAGE.data() + " "s;
+            lineStr += std::to_string(message->GetId()) + " "s;
+            lineStr += "\"" + comment + "\";\n";
+         }
+      }
+   }
+
    for (const auto& signal : this->signals)
    {
       if (signal)
       {
-         const auto valueTable = signal->GetValueTable();
-         if (const auto message = signal->GetMessage(); message && valueTable)
+         comment = signal->GetComment();
+         const auto message = signal->GetMessage();
+         if (comment != "" && message)
          {
-            lineStr += VALUE_TABLE_DEFINITION_HEADER.data();
-            lineStr += std::to_string(message->GetId()) + " ";
-            lineStr += signal->GetName();
-
-            for (size_t i = 0; i < valueTable->GetValuesCount(); i++)
-            {
-               auto value = valueTable->GetValue(i);
-               if (const auto description = valueTable->GetValueDescription(value); description)
-               {
-                  lineStr += " " + std::to_string(value) + " ";
-                  lineStr += "\""s + description + "\"";
-               }
-               else
-               {
-                  lineStr = "";
-                  break;
-               }
-            }
-
-            lineStr += ";\n";
+            lineStr += commentHeader;
+            lineStr += DBC_KEYWORD_SIGNAL.data() + " "s;
+            lineStr += std::to_string(message->GetId()) + " "s;
+            lineStr += signal->GetName() + " "s;
+            lineStr += "\"" + comment + "\";\n";
          }
       }
    }
@@ -2268,27 +2413,13 @@ bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
    {
       if (envVar)
       {
-         if (const auto valueTable = envVar->GetValueTable();  valueTable)
+         comment = envVar->GetComment();
+         if (comment != "")
          {
-            lineStr += VALUE_TABLE_DEFINITION_HEADER.data();
-            lineStr += envVar->GetName();
-
-            for (size_t i = 0; i < valueTable->GetValuesCount(); i++)
-            {
-               auto value = valueTable->GetValue(i);
-               if (const auto description = valueTable->GetValueDescription(value); description)
-               {
-                  lineStr += " " + std::to_string(value) + " ";
-                  lineStr += "\""s + description + "\"";
-               }
-               else
-               {
-                  lineStr = "";
-                  break;
-               }
-            }
-
-            lineStr += ";\n";
+            lineStr += commentHeader;
+            lineStr += DBC_KEYWORD_ENVIRONMENT_VARIABLE.data() + " "s;
+            lineStr += envVar->GetName() + " "s;
+            lineStr += "\"" + comment + "\";\n";
          }
       }
    }
@@ -2547,12 +2678,67 @@ bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
    return false;
 }
 
-bool CanBusConfig::WriteEnvironmentVariableDataDefinition(std::string& lineStr) const
+bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
 {
-   return false;
-}
+   for (const auto& signal : this->signals)
+   {
+      if (signal)
+      {
+         const auto valueTable = signal->GetValueTable();
+         if (const auto message = signal->GetMessage(); message && valueTable)
+         {
+            lineStr += VALUE_TABLE_DEFINITION_HEADER.data();
+            lineStr += std::to_string(message->GetId()) + " ";
+            lineStr += signal->GetName();
 
-bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
-{
+            for (size_t i = 0; i < valueTable->GetValuesCount(); i++)
+            {
+               auto value = valueTable->GetValue(i);
+               if (const auto description = valueTable->GetValueDescription(value); description)
+               {
+                  lineStr += " " + std::to_string(value) + " ";
+                  lineStr += "\""s + description + "\"";
+               }
+               else
+               {
+                  lineStr = "";
+                  break;
+               }
+            }
+
+            lineStr += ";\n";
+         }
+      }
+   }
+
+   for (const auto& envVar : this->envVars)
+   {
+      if (envVar)
+      {
+         if (const auto valueTable = envVar->GetValueTable();  valueTable)
+         {
+            lineStr += VALUE_TABLE_DEFINITION_HEADER.data();
+            lineStr += envVar->GetName();
+
+            for (size_t i = 0; i < valueTable->GetValuesCount(); i++)
+            {
+               auto value = valueTable->GetValue(i);
+               if (const auto description = valueTable->GetValueDescription(value); description)
+               {
+                  lineStr += " " + std::to_string(value) + " ";
+                  lineStr += "\""s + description + "\"";
+               }
+               else
+               {
+                  lineStr = "";
+                  break;
+               }
+            }
+
+            lineStr += ";\n";
+         }
+      }
+   }
+
    return false;
 }

@@ -101,6 +101,11 @@ ICanNode* CanEnvVar::GetAccessNodeByName(const char* name) const
    return (it != this->accessNodes.end() ? *it : nullptr);
 }
 
+std::vector<CanNode*> CanEnvVar::GetAccessNodes(void) const
+{
+   return this->accessNodes;
+}
+
 void CanEnvVar::AddAccessNode(CanNode* accessNode)
 {
    if (accessNode != nullptr)

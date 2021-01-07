@@ -34,6 +34,7 @@ public:
    size_t GetAccessNodesCount(void) const override;
    ICanNode* GetAccessNodeByIndex(size_t index) const override;
    ICanNode* GetAccessNodeByName(const char* name) const override;
+   std::vector<CanNode*> GetAccessNodes(void) const;
    void AddAccessNode(CanNode* accessNode);
 
    ICanValueTable* GetValueTable(void) const override;

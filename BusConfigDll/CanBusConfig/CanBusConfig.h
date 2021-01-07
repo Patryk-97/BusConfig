@@ -97,12 +97,12 @@ private:
    bool WriteSignalDefinition(CanMessage* message, std::string& lineStr) const;
    bool WriteNodeDefinition(std::string& lineStr) const;
    bool WriteEnvironmentVariableDefinition(std::string& lineStr) const;
-   bool WriteValueTableDefinition(std::string& lineStr) const;
+   bool WriteEnvironmentVariableDataDefinition(std::string& lineStr) const;
+   bool WriteCommentDefinition(std::string& lineStr) const;
    bool WriteAttributeDefinition(std::string& lineStr) const;
    bool WriteAttributeDefaultDefinition(std::string& lineStr) const;
    bool WriteAttributeValueDefinition(std::string& lineStr) const;
-   bool WriteEnvironmentVariableDataDefinition(std::string& lineStr) const;
-   bool WriteCommentDefinition(std::string& lineStr) const;
+   bool WriteValueTableDefinition(std::string& lineStr) const;
 
    // member variables
    std::string fileName;
