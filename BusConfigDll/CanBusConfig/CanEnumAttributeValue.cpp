@@ -7,6 +7,7 @@ CanEnumAttributeValue::~CanEnumAttributeValue()
 
 void CanEnumAttributeValue::Clear()
 {
+   CanAttributeValue::Clear();
    this->value = "";
 }
 

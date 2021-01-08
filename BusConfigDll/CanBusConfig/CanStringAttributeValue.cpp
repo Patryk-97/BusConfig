@@ -7,6 +7,7 @@ CanStringAttributeValue::~CanStringAttributeValue()
 
 void CanStringAttributeValue::Clear()
 {
+   CanAttributeValue::Clear();
    this->value = "";
 }
 

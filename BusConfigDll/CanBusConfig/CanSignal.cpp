@@ -342,6 +342,11 @@ ICanAttribute* CanSignal::GetAttributeByName(const char* name) const
    return CanAttributeOwner::GetAttributeByName(name);
 }
 
+size_t CanSignal::GetAttributesValuesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesValuesCount();
+}
+
 ICanAttributeValue* CanSignal::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);

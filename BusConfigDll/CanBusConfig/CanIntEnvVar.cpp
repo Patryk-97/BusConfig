@@ -102,6 +102,11 @@ ICanAttribute* CanIntEnvVar::GetAttributeByName(const char* name) const
    return CanEnvVar::GetAttributeByName(name);
 }
 
+size_t CanIntEnvVar::GetAttributesValuesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesValuesCount();
+}
+
 ICanAttributeValue* CanIntEnvVar::GetAttributeValue(const char* attributeName) const
 {
    return CanEnvVar::GetAttributeValue(attributeName);

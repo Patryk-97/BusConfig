@@ -1,3 +1,37 @@
+VERSION "HNNBNNNYNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN/4/%%%/4/'%**4NNN///"
+
+
+NS_ :
+	NS_DESC_
+CM_
+BA_DEF_
+BA_
+VAL_
+CAT_DEF_
+CAT_
+FILTER
+BA_DEF_DEF_
+EV_DATA_
+ENVVAR_DATA_
+SGTYPE_
+SGTYPE_VAL_
+BA_DEF_SGTYPE_
+BA_SGTYPE_
+SIG_TYPE_REF_
+VAL_TABLE_
+SIG_GROUP_
+SIG_VALTYPE_
+SIGTYPE_VALTYPE_
+BO_TX_BU_
+BA_DEF_REL_
+BA_REL_
+BA_DEF_DEF_REL_
+BU_SG_REL_
+BU_EV_REL_
+BU_BO_REL_
+
+BS_ :
+
 BU_:  Airbag BAP_Tester ICAS1_Gateway ICAS1_KommunikationsServer LE1 LE2 Motor_BEV Schaltbetaetigung
 
 BO_ 333 ACC_18: 32 ICAS1_Gateway
@@ -2891,6 +2925,206 @@ BO_ 1411 ZV_02: 8 ICAS1_Gateway
  SG_ ZV_SAD_zu  : 60|1@1+ (1.000000,0.000000) [0.000000|1.000000] "" Vector__XXX 
  SG_ ZV_verriegelt_soll  : 62|2@1+ (1.000000,0.000000) [0.000000|3.000000] "" Vector__XXX 
 
+CM_ BO_ 960 "MQB";
+CM_ BO_ 982 "MQB";
+CM_ BO_ 1648 "Kombischnittstelle";
+CM_ BO_ 339 "CAN-Botschaft";
+CM_ SG_ 219 SDF_PSF_Objektstatus "Objektstatus";
+CM_ SG_ 219 SDF_PSF_CU_Status "Kollisionsvermeidbarkeit";
+CM_ SG_ 219 SDF_PSF_CW "Kollisionswahrscheinlichkeit";
+CM_ SG_ 219 SDF_PSF_Fahrer_aktiv "Fahreraktivität";
+CM_ SG_ 219 AWV_QFK_KruemmSoll "Krümmungsanforderung";
+CM_ SG_ 869 BEM_Batt_Ab "Batterieverbindungskontrolle:
+0x0: Batterie am Bordnetz
+0x1: Batterie ab erkannt";
+CM_ SG_ 2463978646 CHA_Ziel_FahrPr_ACC "MQB
+Anforderung Ziel-Fahrprogramm ACC";
+CM_ SG_ 514 DR_Aufbaubeschleunigung_HR "Aufbaubeschleunigungssensor
+Auflösung 1g/300
+Wertebereich -1,6g..1,6g
+in m/s^2 übertragen.";
+CM_ SG_ 514 DR_Aufbaubeschleunigung_VR "Aufbaubeschleunigungssensor
+Auflösung 1g/300
+Wertebereich -1,6g..1,6g
+in m/s^2 übertragen.";
+CM_ SG_ 514 DR_Aufbaubeschleunigung_VL "Aufbaubeschleunigungssensor
+Auflösung 1g/300
+Wertebereich -1,6g..1,6g
+in m/s^2 übertragen.";
+CM_ SG_ 514 DR_Aufbaubeschleunigung_HL "Aufbaubeschleunigungssensor
+Auflösung 1g/300
+Wertebereich -1,6g..1,6g
+in m/s^2 übertragen.";
+CM_ SG_ 2549876269 Diag_Waehlhebel_Req_Data "UDS-Diagnose
+ISO-TP Datenkanal - FID2NA
+Request Funktion 0x06 Diagnosezugriff vom DK4-Master auf DK1/2-Knoten 0x62D";
+CM_ SG_ 2550007341 Diag_Waehlhebel_Resp_Data "UDS-Diganose
+ISO-TP Datenkanal - FID2NA
+Response DK1/2-Knoten 0x62D an Funktion 0x06 Diagnosezugriff vom DK4-Master";
+CM_ SG_ 1714 Uhrzeit_01_alt "
+";
+CM_ SG_ 851 DiETa_Lock_Unlock_Taste "Lock-/Unlock-Taste";
+CM_ SG_ 374 EBKV_QBit_Fahrer_bremst "
+";
+CM_ SG_ 184 EM1_Freigabe_Info_WFS "WFS-Freigabeinformation";
+CM_ SG_ 184 EM1_Sperr_Info_WFS "WFS-Sperrinformation
+";
+CM_ SG_ 184 EM1_Freigabe_Verfallsinfo_WFS "WFS";
+CM_ SG_ 199 EM2_Freigabe_Info_WFS "WFS-Freigabeinformation
+
+";
+CM_ SG_ 199 EM2_Sperr_Info_WFS "WFS-Sperrinformation
+";
+CM_ SG_ 199 EM2_Freigabe_Verfallsinfo_WFS "WFS";
+CM_ SG_ 258 ESP_v_ref "MLBevo:
+Signal wird nur von einem BOSCH ESP System zur Verfügung gestellt. Exklusives Signal vom BOSCH ESP zum BOSCH Airbag für ROSEII Funktion und für Fahrwerkregelsysteme.
+Verwendung nur nach vorheriger Abstimmung mit den verantwortlichen EF Fachbere";
+CM_ SG_ 258 EPB_Freig_Verzoeg_Anf "Verzögerungsanforderung	";
+CM_ SG_ 278 ESP_10_BZ "Botschaftszähler
+
+Wird im Projekt D4 und D4Hybrid nicht verwendet!  Wird im D4 PA verwendet";
+CM_ SG_ 795 ABS_Lampe "Sicherheitswarnlampe
+
+Weiterführende Informationen im Lastenheft spezifiziert und in der entsprechenden Fachabteilung zu erfragen.";
+CM_ SG_ 987 VS_Verdeck_Anf "
+
+
+
+";
+CM_ SG_ 987 VS_VD_entriegelt "
+
+";
+CM_ SG_ 987 VS_VD_zu_ver "
+";
+CM_ SG_ 987 BCM1_Rueckfahrlicht_Schalter "Rückfahrlichtschalter
+ab MQB/ MLBevo: Die Ganginformation wird unentprellt übertragen, im AT-Getriebe wird evtl. kurzzeitig der R-Gang angezeigt. Eine Entprellung muß im Empfänger erfolgen (typisch 400ms).";
+CM_ SG_ 987 BCM1_MH_Schalter "Motorhaubenkontakt";
+CM_ SG_ 173 Getriebe_11_BZ "Botschaftszähler";
+CM_ SG_ 173 GE_MMom_Status "Qualifiziert
+MLB: GE_MMom_Soll
+MQB: GE_MMom_Soll_02";
+CM_ SG_ 173 GE_Zielgang "VL-Getriebe:
+Signalisiert den Zielgang im manuellen Modus während eines Schaltvorgangs bzw. die momentane simulierte Gangstufe wenn kein Schaltvorgang aktiv ist. In den Fahrprogrammen 'D' und 'S' ist die Übersetzung variabel und somit wird dauerhaft 'Ist";
+CM_ SG_ 268 ImoCord_Auth_Aufforderung_WFS "WFS-Anforderung";
+CM_ SG_ 2549088374 MO_KD_Fehler "Kundendienstfehlerspeicherbit";
+CM_ SG_ 982 LH_Nebelschluss_aktiv "Nebelschlusslicht
+";
+CM_ SG_ 982 LH_Rueckfahrlicht_aktiv "Rueckfahrlicht
+";
+CM_ SG_ 1600 MO_QBit_Ansaugluft_Temp "
+";
+CM_ SG_ 1600 MO_QBit_Kuehlmittel_Temp "
+";
+CM_ SG_ 1600 MO_Kuehlmittel_Temp "Kuehlmitteltemperatur";
+CM_ SG_ 958 MO_Gangposition "MLB:
+Stellung des Wählhebels in der Schaltgasse des Handschaltgetriebes.
+MLBevo:
+Ausweitung der Bedienung auch auf Automatikgetrieb";
+CM_ SG_ 958 MO_QBit_Fahrer_bremst "MLB:
+AUDI D4: Zykluszeit: 10ms (siehe Zykluszeit schnell/Cycletime Fast)
+
+Achtung:
+Reduktion der Zykluszeit Motor_03 auf 10ms geplant.
+Projektabhängig soll künftig mit 10ms gesendet werden.
+Empfänger die in weiteren Konzern-Projekten eingesetzt werd";
+CM_ SG_ 958 MO_Konsistenz_Bremsped "MLB:
+
+AUDI D4: Zykluszeit: 10ms (siehe Zykluszeit schnell/Cycletime Fast)
+Siehe 'Funktionsspezifikation Bremslichtinfo B8'
+
+Achtung:
+Reduktion der Zykluszeit Motor_03 auf 10ms geplant.
+Projektabhängig soll künftig mit 10ms gesendet werden.
+Empfäng";
+CM_ SG_ 958 MO_Kuppl_schalter "MLB:
+Das Motorsteuergerät gibt die Information aus, ab wann der Kupplungsschalter durch das Motorsteuergerät als getreten gesehen wird
+0x0: Schalter sagt betätigt (Ausgekuppelt)
+0x1: Schalter sagt nicht betätigt (Eingekuppelt)
+
+MQB:
+Nur Handschalter";
+CM_ SG_ 1648 MO1_Sperr_Info_WFS "WFS-Sperrinformation";
+CM_ SG_ 1648 MO1_Freigabe_Info_WFS "WFS-Freigabeinformation";
+CM_ SG_ 1648 MO1_Freigabe_Verfallsinfo_WFS "WFS-Freigabeverfallsinformation";
+CM_ SG_ 190 MO_EM1_Sollmodus "Werte:
+Anforderung der Betriebsart der E-Maschine
+0: Standby; Kommunikation aktiv; aktiver Kurzschluss
+1: Momentenregelung
+2: Drehzahlregelung (interner Regelkreis)
+3: Spannungsregelung
+4: Drehzahlregelung (externer Regelkreis)
+5: nicht verfügbar";
+CM_ SG_ 190 MO_EM2_Sollmodus "Werte:
+Anforderung der Betriebsart der E-Maschine
+0: Standby; Kommunikation aktiv; aktiver Kurzschluss
+1: Momentenregelung
+2: Drehzahlregelung (interner Regelkreis)
+3: Spannungsregelung
+4: Drehzahlregelung (externer Regelkreis)
+5: nicht verfügbar";
+CM_ SG_ 518 Parken_QFK_KruemmSoll "Krümmungsanforderung";
+CM_ SG_ 1124 PSD_Sys_Laendercode "Ländercode
+";
+CM_ SG_ 591 RDR1_Blindheit_erkannt "Blindheitserkennung";
+CM_ SG_ 980 WH_SRA "Scheinwerferreinigungsanlage
+
+derzeit nur bei PAG umgesetzt";
+CM_ SG_ 1716 VIN_01_MUX "Achtung:
+Die Botschaft ist nicht linear gemultiplext!!!
+Sondern 0,1,0,2,0, usw.";
+CM_ SG_ 1716 VIN_4 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_11 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_5 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_12 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_6 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_13 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_7 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_14 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_1 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_8 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_15 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_2 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_9 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_16 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_3 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_10 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1716 VIN_17 "Initwert:
+0x2D bei Fahrzeugen mit Wegfahrsperrengeneration >= 5
+0x58 bei Fahrzeugen mit Wegfahrsperrengeneration < 5 (z.B. WFS-4)";
+CM_ SG_ 1411 BCM_HSK_Freigabe "Handschuhkastenfreigabe";
+CM_ SG_ 1411 ZV_Heckeinzelentriegelung "Heckdeckeleinzelentriegelung";
 BA_DEF_  "DBName" STRING;
 BA_DEF_  "GenNWMApBusSleep" STRING;
 BA_DEF_  "GenNWMApCanNormal" STRING;

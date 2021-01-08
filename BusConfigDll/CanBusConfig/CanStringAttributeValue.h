@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ICanStringAttributeValue.h"
+#include "CanAttributeValue.h"
 #include <string>
 
-class CanStringAttributeValue : public ICanStringAttributeValue
+class CanStringAttributeValue : public CanAttributeValue, public ICanStringAttributeValue
 {
 public:
    CanStringAttributeValue() = default;

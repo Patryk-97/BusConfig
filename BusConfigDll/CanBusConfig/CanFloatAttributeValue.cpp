@@ -7,6 +7,7 @@ CanFloatAttributeValue::~CanFloatAttributeValue()
 
 void CanFloatAttributeValue::Clear()
 {
+   CanAttributeValue::Clear();
    this->value = 0.f;
 }
 

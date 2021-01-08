@@ -116,6 +116,11 @@ ICanAttribute* CanNode::GetAttributeByName(const char* name) const
    return CanAttributeOwner::GetAttributeByName(name);
 }
 
+size_t CanNode::GetAttributesValuesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesValuesCount();
+}
+
 ICanAttributeValue* CanNode::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);

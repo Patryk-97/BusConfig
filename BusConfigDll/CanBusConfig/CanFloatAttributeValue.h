@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ICanFloatAttributeValue.h"
+#include "CanAttributeValue.h"
 
-class CanFloatAttributeValue : public ICanFloatAttributeValue
+class CanFloatAttributeValue : public CanAttributeValue, public ICanFloatAttributeValue
 {
 public:
    CanFloatAttributeValue() = default;

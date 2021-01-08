@@ -1,5 +1,6 @@
 #include "CanAttributeOwner.h"
 #include "CanIntAttribute.h"
+#include "helpers.h"
 #include <algorithm>
 
 namespace ranges = std::ranges;
@@ -11,6 +12,18 @@ CanAttributeOwner::~CanAttributeOwner()
 
 void CanAttributeOwner::Clear(void)
 {
+   if (this->objectType == ICanAttribute::IObjectType_e::NETWORK)
+   {
+      helpers::ClearContainer(this->attributes);
+   }
+   else
+   {
+      this->attributes.clear();
+   }
+   this->attributesValuesCount = 0;
+   for (auto& [key, value] : this->attributesValues) { delete value; value = nullptr; };
+   this->attributesValues.clear();
+   helpers::ClearContainer(this->attributes);
    this->objectType = ICanAttribute::IObjectType_e::UNDEFINED;
 }
 
@@ -57,13 +70,23 @@ void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
    }
 }
 
+size_t CanAttributeOwner::GetAttributesValuesCount(void) const
+{
+   return this->attributesValuesCount;
+}
+
 ICanAttributeValue* CanAttributeOwner::GetAttributeValue(const char* attributeName) const
 {
    auto it = this->attributesValues.find(std::string{ attributeName });
    return (it != this->attributesValues.end() ? it->second : nullptr);
 }
 
-void CanAttributeOwner::AddAttributeValue(const std::string& attributeName, ICanAttributeValue* attributeValue)
+void CanAttributeOwner::AddAttributeValue(const std::string& attributeName, CanAttributeValue* attributeValue)
 {
+   if (this->attributesValues.find(attributeName) == this->attributesValues.end())
+   {
+      ++this->attributesValuesCount;
+   }
+
    this->attributesValues[attributeName] = attributeValue;
 }

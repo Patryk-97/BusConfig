@@ -7,6 +7,7 @@ CanIntAttributeValue::~CanIntAttributeValue()
 
 void CanIntAttributeValue::Clear()
 {
+   CanAttributeValue::Clear();
    this->value = 0;
 }
 

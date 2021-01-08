@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ICanIntAttributeValue.h"
+#include "CanAttributeValue.h"
 
-class CanIntAttributeValue : public ICanIntAttributeValue
+class CanIntAttributeValue : public CanAttributeValue, public ICanIntAttributeValue
 {
 public:
    CanIntAttributeValue() = default;

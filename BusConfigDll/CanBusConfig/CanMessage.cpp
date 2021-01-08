@@ -124,6 +124,11 @@ ICanAttribute* CanMessage::GetAttributeByName(const char* name) const
    return CanAttributeOwner::GetAttributeByName(name);
 }
 
+size_t CanMessage::GetAttributesValuesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesValuesCount();
+}
+
 ICanAttributeValue* CanMessage::GetAttributeValue(const char* attributeName) const
 {
    return CanAttributeOwner::GetAttributeValue(attributeName);

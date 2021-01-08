@@ -2,6 +2,7 @@
 
 #include "ICanAttributeOwner.h"
 #include "CanAttribute.h"
+#include "CanAttributeValue.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -20,12 +21,13 @@ public:
    std::vector<CanAttribute*> GetAttributes(void) const;
    void AddAttribute(CanAttribute* attribute);
 
+   size_t GetAttributesValuesCount(void) const override;
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
-   void AddAttributeValue(const std::string& attributeName, ICanAttributeValue* attributeValue);
+   void AddAttributeValue(const std::string& attributeName, CanAttributeValue* attributeValue);
 
-public:
-   ICanAttribute::IObjectType_e objectType { ICanAttribute::IObjectType_e::UNDEFINED };
 private:
+   ICanAttribute::IObjectType_e objectType{ ICanAttribute::IObjectType_e::UNDEFINED };
    std::vector<CanAttribute*> attributes;
-   std::map<std::string, ICanAttributeValue*> attributesValues;
+   size_t attributesValuesCount {};
+   std::map<std::string, CanAttributeValue*> attributesValues;
 };

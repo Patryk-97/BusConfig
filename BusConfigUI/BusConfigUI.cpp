@@ -252,6 +252,10 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
          const auto canNetworkNode = this->canBusConfig->GetNodeByName(parentText.toUtf8());
          this->BuildAttributesProperties(canNetworkNode);
       }
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::NETWORK.data())
+      {
+         this->BuildAttributesProperties(this->canBusConfig);
+      }
    }
 
    this->isTableWidgetFilled = true;
@@ -481,12 +485,14 @@ void BusConfigUI::BuildTree(void)
    this->ui.treeWidget_MainView->addTopLevelItem(networkTreeItem);
    networkTreeItem->setText(0, ItemId::NETWORK.data());
    networkTreeItem->setIcon(0, this->icons[Icon_e::NETWORK]);
+   networkTreeItem->setWhatsThis(0, ItemId::NETWORK.data());
+   networkTreeItem->setToolTip(0, "Network");
 
    auto canNetworkNodesTreeItem = new QTreeWidgetItem{ networkTreeItem };
-   canNetworkNodesTreeItem->setText(0, "Can network nodes");
+   canNetworkNodesTreeItem->setText(0, "Network nodes");
    canNetworkNodesTreeItem->setIcon(0, this->icons[Icon_e::NETWORK_NODE]);
    canNetworkNodesTreeItem->setWhatsThis(0, ItemId::CAN_NETWORK_NODES.data());
-   canNetworkNodesTreeItem->setToolTip(0, "Can network node");
+   canNetworkNodesTreeItem->setToolTip(0, "Can network nodes");
    size_t canNodesCount = this->canBusConfig->GetNodesCount();
    for (size_t i = 0; i < canNodesCount; i++)
    {
@@ -653,6 +659,7 @@ void BusConfigUI::BuildTree(void)
 
    auto attributesItem = new QTreeWidgetItem{ networkTreeItem };
    attributesItem->setText(0, "Attributes");
+   attributesItem->setIcon(0, this->icons[Icon_e::ATTRIBUTES]);
    attributesItem->setWhatsThis(0, ItemId::ATTRIBUTES.data());
    attributesItem->setToolTip(0, "Attributes");
 }
@@ -930,14 +937,7 @@ void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarNam
       std::visit([this] (auto&& arg)
       {
          using T = std::decay_t<decltype(arg)>;
-         if constexpr (std::is_same_v<T, ICanIntEnvVar*>)
-         {
-            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
-            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
-            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
-            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-         }
-         else if constexpr (std::is_same_v<T, ICanFloatEnvVar*>)
+         if constexpr (std::is_same_v<T, ICanIntEnvVar*> || std::is_same_v<T, ICanFloatEnvVar*>)
          {
             this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
             this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
@@ -1191,7 +1191,7 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
 {
    if (attributeOwner)
    {
-      size_t attributesCount = attributeOwner->GetAttributesCount();
+      size_t attributesCount = attributeOwner->GetAttributesValuesCount();
       QStringList headerLabels;
       headerLabels << "Name" << "Value";
 

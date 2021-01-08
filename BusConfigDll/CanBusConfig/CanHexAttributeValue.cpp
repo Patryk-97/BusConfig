@@ -7,6 +7,7 @@ CanHexAttributeValue::~CanHexAttributeValue()
 
 void CanHexAttributeValue::Clear()
 {
+   CanAttributeValue::Clear();
    this->value = 0;
 }
 

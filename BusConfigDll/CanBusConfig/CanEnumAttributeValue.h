@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ICanEnumAttributeValue.h"
+#include <CanAttributeValue.h>
 #include <string>
 
-class CanEnumAttributeValue : public ICanEnumAttributeValue
+class CanEnumAttributeValue : public CanAttributeValue, public ICanEnumAttributeValue
 {
 public:
    CanEnumAttributeValue() = default;

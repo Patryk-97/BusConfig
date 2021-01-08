@@ -9,7 +9,7 @@
 #include "CanFloatAttribute.h"
 #include "CanStringAttribute.h"
 #include "CanEnumAttribute.h"
-#include "ICanAttributeValueFactory.h"
+#include "CanAttributeValueFactory.h"
 #include "CanEnvVarFactory.h"
 #include "CanIntEnvVar.h"
 #include "CanFloatEnvVar.h"
@@ -396,6 +396,11 @@ ICanAttribute* CanBusConfig::GetAttributeByIndex(size_t index) const
 ICanAttribute* CanBusConfig::GetAttributeByName(const char* name) const
 {
    return CanAttributeOwner::GetAttributeByName(name);
+}
+
+size_t CanBusConfig::GetAttributesValuesCount(void) const
+{
+   return CanAttributeOwner::GetAttributesValuesCount();
 }
 
 ICanAttributeValue* CanBusConfig::GetAttributeValue(const char* attributeName) const
@@ -1580,8 +1585,8 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                         {
                            attributeOwner->AddAttribute(attribute);
                         }
-                        ICanAttributeValue* attributeValue = 
-                           ICanAttributeValueFactory::CreateAttributeValue(attribute->GetValueType());
+                        CanAttributeValue* attributeValue = 
+                           CanAttributeValueFactory::CreateAttributeValue(attribute->GetValueType());
                         if (attributeValue)
                         {
                            std::string value = token;
@@ -2170,32 +2175,32 @@ bool CanBusConfig::WriteFileHeader(std::string& lineStr) const
    lineStr += "\n\n\n";
    lineStr += "NS_ :\n";
    lineStr += "\tNS_DESC_\n";
-   lineStr += "CM_\n";
-   lineStr += "BA_DEF_\n";
-   lineStr += "BA_\n";
-   lineStr += "VAL_\n";
-   lineStr += "CAT_DEF_\n";
-   lineStr += "CAT_\n";
-   lineStr += "FILTER\n";
-   lineStr += "BA_DEF_DEF_\n";
-   lineStr += "EV_DATA_\n";
-   lineStr += "ENVVAR_DATA_\n";
-   lineStr += "SGTYPE_\n";
-   lineStr += "SGTYPE_VAL_\n";
-   lineStr += "BA_DEF_SGTYPE_\n";
-   lineStr += "BA_SGTYPE_\n";
-   lineStr += "SIG_TYPE_REF_\n";
-   lineStr += "VAL_TABLE_\n";
-   lineStr += "SIG_GROUP_\n";
-   lineStr += "SIG_VALTYPE_\n";
-   lineStr += "SIGTYPE_VALTYPE_\n";
-   lineStr += "BO_TX_BU_\n";
-   lineStr += "BA_DEF_REL_\n";
-   lineStr += "BA_REL_\n";
-   lineStr += "BA_DEF_DEF_REL_\n";
-   lineStr += "BU_SG_REL_\n";
-   lineStr += "BU_EV_REL_\n";
-   lineStr += "BU_BO_REL_\n";
+   lineStr += "\tCM_\n";
+   lineStr += "\tBA_DEF_\n";
+   lineStr += "\tBA_\n";
+   lineStr += "\tVAL_\n";
+   lineStr += "\tCAT_DEF_\n";
+   lineStr += "\tCAT_\n";
+   lineStr += "\tFILTER\n";
+   lineStr += "\tBA_DEF_DEF_\n";
+   lineStr += "\tEV_DATA_\n";
+   lineStr += "\tENVVAR_DATA_\n";
+   lineStr += "\tSGTYPE_\n";
+   lineStr += "\tSGTYPE_VAL_\n";
+   lineStr += "\tBA_DEF_SGTYPE_\n";
+   lineStr += "\tBA_SGTYPE_\n";
+   lineStr += "\tSIG_TYPE_REF_\n";
+   lineStr += "\tVAL_TABLE_\n";
+   lineStr += "\tSIG_GROUP_\n";
+   lineStr += "\tSIG_VALTYPE_\n";
+   lineStr += "\tSIGTYPE_VALTYPE_\n";
+   lineStr += "\tBO_TX_BU_\n";
+   lineStr += "\tBA_DEF_REL_\n";
+   lineStr += "\tBA_REL_\n";
+   lineStr += "\tBA_DEF_DEF_REL_\n";
+   lineStr += "\tBU_SG_REL_\n";
+   lineStr += "\tBU_EV_REL_\n";
+   lineStr += "\tBU_BO_REL_\n";
    lineStr += "\n";
    lineStr += "BS_ :\n";
    lineStr += "\n";

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ICanHexAttributeValue.h"
+#include "CanAttributeValue.h"
 
-class CanHexAttributeValue : public ICanHexAttributeValue
+class CanHexAttributeValue : public CanAttributeValue, public ICanHexAttributeValue
 {
 public:
    CanHexAttributeValue() = default;

@@ -1,11 +1,11 @@
-#include "ICanAttributeValueFactory.h"
+#include "CanAttributeValueFactory.h"
 #include "CanIntAttributeValue.h"
 #include "CanHexAttributeValue.h"
 #include "CanFloatAttributeValue.h"
 #include "CanStringAttributeValue.h"
 #include "CanEnumAttributeValue.h"
 
-ICanAttributeValue* ICanAttributeValueFactory::CreateAttributeValue(ICanAttribute::IValueType_e valueType)
+CanAttributeValue* CanAttributeValueFactory::CreateAttributeValue(ICanAttribute::IValueType_e valueType)
 {
    switch (valueType)
    {

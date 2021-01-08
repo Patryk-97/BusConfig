@@ -153,9 +153,6 @@
     <ClInclude Include="CanBusConfig\CanAttributeOwner.h">
       <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interfaces\ICanAttributeValueFactory.h">
-      <Filter>Interfaces\CanAttributes</Filter>
-    </ClInclude>
     <ClInclude Include="CanBusConfig\CanAttributeManager.h">
       <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClInclude>
@@ -203,6 +200,12 @@
     </ClInclude>
     <ClInclude Include="CanBusConfig\CanEnvVarFactory.h">
       <Filter>Pliki nagłówkowe\CanEnvironmentVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanAttributeValue.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Interfaces\CanAttributeValueFactory.h">
+      <Filter>Interfaces\CanAttributes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -269,9 +272,6 @@
     <ClCompile Include="CanBusConfig\CanAttributeManager.cpp">
       <Filter>Pliki źródłowe\CanAttributes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Interfaces\ICanAttributeValueFactory.cpp">
-      <Filter>Interfaces\CanAttributes</Filter>
-    </ClCompile>
     <ClCompile Include="CanBusConfig\CanEnvVar.cpp">
       <Filter>Pliki źródłowe\CanEnvironmentVariables</Filter>
     </ClCompile>
@@ -289,6 +289,12 @@
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanEnvVarFactory.cpp">
       <Filter>Pliki źródłowe\CanEnvironmentVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanAttributeValue.cpp">
+      <Filter>Pliki źródłowe\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Interfaces\CanAttributeValueFactory.cpp">
+      <Filter>Interfaces\CanAttributes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
