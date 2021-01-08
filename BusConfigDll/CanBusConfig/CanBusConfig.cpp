@@ -1752,11 +1752,41 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
       ICanAttribute::IObjectType_e objectType { ICanAttribute::IObjectType_e::UNDEFINED };
       bool endingQuote { false };
       std::string comment;
+      std::vector<std::string> tokens;
+
+      // prepare comment definition tokens
+      std::invoke([&tokenizer, &tokens, this]
+      {
+         bool commentStart { false };
+
+         for (const auto& token : tokenizer)
+         {
+            if (token != "")
+            {
+               if (token.starts_with("\"") && !commentStart)
+               {
+                  tokens.push_back(token);
+                  commentStart = true;
+               }
+               else
+               {
+                  if (commentStart)
+                  {
+                     tokens[tokens.size() - 1] = tokens[tokens.size() - 1] + token;
+                  }
+                  else
+                  {
+                     tokens.push_back(token);
+                  }
+               }
+            }
+         }
+      });
 
       // If everything's okay
-      if (ranges::distance(tokenizer) >= COMMENT_DEFINITION_ELEMENTS_MIN_COUNT)
+      if (ranges::distance(tokens) >= COMMENT_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         const auto commentObjectType = *std::next(tokenizer.begin(), COMMENT_OBJECT_TYPE_POS);
+         const auto commentObjectType = *std::next(tokens.begin(), COMMENT_OBJECT_TYPE_POS);
          if (commentObjectType == DBC_KEYWORD_NETWORK_NODE)
          {
             elementsMinCount = NODE_COMMENT_DEFINITION_ELEMENTS_MIN_COUNT;
@@ -1788,9 +1818,9 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
             this->log += "Wrong comment object type [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
          }
 
-         if (rV && ranges::distance(tokenizer) == elementsMinCount)
+         if (rV && ranges::distance(tokens) == elementsMinCount)
          {
-            for (size_t pos{}; const auto& token : tokenizer)
+            for (size_t pos{}; const auto& token : tokens)
             {
                if (pos == COMMENT_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
                {
