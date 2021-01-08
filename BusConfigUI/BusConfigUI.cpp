@@ -388,50 +388,51 @@ void BusConfigUI::on_tableWidget_Properties_cellChanged(int row, int column)
 void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
 {
    QPoint globalPos = this->ui.tableWidget_Properties->mapToGlobal(pos);
-   QTableWidgetItem* item = this->ui.tableWidget_Properties->itemAt(pos);
-
-   //create right click menu item
-   QMenu* itemMenu = new QMenu { this->ui.tableWidget_Properties };
-   QAction* itemMenuEntry{ nullptr };
-   itemMenuEntry = new QAction { "Remove", itemMenu };
-   itemMenu->addAction(itemMenuEntry);
-
-   const auto itemType = this->ui.tableWidget_Properties->whatsThis();
-   const int row = item->row();
-
-   connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row]
+   if (const auto item = this->ui.tableWidget_Properties->itemAt(pos); item)
    {
-      QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
-      if (itemType == "CanMessage")
-      {
-         this->RemoveCanMessage(name);
-      }
-      else if (itemType == "CanMessages")
-      {
-         this->RemoveCanMessage(row);
-      }
-      else if (itemType == "CanSignal")
-      {
-         this->RemoveCanSignal(name);
-      }
-      else if (itemType == "CanSignals")
-      {
-         this->RemoveCanSignal(row);
-      }
-      else if (itemType == "CanEnvironmentVariable")
-      {
-         this->RemoveCanEnvVar(name);
-      }
-      else if (itemType == "CanEnvironmentVariables")
-      {
-         this->RemoveCanEnvVar(row);
-      }
+      //create right click menu item
+      QMenu* itemMenu = new QMenu{ this->ui.tableWidget_Properties };
+      QAction* itemMenuEntry{ nullptr };
+      itemMenuEntry = new QAction{ "Remove", itemMenu };
+      itemMenu->addAction(itemMenuEntry);
 
-      this->ui.tableWidget_Properties->removeRow(row);
-      this->RemoveFromTreeWidget(name);
-   });
+      const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+      const int row = item->row();
 
-   QAction* input = itemMenu->exec(globalPos);
+      connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row]
+         {
+            QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
+            if (itemType == "CanMessage")
+            {
+               this->RemoveCanMessage(name);
+            }
+            else if (itemType == "CanMessages")
+            {
+               this->RemoveCanMessage(row);
+            }
+            else if (itemType == "CanSignal")
+            {
+               this->RemoveCanSignal(name);
+            }
+            else if (itemType == "CanSignals")
+            {
+               this->RemoveCanSignal(row);
+            }
+            else if (itemType == "CanEnvironmentVariable")
+            {
+               this->RemoveCanEnvVar(name);
+            }
+            else if (itemType == "CanEnvironmentVariables")
+            {
+               this->RemoveCanEnvVar(row);
+            }
+
+            this->ui.tableWidget_Properties->removeRow(row);
+            this->RemoveFromTreeWidget(name);
+         });
+
+      QAction* input = itemMenu->exec(globalPos);
+   }
 }
 
 bool BusConfigUI::LoadFile(const QString& fileName)
