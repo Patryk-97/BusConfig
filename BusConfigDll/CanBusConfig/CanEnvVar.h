@@ -16,18 +16,23 @@ public:
    void Clear(void) override;
 
    const char* GetName(void) const override;
+   void ModifyName(const char* name) override;
    void SetName(const char * name);
 
    Type_e GetType(void) const override;
+   void ModifyType(Type_e type) override;
    void SetType(Type_e type);
 
    const char* GetUnit(void) const override;
+   void ModifyUnit(const char* unit) override;
    void SetUnit(const char* unit);
 
    uint32_t GetId(void) const override;   // obsolete
+   void ModifyId(uint32_t id) override;   // obsolete
    void SetId(uint32_t id);
 
    AccessType_e GetAccessType(void) const override;
+   void ModifyAccessType(AccessType_e accessType) override;
    void SetAccessType(AccessType_e accessType);
    void SetAccessTypeValue(uint32_t accessTypeValue);
 
@@ -48,6 +53,7 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* GetComment(void) const override;
+   void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
 private:

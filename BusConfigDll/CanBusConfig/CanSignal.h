@@ -91,6 +91,7 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* GetComment(void) const override;
+   void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
    const char* ToString(void) override;

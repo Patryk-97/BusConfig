@@ -357,6 +357,11 @@ const char* CanSignal::GetComment(void) const
    return this->comment.c_str();
 }
 
+void CanSignal::ModifyComment(const char* comment)
+{
+   this->comment = comment;
+}
+
 void CanSignal::SetComment(const char* comment)
 {
    this->comment = comment;

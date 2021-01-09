@@ -58,6 +58,7 @@ private:
 
    void BuildCanSignalRow(const ICanSignal* signal, int row);
    void BuildCanMessageRow(const ICanMessage* message, int row);
+   void BuildCanEnvVarRow(const ICanEnvVar* envVar, int row);
 
    auto Find(const QString& itemName);
    void RemoveFromTreeWidget(const QString& itemName);

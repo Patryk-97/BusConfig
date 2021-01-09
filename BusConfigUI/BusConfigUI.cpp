@@ -16,6 +16,7 @@
 #include "ICanDataEnvVar.h"
 #include "CanSignalManager.h"
 #include "CanMessageManager.h"
+#include "CanEnvVarManager.h"
 #include <algorithm>
 #include <qlocale.h>
 #include "LineEditFactory.h"
@@ -1002,9 +1003,7 @@ void BusConfigUI::BuildCanMappedTxMessageSignalsProperties(const QString& messag
       size_t canMappedTxSignalsCount = canMessage->GetSignalsCount();
       QStringList headerLabels;
       ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-         {
-            headerLabels << property.data();
-         });
+         { headerLabels << property.data(); });
 
       this->ui.tableWidget_Properties->setRowCount(canMappedTxSignalsCount);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
@@ -1029,9 +1028,7 @@ void BusConfigUI::BuildCanMappedRxSignalsProperties(const QString& networkNodeNa
       size_t canMappedRxSignalsCount = canNetworkNode->GetMappedRxSignalsCount();
       QStringList headerLabels;
       ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-         {
-            headerLabels << property.data();
-         });
+         { headerLabels << property.data(); });
 
       this->ui.tableWidget_Properties->setRowCount(canMappedRxSignalsCount);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
@@ -1105,295 +1102,44 @@ void BusConfigUI::BuildCanMappedRxMessageSignalsProperties(const QString& messag
 
 void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarName)
 {
-   if (const auto canEnvVar = this->canBusConfig->GetEnvVarByName(envVarName.toUtf8()); canEnvVar)
-   {
-      QStringList headerLabels;
-      std::variant<ICanEnvVar*, ICanIntEnvVar*, ICanFloatEnvVar*, ICanStringEnvVar*, ICanDataEnvVar*>
-         envVar = canEnvVar;
-      headerLabels << "Name" << "Type" << "Unit" << "Minimum" << "Maximum" << "Initial value";
-      headerLabels << "Length (Bytes)" << "Access" << "Value table" << "Comment";
-      this->ui.tableWidget_Properties->setRowCount(1);
-      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-      this->ui.tableWidget_Properties->setItem(0, 0, new QTableWidgetItem{ this->icons[Icon_e::ENVIRONMENT_VARIABLE], canEnvVar->GetName() });
+   QStringList headerLabels;
+   ranges::for_each(CanEnvVarManager::PROPERTIES, [&headerLabels](std::string_view property)
+      { headerLabels << property.data(); });
 
-      const QString type = std::invoke([&canEnvVar, &envVar]
-      {
-         switch (canEnvVar->GetType())
-         {
-            case ICanEnvVar::Type_e::INTEGER:
-            {
-               envVar = dynamic_cast<ICanIntEnvVar*>(canEnvVar);
-               return "Integer";
-            }
-            case ICanEnvVar::Type_e::FLOAT:
-            {
-               envVar = dynamic_cast<ICanFloatEnvVar*>(canEnvVar);
-               return "Float";
-            }
-            case ICanEnvVar::Type_e::STRING:
-            {
-               envVar = dynamic_cast<ICanStringEnvVar*>(canEnvVar);
-               return "String";
-            }
-            case ICanEnvVar::Type_e::DATA:
-            {
-               envVar = dynamic_cast<ICanDataEnvVar*>(canEnvVar);
-               return "Data";
-            }
-         }
-         return "Integer";
-      });
+   this->ui.tableWidget_Properties->setRowCount(1);
+   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+      
+   this->BuildCanEnvVarRow(this->canBusConfig->GetEnvVarByName(envVarName.toUtf8()), 0);
 
-      const QString accessType = std::invoke([&canEnvVar] () -> QString
-      {
-         switch (canEnvVar->GetAccessType())
-         {
-            case ICanEnvVar::AccessType_e::UNRESTRICTED:
-            {
-               return "Unrestricted";
-            }
-            case ICanEnvVar::AccessType_e::READ:
-            {
-               return "Read";
-            }
-            case ICanEnvVar::AccessType_e::WRITE:
-            {
-               return "Write";
-            }
-            case ICanEnvVar::AccessType_e::READ_WRITE:
-            {
-               return "Read & Write";
-            }
-         }
-         return "Unrestricted";
-      });
+   //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-      const QString valueTableName = std::invoke([&canEnvVar]
-      {
-         if (const auto valueTable = canEnvVar->GetValueTable(); valueTable)
-         {
-            return valueTable->GetName();
-         }
-         return "";
-      });
-
-      this->ui.tableWidget_Properties->setItem(0, 1, new QTableWidgetItem{ type });
-      this->ui.tableWidget_Properties->setItem(0, 2, new QTableWidgetItem{ canEnvVar->GetUnit() });
-
-      std::visit([this] (auto&& arg)
-      {
-         using T = std::decay_t<decltype(arg)>;
-         if constexpr (std::is_same_v<T, ICanIntEnvVar*> || std::is_same_v<T, ICanFloatEnvVar*>)
-         {
-            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
-            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
-            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
-            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-         }
-         else if constexpr (std::is_same_v<T, ICanDataEnvVar*>)
-         {
-            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ toQString(arg->GetLength()) });
-         }
-         else
-         {
-            this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-         }
-      }, envVar);
-
-      /*if (canEnvVar->GetType() == ICanEnvVar::Type_e::INTEGER)
-      {
-         this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMinimum()) });
-         this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMaximum()) });
-         this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetInitialValue()) });
-         this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-      }
-      else if (canEnvVar->GetType() == ICanEnvVar::Type_e::FLOAT)
-      {
-         this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ toQString(std::get<ICanFloatEnvVar*>(envVar)->GetMinimum()) });
-         this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ toQString(std::get<ICanFloatEnvVar*>(envVar)->GetMaximum()) });
-         this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ toQString(std::get<ICanFloatEnvVar*>(envVar)->GetInitialValue()) });
-         this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-      }
-      else if (canEnvVar->GetType() == ICanEnvVar::Type_e::DATA)
-      {
-         this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ "-" });
-         this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
-         this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
-         this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ toQString(std::get<ICanDataEnvVar*>(envVar)->GetLength()) });
-      }
-      else
-      {
-         this->ui.tableWidget_Properties->setItem(0, 3, new QTableWidgetItem{ "-" });
-         this->ui.tableWidget_Properties->setItem(0, 4, new QTableWidgetItem{ "-" });
-         this->ui.tableWidget_Properties->setItem(0, 5, new QTableWidgetItem{ "-" });
-         this->ui.tableWidget_Properties->setItem(0, 6, new QTableWidgetItem{ "-" });
-      }*/
-
-      this->ui.tableWidget_Properties->setItem(0, 7, new QTableWidgetItem{ accessType });
-      this->ui.tableWidget_Properties->setItem(0, 8, new QTableWidgetItem{ valueTableName });
-      this->ui.tableWidget_Properties->setItem(0, 9, new QTableWidgetItem{ canEnvVar->GetComment() });
-      //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
-   }
+   ComboDelegate* typeDelegate = new ComboDelegate{ CanEnvVarManager::TYPES };
+   this->ui.tableWidget_Properties->setItemDelegateForColumn(1, typeDelegate);
+   ComboDelegate* accessTypeDelegate = new ComboDelegate{ CanEnvVarManager::ACCESS_TYPES };
+   this->ui.tableWidget_Properties->setItemDelegateForColumn(7, accessTypeDelegate);
 }
 
 void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
 {
    size_t canEnvVarsCount = this->canBusConfig->GetEnvVarsCount();
    QStringList headerLabels;
-   headerLabels << "Name" << "Type" << "Unit" << "Minimum" << "Maximum" << "Initial value";
-   headerLabels << "Length (Bytes)" << "Access" << "Value table" << "Comment";
+   ranges::for_each(CanEnvVarManager::PROPERTIES, [&headerLabels](std::string_view property)
+      { headerLabels << property.data(); });
+
    this->ui.tableWidget_Properties->setRowCount(canEnvVarsCount);
    this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
    this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-   std::variant<const ICanEnvVar*, ICanIntEnvVar*, ICanFloatEnvVar*, ICanStringEnvVar*, ICanDataEnvVar*>
-      envVar;
 
    for (size_t i = 0; i < canEnvVarsCount; i++)
    {
-      if (const auto canEnvVar = this->canBusConfig->GetEnvVarByIndex(i); canEnvVar)
-      {
-         envVar = canEnvVar;
-         this->ui.tableWidget_Properties->setItem(i, 0, new QTableWidgetItem{ this->icons[Icon_e::ENVIRONMENT_VARIABLE], canEnvVar->GetName() });
-
-         const QString type = std::invoke([&canEnvVar, &envVar]() -> QString
-         {
-            switch (canEnvVar->GetType())
-            {
-               case ICanEnvVar::Type_e::INTEGER:
-               {
-                  envVar = dynamic_cast<ICanIntEnvVar*>(canEnvVar);
-                  return "Integer";
-               }
-               case ICanEnvVar::Type_e::FLOAT:
-               {
-                  envVar = dynamic_cast<ICanFloatEnvVar*>(canEnvVar);
-                  return "Float";
-               }
-               case ICanEnvVar::Type_e::STRING:
-               {
-                  envVar = dynamic_cast<ICanStringEnvVar*>(canEnvVar);
-                  return "String";
-               }
-               case ICanEnvVar::Type_e::DATA:
-               {
-                  envVar = dynamic_cast<ICanDataEnvVar*>(canEnvVar);
-                  return "Data";
-               }
-            }
-            return "Integer";
-         });
-
-         const QString accessType = std::invoke([&canEnvVar]() -> QString
-         {
-            switch (canEnvVar->GetAccessType())
-            {
-               case ICanEnvVar::AccessType_e::UNRESTRICTED:
-               {
-                  return "Unrestricted";
-               }
-               case ICanEnvVar::AccessType_e::READ:
-               {
-                  return "Read";
-               }
-               case ICanEnvVar::AccessType_e::WRITE:
-               {
-                  return "Write";
-               }
-               case ICanEnvVar::AccessType_e::READ_WRITE:
-               {
-                  return "Read & Write";
-               }
-            }
-            return "Unrestricted";
-         });
-
-         const QString valueTableName = std::invoke([&canEnvVar]() -> QString
-         {
-            if (ICanValueTable* valueTable = canEnvVar->GetValueTable(); valueTable)
-            {
-               return valueTable->GetName();
-            }
-            return "";
-         });
-
-         this->ui.tableWidget_Properties->setItem(i, 1, new QTableWidgetItem{ type });
-         this->ui.tableWidget_Properties->setItem(i, 2, new QTableWidgetItem{ canEnvVar->GetUnit() });
-
-         std::visit([this, &i] (auto&& arg)
-         {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, ICanIntEnvVar*>)
-            {
-               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
-               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
-               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
-               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-            }
-            else if constexpr (std::is_same_v<T, ICanFloatEnvVar*>)
-            {
-               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
-               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
-               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
-               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-            }
-            else if constexpr (std::is_same_v<T, ICanDataEnvVar*>)
-            {
-               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ "-" });
-               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
-               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
-               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ toQString(arg->GetLength()) });
-            }
-            else
-            {
-               this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ "-" });
-               this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
-               this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
-               this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-            }
-         }, envVar);
-
-         /*if (canEnvVar->GetType() == ICanEnvVar::Type_e::INTEGER)
-         {
-            this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMinimum()) });
-            this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetMaximum()) });
-            this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(std::get<ICanIntEnvVar*>(envVar)->GetInitialValue()) });
-            this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-         }
-         else if (canEnvVar->GetType() == ICanEnvVar::Type_e::FLOAT)
-         {
-            this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ toQString(std::get<ICanFloatEnvVar*>(envVar)->GetMinimum()) });
-            this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ toQString(std::get<ICanFloatEnvVar*>(envVar)->GetMaximum()) });
-            this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ toQString(std::get<ICanFloatEnvVar*>(envVar)->GetInitialValue()) });
-            this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-         }
-         else if (canEnvVar->GetType() == ICanEnvVar::Type_e::DATA)
-         {
-            this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ toQString(std::get<ICanDataEnvVar*>(envVar)->GetLength()) });
-         }
-         else
-         {
-            this->ui.tableWidget_Properties->setItem(i, 3, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(i, 4, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(i, 5, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(i, 6, new QTableWidgetItem{ "-" });
-         } */
-
-         this->ui.tableWidget_Properties->setItem(i, 7, new QTableWidgetItem{ accessType });
-         this->ui.tableWidget_Properties->setItem(i, 8, new QTableWidgetItem{ valueTableName });
-         this->ui.tableWidget_Properties->setItem(i, 9, new QTableWidgetItem{ canEnvVar->GetComment() });
-         //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
-      }
+      this->BuildCanEnvVarRow(this->canBusConfig->GetEnvVarByIndex(i), i);
    }
+
+   ComboDelegate* typeDelegate = new ComboDelegate{ CanEnvVarManager::TYPES };
+   this->ui.tableWidget_Properties->setItemDelegateForColumn(1, typeDelegate);
+   ComboDelegate* accessTypeDelegate = new ComboDelegate{ CanEnvVarManager::ACCESS_TYPES };
+   this->ui.tableWidget_Properties->setItemDelegateForColumn(7, accessTypeDelegate);
 }
 
 void BusConfigUI::BuildCanValueTableProperties(const QString& canValueTableOwnerType, const QString& canValueTableOwnerName)
@@ -1529,6 +1275,92 @@ void BusConfigUI::BuildCanMessageRow(const ICanMessage* canMessage, int row)
       this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ txMethod });
       this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ toQString(canMessage->GetCycleTime()) });
       this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ canMessage->GetComment() });
+   }
+}
+
+void BusConfigUI::BuildCanEnvVarRow(const ICanEnvVar* envVar, int row)
+{
+   if (envVar)
+   {
+      std::variant<const ICanEnvVar*, const ICanIntEnvVar*, const ICanFloatEnvVar*, const ICanStringEnvVar*, const ICanDataEnvVar*>
+         vCanEnvVar = envVar;
+
+      switch (envVar->GetType())
+      {
+         case ICanEnvVar::Type_e::INTEGER:
+         {
+            vCanEnvVar = dynamic_cast<const ICanIntEnvVar*>(envVar);
+            break;
+         }
+         case ICanEnvVar::Type_e::FLOAT:
+         {
+            vCanEnvVar = dynamic_cast<const ICanFloatEnvVar*>(envVar);
+            break;
+         }
+         case ICanEnvVar::Type_e::STRING:
+         {
+            vCanEnvVar = dynamic_cast<const ICanStringEnvVar*>(envVar);
+            break;
+         }
+         case ICanEnvVar::Type_e::DATA:
+         {
+            vCanEnvVar = dynamic_cast<const ICanDataEnvVar*>(envVar);
+            break;
+         }
+         default:
+         {
+            break;
+         }
+      }
+
+      this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::ENVIRONMENT_VARIABLE], envVar->GetName() });
+
+      int pos = static_cast<int>(envVar->GetType());
+      const QString type = pos >= 0 ? CanEnvVarManager::TYPES[pos] : CanEnvVarManager::Type::DEFAULT.data();
+      pos = static_cast<int>(envVar->GetAccessType());
+      const QString accessType = pos >= 0 ? CanEnvVarManager::ACCESS_TYPES[pos] : CanEnvVarManager::AccessType::DEFAULT.data();
+
+      const QString valueTableName = std::invoke([&envVar]
+      {
+         if (const auto valueTable = envVar->GetValueTable(); valueTable)
+         {
+            return valueTable->GetName();
+         }
+         return "";
+      });
+
+      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ type });
+      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ envVar->GetUnit() });
+
+      std::visit([this, &row](auto&& arg)
+      {
+         using T = std::decay_t<decltype(arg)>;
+         if constexpr (std::is_same_v<T, const ICanIntEnvVar*> || std::is_same_v<T, const ICanFloatEnvVar*>)
+         {
+            this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
+            this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
+            this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
+            this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ "-" });
+         }
+         else if constexpr (std::is_same_v<T, const ICanDataEnvVar*>)
+         {
+            this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ toQString(arg->GetLength()) });
+         }
+         else
+         {
+            this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ "-" });
+         }
+      }, vCanEnvVar);
+
+      this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ accessType });
+      this->ui.tableWidget_Properties->setItem(row, 8, new QTableWidgetItem{ valueTableName });
+      this->ui.tableWidget_Properties->setItem(row, 9, new QTableWidgetItem{ envVar->GetComment() });
    }
 }
 

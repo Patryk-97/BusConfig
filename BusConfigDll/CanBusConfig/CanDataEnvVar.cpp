@@ -16,13 +16,29 @@ const char* CanDataEnvVar::GetName(void) const
    return CanEnvVar::GetName();
 }
 
+void CanDataEnvVar::ModifyName(const char* name)
+{
+   CanEnvVar::ModifyName(name);
+}
+
 ICanEnvVar::Type_e CanDataEnvVar::GetType(void) const
 {
    return CanEnvVar::GetType();
 }
+
+void CanDataEnvVar::ModifyType(Type_e type)
+{
+   CanEnvVar::ModifyType(type);
+}
+
 const char* CanDataEnvVar::GetUnit(void) const
 {
    return CanEnvVar::GetUnit();
+}
+
+void CanDataEnvVar::ModifyUnit(const char* unit)
+{
+   CanEnvVar::ModifyUnit(unit);
 }
 
 uint32_t CanDataEnvVar::GetId(void) const
@@ -30,9 +46,19 @@ uint32_t CanDataEnvVar::GetId(void) const
    return CanEnvVar::GetId();
 }
 
+void CanDataEnvVar::ModifyId(uint32_t id)
+{
+   CanEnvVar::ModifyId(id);
+}
+
 ICanEnvVar::AccessType_e CanDataEnvVar::GetAccessType(void) const
 {
    return CanEnvVar::GetAccessType();
+}
+
+void CanDataEnvVar::ModifyAccessType(AccessType_e accessType)
+{
+   CanEnvVar::ModifyAccessType(accessType);
 }
 
 size_t CanDataEnvVar::GetAccessNodesCount(void) const
@@ -93,4 +119,9 @@ ICanAttributeValue* CanDataEnvVar::GetAttributeValue(const char* attributeName) 
 const char* CanDataEnvVar::GetComment(void) const
 {
    return CanEnvVar::GetComment();
+}
+
+void CanDataEnvVar::ModifyComment(const char* comment)
+{
+   CanEnvVar::ModifyComment(comment);
 }

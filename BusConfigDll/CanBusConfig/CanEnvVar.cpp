@@ -27,6 +27,11 @@ const char* CanEnvVar::GetName(void) const
    return this->name.c_str();
 }
 
+void CanEnvVar::ModifyName(const char* name)
+{
+   this->name = name;
+}
+
 void CanEnvVar::SetName(const char* name)
 {
    this->name = name;
@@ -35,6 +40,11 @@ void CanEnvVar::SetName(const char* name)
 ICanEnvVar::Type_e CanEnvVar::GetType(void) const
 {
    return this->type;
+}
+
+void CanEnvVar::ModifyType(Type_e type)
+{
+   this->type = type;
 }
 
 void CanEnvVar::SetType(Type_e type)
@@ -47,6 +57,11 @@ const char* CanEnvVar::GetUnit(void) const
    return this->unit.c_str();
 }
 
+void CanEnvVar::ModifyUnit(const char* unit)
+{
+   this->unit = unit;
+}
+
 void CanEnvVar::SetUnit(const char* unit)
 {
    this->unit = unit;
@@ -57,6 +72,11 @@ uint32_t CanEnvVar::GetId(void) const
    return this->id;
 }
 
+void CanEnvVar::ModifyId(uint32_t id)
+{
+   this->id = id;
+}
+
 void CanEnvVar::SetId(uint32_t id)
 {
    this->id = id;
@@ -65,6 +85,11 @@ void CanEnvVar::SetId(uint32_t id)
 ICanEnvVar::AccessType_e CanEnvVar::GetAccessType(void) const
 {
    return this->accessType;
+}
+
+void CanEnvVar::ModifyAccessType(AccessType_e accessType)
+{
+   this->accessType = accessType;
 }
 
 void CanEnvVar::SetAccessType(AccessType_e accessType)
@@ -152,6 +177,11 @@ ICanAttributeValue* CanEnvVar::GetAttributeValue(const char* attributeName) cons
 const char* CanEnvVar::GetComment(void) const
 {
    return this->comment.c_str();
+}
+
+void CanEnvVar::ModifyComment(const char* comment)
+{
+   this->comment = comment;
 }
 
 void CanEnvVar::SetComment(const char* comment)

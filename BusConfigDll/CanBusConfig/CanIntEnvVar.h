@@ -10,11 +10,22 @@ public:
    ~CanIntEnvVar();
 
    void Clear(void) override;
+
    const char* GetName(void) const override;
+   void ModifyName(const char* name) override;
+
    Type_e GetType(void) const override;
+   void ModifyType(Type_e type) override;
+
    const char* GetUnit(void) const override;
+   void ModifyUnit(const char* unit) override;
+
    uint32_t GetId(void) const override;   // obsolete
+   void ModifyId(uint32_t id) override;   // obsolete
+
    AccessType_e GetAccessType(void) const override;
+   void ModifyAccessType(AccessType_e accessType) override;
+
    size_t GetAccessNodesCount(void) const override;
    ICanNode* GetAccessNodeByIndex(size_t index) const override;
    ICanNode* GetAccessNodeByName(const char* name) const override;
@@ -37,6 +48,7 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* GetComment(void) const override;
+   void ModifyComment(const char* comment) override;
 
 private:
    int32_t minimum {};

@@ -62,6 +62,9 @@
     <ClCompile Include="AttributeDefinitions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CanEnvVarManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h">
@@ -89,6 +92,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ComboDelegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CanEnvVarManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
