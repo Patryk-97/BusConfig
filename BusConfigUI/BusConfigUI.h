@@ -42,11 +42,15 @@ private:
    // Table widget properties
    void BuildCanMessageProperties(const QString& messageName);
    void BuildCanMessagesProperties(void);
+   void BuildCanTxMessagesProperties(const QString& networkNodeName);
+   void BuildCanRxMessagesProperties(const QString& networkNodeName);
    void BuildCanSignalProperties(const QString& signalName);
    void BuildCanSignalsProperties(void);
    void BuildCanMessageSignalsProperties(const QString& messageName);
    void BuildCanMappedTxSignalsProperties(const QString& networkNodeName);
+   void BuildCanMappedTxMessageSignalsProperties(const QString& messageName);
    void BuildCanMappedRxSignalsProperties(const QString& networkNodeName);
+   void BuildCanMappedRxMessageSignalsProperties(const QString& messageName, const QString& networkNodeName);
    void BuildCanEnvironmentVariableProperties(const QString& envVarName);
    void BuildCanEnvironmentVariablesProperties(void);
    void BuildCanValueTableProperties(const QString& canValueTableOwnerType, const QString& canValueTableOwnerName);
@@ -131,9 +135,13 @@ private:
        static constexpr std::string_view CAN_SIGNALS = "CanSignals";
        static constexpr std::string_view CAN_MESSAGE = "CanMessage";
        static constexpr std::string_view CAN_MESSAGES = "CanMessages";
+       static constexpr std::string_view CAN_TX_MESSAGES = "CanTxMessages";
+       static constexpr std::string_view CAN_RX_MESSAGES = "CanRxMessages";
        static constexpr std::string_view CAN_MESSAGE_SIGNALS = "CanMessageSignals";
        static constexpr std::string_view CAN_MAPPED_TX_SIGNALS = "CanMappedTxSignals";
+       static constexpr std::string_view CAN_MAPPED_TX_MESSAGE_SIGNALS = "CanMappedTxMessageSignals";
        static constexpr std::string_view CAN_MAPPED_RX_SIGNALS = "CanMappedRxSignals";
+       static constexpr std::string_view CAN_MAPPED_RX_MESSAGE_SIGNALS = "CanMappedRxMessageSignals";
        static constexpr std::string_view CAN_NETWORK_NODE = "CanNetworkNode";
        static constexpr std::string_view CAN_NETWORK_NODES = "CanNetworkNodes";
        static constexpr std::string_view CAN_ENVIRONMENT_VARIABLE = "CanEnvironmentVariable";
