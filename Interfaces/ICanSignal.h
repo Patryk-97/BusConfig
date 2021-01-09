@@ -85,7 +85,7 @@ public:
    virtual const char* ToString(void) = 0;
 
    // static variables
-   static constexpr uint32_t NOT_MULTIPLEX_VALUE = 0xFFFFFFFF;
+   static constexpr uint32_t INVALID_MULTIPLEX_VALUE = 0xFFFFFFFF;
    static constexpr uint8_t UNDEFINED_BYTE_ORDER_SYMBOL = 0xFF;
    static constexpr uint8_t UNDEFINED_VALUE_TYPE_SYMBOL = 0x00;
 };

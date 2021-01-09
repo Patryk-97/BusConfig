@@ -100,7 +100,7 @@ private:
 
    IMuxType_e muxType = IMuxType_e::NOT_MULTIPLEXED;
    std::string muxTypeStr;
-   uint32_t multiplexValue = ICanSignal::NOT_MULTIPLEX_VALUE;
+   uint32_t multiplexValue = ICanSignal::INVALID_MULTIPLEX_VALUE;
    std::string muxIndicator; // multiplexer_indicator = ' ' | 'M' | m multiplexer_switch_value;
 
    uint32_t startBit {}; // The startbit has to be in the range of 0 to (8 * message_size - 1). 

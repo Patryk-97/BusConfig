@@ -17,7 +17,7 @@ void CanSignal::Clear(void)
    this->name.clear();
    this->muxType = IMuxType_e::NOT_MULTIPLEXED;
    this->muxTypeStr.clear();
-   this->multiplexValue = ICanSignal::NOT_MULTIPLEX_VALUE;
+   this->multiplexValue = ICanSignal::INVALID_MULTIPLEX_VALUE;
    this->muxIndicator.clear();
    this->startBit = 0;
    this->size = 0;

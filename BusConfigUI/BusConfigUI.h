@@ -36,15 +36,24 @@ private:
    void BuildTree(void);
    void Clear(void);
    
+   void AttachAttributesToTree(QTreeWidgetItem* parent);
+   void AttachValueTableToTree(QTreeWidgetItem* parent);
+
    // Table widget properties
    void BuildCanMessageProperties(const QString& messageName);
    void BuildCanMessagesProperties(void);
    void BuildCanSignalProperties(const QString& signalName);
    void BuildCanSignalsProperties(void);
+   void BuildCanMessageSignalsProperties(const QString& messageName);
+   void BuildCanMappedTxSignalsProperties(const QString& networkNodeName);
+   void BuildCanMappedRxSignalsProperties(const QString& networkNodeName);
    void BuildCanEnvironmentVariableProperties(const QString& envVarName);
    void BuildCanEnvironmentVariablesProperties(void);
    void BuildCanValueTableProperties(const QString& canValueTableOwnerType, const QString& canValueTableOwnerName);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
+
+   void BuildCanSignalRow(const ICanSignal* signal, int row);
+   void BuildCanMessageRow(const ICanMessage* message, int row);
 
    auto Find(const QString& itemName);
    void RemoveFromTreeWidget(const QString& itemName);
@@ -122,6 +131,9 @@ private:
        static constexpr std::string_view CAN_SIGNALS = "CanSignals";
        static constexpr std::string_view CAN_MESSAGE = "CanMessage";
        static constexpr std::string_view CAN_MESSAGES = "CanMessages";
+       static constexpr std::string_view CAN_MESSAGE_SIGNALS = "CanMessageSignals";
+       static constexpr std::string_view CAN_MAPPED_TX_SIGNALS = "CanMappedTxSignals";
+       static constexpr std::string_view CAN_MAPPED_RX_SIGNALS = "CanMappedRxSignals";
        static constexpr std::string_view CAN_NETWORK_NODE = "CanNetworkNode";
        static constexpr std::string_view CAN_NETWORK_NODES = "CanNetworkNodes";
        static constexpr std::string_view CAN_ENVIRONMENT_VARIABLE = "CanEnvironmentVariable";
