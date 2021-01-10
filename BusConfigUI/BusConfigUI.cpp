@@ -196,126 +196,8 @@ void BusConfigUI::on_actionExit_triggered()
 
 void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
-   size_t itemIndex = (size_t)-1;
-   this->isTableWidgetFilled = false;
-
-   this->ui.tableWidget_Properties->clear();
-   this->ui.tableWidget_Properties->setRowCount(0);
-   this->ui.tableWidget_Properties->setColumnCount(0);
-   this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
-
-   if (current)
-   {
-      const auto text = current->text(0);
-      const auto itemType = current->whatsThis(0);
-      const auto parent = current->parent();
-      const auto parentText = (parent ? parent->text(0) : "");
-      const auto parentItemType = (parent ? parent->whatsThis(0) : "");
-
-      const auto GetParentOf = [] (const QString& subName, QTreeWidgetItem* item)
-      {
-         const auto GetParentOfImpl = [] (const auto GetParentOfImpl, const QString& subName, QTreeWidgetItem* item) -> QTreeWidgetItem*
-         {
-            if (item)
-            {
-               if (item->whatsThis(0) == subName)
-               {
-                  return item->parent();
-               }
-               else
-               {
-                  return GetParentOfImpl(GetParentOfImpl, subName, item->parent());
-               }
-            }
-            return nullptr;
-         };
-         return GetParentOfImpl(GetParentOfImpl, subName, item);
-      };
-
-      this->ui.tableWidget_Properties->setWhatsThis(itemType);
-
-      if (itemType == ItemId::CAN_MESSAGE.data())
-      {
-         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-         this->BuildCanMessageProperties(text);
-      }
-      else if (itemType == ItemId::CAN_MESSAGES.data())
-      {
-         this->BuildCanMessagesProperties();
-      }
-      else if (itemType == ItemId::CAN_TX_MESSAGES.data())
-      {
-         this->BuildCanTxMessagesProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_RX_MESSAGES.data())
-      {
-         this->BuildCanRxMessagesProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_SIGNAL.data())
-      {
-         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-         this->BuildCanSignalProperties(text);
-      }
-      else if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         this->BuildCanSignalsProperties();
-      }
-      else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
-      {
-         this->BuildCanMessageSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
-      {
-         this->BuildCanMappedTxSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
-      {
-         this->BuildCanMappedTxMessageSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
-      {
-         this->BuildCanMappedRxSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
-      {
-         const auto canNetworkNodeTreeItem = GetParentOf(ItemId::CAN_RX_MESSAGES.data(), current);
-         if (canNetworkNodeTreeItem)
-         {
-            this->BuildCanMappedRxMessageSignalsProperties(parentText, canNetworkNodeTreeItem->text(0));
-         }
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
-      {
-         this->BuildCanEnvironmentVariableProperties(text);
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-      {
-         this->BuildCanEnvironmentVariablesProperties();
-      }
-      else if (itemType == ItemId::VALUE_TABLE.data())
-      {
-         this->BuildCanValueTableProperties(parentItemType, parentText);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_SIGNAL.data())
-      {
-         const auto canSignal = this->canBusConfig->GetSignalByName(parentText.toUtf8());
-         this->BuildAttributesProperties(canSignal);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_MESSAGE.data())
-      {
-         const auto canMessage = this->canBusConfig->GetMessageByName(parentText.toUtf8());
-         this->BuildAttributesProperties(canMessage);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_NETWORK_NODE.data())
-      {
-         const auto canNetworkNode = this->canBusConfig->GetNodeByName(parentText.toUtf8());
-         this->BuildAttributesProperties(canNetworkNode);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::NETWORK.data())
-      {
-         this->BuildAttributesProperties(this->canBusConfig);
-      }
-   }
+   this->currentTreeWidgetItem = current;
+   this->BuildTable();
 
    this->isTableWidgetFilled = true;
 }
@@ -513,13 +395,22 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
          const auto canMessageName = this->ui.tableWidget_Properties->item(row, 1)->text();
          if (const auto canMessage = this->canBusConfig->GetMessageByName(canMessageName.toUtf8()); canMessage)
          {
+            auto caseSensitiveMenuEntry = new QAction { "Case sensitive", itemMenu };
+            caseSensitiveMenuEntry->setCheckable(true);
+            caseSensitiveMenuEntry->setChecked(this->caseSensitive);
+            itemMenu->addAction(caseSensitiveMenuEntry);
+            connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this] ()
+            {
+               this->caseSensitive = caseSensitiveMenuEntry->isChecked();
+            });
+
             auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
             itemMenu->addAction(sortByNameMenuEntry);
 
             connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
             {
-               canMessage->SortSignalsByName();
-               this->ui.tableWidget_Properties->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+               canMessage->SortSignalsByName(this->caseSensitive);
+               this->BuildTable();
             });
 
             auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", itemMenu };
@@ -528,7 +419,7 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
             connect(sortByStartBitMenuEntry, &QAction::triggered, this, [this, &canMessage]
             {
                canMessage->SortSignalsByStartBit();
-               this->ui.tableWidget_Properties->sortByColumn(2, Qt::SortOrder::AscendingOrder);
+               this->BuildTable();
             });
          }
       }
@@ -826,6 +717,131 @@ void BusConfigUI::BuildTree(void)
    }
 
    this->AttachAttributesToTree(networkTreeItem);
+}
+
+void BusConfigUI::BuildTable(void)
+{
+   if (this->currentTreeWidgetItem)
+   {
+      this->isTableWidgetFilled = false;
+
+      this->ui.tableWidget_Properties->clear();
+      this->ui.tableWidget_Properties->setRowCount(0);
+      this->ui.tableWidget_Properties->setColumnCount(0);
+      this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
+
+      const auto text = currentTreeWidgetItem->text(0);
+      const auto itemType = currentTreeWidgetItem->whatsThis(0);
+      const auto parent = currentTreeWidgetItem->parent();
+      const auto parentText = (parent ? parent->text(0) : "");
+      const auto parentItemType = (parent ? parent->whatsThis(0) : "");
+
+      const auto GetParentOf = [] (const QString& subName, QTreeWidgetItem* item)
+      {
+         const auto GetParentOfImpl = [] (const auto GetParentOfImpl, const QString& subName, QTreeWidgetItem* item) -> QTreeWidgetItem*
+         {
+            if (item)
+            {
+               if (item->whatsThis(0) == subName)
+               {
+                  return item->parent();
+               }
+               else
+               {
+                  return GetParentOfImpl(GetParentOfImpl, subName, item->parent());
+               }
+            }
+            return nullptr;
+         };
+         return GetParentOfImpl(GetParentOfImpl, subName, item);
+      };
+
+      this->ui.tableWidget_Properties->setWhatsThis(itemType);
+
+      if (itemType == ItemId::CAN_MESSAGE.data())
+      {
+         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+         this->BuildCanMessageProperties(text);
+      }
+      else if (itemType == ItemId::CAN_MESSAGES.data())
+      {
+         this->BuildCanMessagesProperties();
+      }
+      else if (itemType == ItemId::CAN_TX_MESSAGES.data())
+      {
+         this->BuildCanTxMessagesProperties(parentText);
+      }
+      else if (itemType == ItemId::CAN_RX_MESSAGES.data())
+      {
+         this->BuildCanRxMessagesProperties(parentText);
+      }
+      else if (itemType == ItemId::CAN_SIGNAL.data())
+      {
+         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+         this->BuildCanSignalProperties(text);
+      }
+      else if (itemType == ItemId::CAN_SIGNALS.data())
+      {
+         this->BuildCanSignalsProperties();
+      }
+      else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
+      {
+         this->BuildCanMessageSignalsProperties(parentText);
+      }
+      else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
+      {
+         this->BuildCanMappedTxSignalsProperties(parentText);
+      }
+      else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
+      {
+         this->BuildCanMappedTxMessageSignalsProperties(parentText);
+      }
+      else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
+      {
+         this->BuildCanMappedRxSignalsProperties(parentText);
+      }
+      else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
+      {
+         const auto canNetworkNodeTreeItem = GetParentOf(ItemId::CAN_RX_MESSAGES.data(), currentTreeWidgetItem);
+         if (canNetworkNodeTreeItem)
+         {
+            this->BuildCanMappedRxMessageSignalsProperties(parentText, canNetworkNodeTreeItem->text(0));
+         }
+      }
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
+      {
+         this->BuildCanEnvironmentVariableProperties(text);
+      }
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
+      {
+         this->BuildCanEnvironmentVariablesProperties();
+      }
+      else if (itemType == ItemId::VALUE_TABLE.data())
+      {
+         this->BuildCanValueTableProperties(parentItemType, parentText);
+      }
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_SIGNAL.data())
+      {
+         const auto canSignal = this->canBusConfig->GetSignalByName(parentText.toUtf8());
+         this->BuildAttributesProperties(canSignal);
+      }
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_MESSAGE.data())
+      {
+         const auto canMessage = this->canBusConfig->GetMessageByName(parentText.toUtf8());
+         this->BuildAttributesProperties(canMessage);
+      }
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_NETWORK_NODE.data())
+      {
+         const auto canNetworkNode = this->canBusConfig->GetNodeByName(parentText.toUtf8());
+         this->BuildAttributesProperties(canNetworkNode);
+      }
+      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::NETWORK.data())
+      {
+         this->BuildAttributesProperties(this->canBusConfig);
+      }
+   }
+
+   this->isTableWidgetFilled = true;
 }
 
 void BusConfigUI::Clear(void)

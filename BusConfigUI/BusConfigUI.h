@@ -34,6 +34,7 @@ private:
    bool LoadDbcFile(const QString& fileName);
    void AddLog(const QString& log);
    void BuildTree(void);
+   void BuildTable(void);
    void Clear(void);
    
    void AttachAttributesToTree(QTreeWidgetItem* parent);
@@ -104,6 +105,8 @@ private:
     CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
     AttributeDefinitions* attributeDefinitions { new AttributeDefinitions {} };
     bool isTableWidgetFilled { false };
+    QTreeWidgetItem* currentTreeWidgetItem { nullptr };
+    bool caseSensitive { false };
 
     enum class Icon_e
     {

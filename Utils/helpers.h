@@ -138,11 +138,15 @@ namespace helpers
 
    static inline bool iless(const std::string& str1, const std::string& str2)
    {
-      return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) < std::tolower(b); });
+      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), [] (char a, char b)
+         { return std::tolower(a) == std::tolower(b); });
+      return (it.first != str1.end() ? (std::tolower(*(it.first)) < std::tolower(*(it.second))) : false);
    }
 
    static inline bool igreater(const std::string& str1, const std::string& str2)
    {
-      return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) > std::tolower(b); });
+      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), [] (char a, char b)
+         { return std::tolower(a) == std::tolower(b); });
+      return (it.first != str1.end() ? (std::tolower(*(it.first)) > std::tolower(*(it.second))) : false);
    }
 }
