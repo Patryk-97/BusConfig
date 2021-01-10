@@ -116,6 +116,7 @@
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h" />
     <ClInclude Include="..\Utils\helpers.h" />
+    <ClInclude Include="TableWidgetItem.h" />
     <QtMoc Include="AttributeDefinitions.h" />
     <ClInclude Include="CanEnvVarManager.h" />
     <ClInclude Include="CanMessageManager.h" />

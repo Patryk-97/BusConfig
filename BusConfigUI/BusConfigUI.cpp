@@ -22,6 +22,7 @@
 #include "LineEditFactory.h"
 #include "Conversions.h"
 #include "ComboDelegate.h"
+#include "TableWidgetItem.h"
 
 namespace ranges = std::ranges;
 
@@ -505,6 +506,8 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
          this->ui.tableWidget_Properties->removeRow(row);
       });
 
+      itemMenu->addSeparator();
+
       if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
       {
          const auto canMessageName = this->ui.tableWidget_Properties->item(row, 1)->text();
@@ -522,9 +525,10 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
             auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", itemMenu };
             itemMenu->addAction(sortByStartBitMenuEntry);
 
-            connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
+            connect(sortByStartBitMenuEntry, &QAction::triggered, this, [this, &canMessage]
             {
                canMessage->SortSignalsByStartBit();
+               this->ui.tableWidget_Properties->sortByColumn(2, Qt::SortOrder::AscendingOrder);
             });
          }
       }
@@ -1258,10 +1262,10 @@ void BusConfigUI::BuildCanSignalRow(const ICanSignal* signal, int row)
    {
       const auto message = signal->GetMessage();
 
-      this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::SIGNAL], signal->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem { this->icons[Icon_e::SIGNAL], signal->GetName() });
 
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ message->GetName() });
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
+      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem { message->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem<uint32_t> { toQString(signal->GetStartBit()) });
       this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ toQString(signal->GetSize()) });
 
       ComboDelegate* byteOrderDelegate = new ComboDelegate{ CanSignalManager::BYTE_ORDERS };
