@@ -4,6 +4,9 @@
 #include <functional>
 #include <string_view>
 #include <string>
+#include <algorithm>
+
+namespace ranges = std::ranges;
 
 namespace helpers
 {
@@ -126,5 +129,20 @@ namespace helpers
       }
 
       return rV;
+   }
+
+   static inline bool iequals(const std::string& str1, const std::string& str2)
+   {
+      return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) == std::tolower(b); });
+   }
+
+   static inline bool iless(const std::string& str1, const std::string& str2)
+   {
+      return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) < std::tolower(b); });
+   }
+
+   static inline bool igreater(const std::string& str1, const std::string& str2)
+   {
+      return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) > std::tolower(b); });
    }
 }

@@ -92,7 +92,7 @@ public:
    virtual ICanSignal* GetSignalByIndex(size_t index) const = 0;
    virtual bool RemoveSignalByIndex(size_t index) = 0;
    virtual bool RemoveSignalByName(const char* name) = 0;
-   virtual void SortSignalsByName(void) = 0;
+   virtual void SortSignalsByName(bool caseSensitive = false) = 0;
    virtual void SortSignalsByStartBit(void) = 0;
 
    virtual size_t GetAttributesCount(void) const = 0;

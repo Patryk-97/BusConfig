@@ -120,10 +120,12 @@ bool CanMessage::RemoveSignalByName(const char* name)
       { return !std::strcmp(signal->GetName(), name); }));
 }
 
-void CanMessage::SortSignalsByName(void)
+void CanMessage::SortSignalsByName(bool caseSensitive)
 {
-   ranges::sort(this->signals, [] (CanSignal* signal1, CanSignal* signal2)
-      { return std::strcmp(signal1->GetName(), signal2->GetName()) < 0; });
+   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
+      { return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2); };
+   ranges::sort(this->signals, [&comparator] (CanSignal* signal1, CanSignal* signal2)
+      { return comparator(signal1->GetName(), signal2->GetName()); });
 }
 
 void CanMessage::SortSignalsByStartBit(void)

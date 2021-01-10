@@ -211,7 +211,7 @@ void BusConfigUI::on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* cur
       const auto parentText = (parent ? parent->text(0) : "");
       const auto parentItemType = (parent ? parent->whatsThis(0) : "");
 
-      const auto GetParentOf = [](const QString& subName, QTreeWidgetItem* item)
+      const auto GetParentOf = [] (const QString& subName, QTreeWidgetItem* item)
       {
          const auto GetParentOfImpl = [] (const auto GetParentOfImpl, const QString& subName, QTreeWidgetItem* item) -> QTreeWidgetItem*
          {
@@ -427,14 +427,13 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
    {
       //create right click menu item
       QMenu* itemMenu = new QMenu{ this->ui.tableWidget_Properties };
-      QAction* itemMenuEntry{ nullptr };
-      itemMenuEntry = new QAction{ "Remove", itemMenu };
-      itemMenu->addAction(itemMenuEntry);
+      auto removeMenuEntry = new QAction{ "Remove", itemMenu };
+      itemMenu->addAction(removeMenuEntry);
 
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
       const int row = item->row();
 
-      connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row]
+      connect(removeMenuEntry, &QAction::triggered, this, [this, &itemType, row]
       {
          QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
          if (itemType == ItemId::CAN_MESSAGE.data())
@@ -505,6 +504,30 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
 
          this->ui.tableWidget_Properties->removeRow(row);
       });
+
+      if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
+      {
+         const auto canMessageName = this->ui.tableWidget_Properties->item(row, 1)->text();
+         if (const auto canMessage = this->canBusConfig->GetMessageByName(canMessageName.toUtf8()); canMessage)
+         {
+            auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
+            itemMenu->addAction(sortByNameMenuEntry);
+
+            connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
+            {
+               canMessage->SortSignalsByName();
+               this->ui.tableWidget_Properties->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+            });
+
+            auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", itemMenu };
+            itemMenu->addAction(sortByStartBitMenuEntry);
+
+            connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
+            {
+               canMessage->SortSignalsByStartBit();
+            });
+         }
+      }
 
       QAction* input = itemMenu->exec(globalPos);
    }
