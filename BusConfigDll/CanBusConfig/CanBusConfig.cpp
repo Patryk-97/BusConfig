@@ -2255,13 +2255,13 @@ bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, 
 
 void CanBusConfig::SetMainAttributes(void)
 {
-   for (size_t i = 0; i < this->messages.size(); i++)
+   for (auto& message : this->messages)
    {
-      if (auto message = this->messages[i]; message)
+      if (message)
       {
-         for (size_t j = 0; j < message->GetAttributesCount(); j++)
+         for (auto& attribute : message->GetAttributes())
          {
-            if (auto attribute = message->GetAttributeByIndex(j); attribute)
+            if (attribute)
             {
                std::string_view attributeName = attribute->GetName();
                if (attributeName == ICanMessage::ID_FORMAT)
@@ -2294,6 +2294,29 @@ void CanBusConfig::SetMainAttributes(void)
                      auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::CycleTime::VALUE_TYPE>
                         (attributeValue);
                      message->SetCycleTime(value);
+                  }
+               }
+            }
+         }
+      }
+   }
+   for (auto& signal : this->signals)
+   {
+      if (signal)
+      {
+         for (auto& attribute : signal->GetAttributes())
+         {
+            if (attribute)
+            {
+               std::string_view attributeName = attribute->GetName();
+               if (attributeName == ICanSignal::RAW_INITIAL_VALUE)
+               {
+                  auto attributeValue = signal->GetAttributeValue(attributeName.data());
+                  if (attributeValue)
+                  {
+                     auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::INT>
+                        (attributeValue);
+                     signal->SetRawInitialValue(value);
                   }
                }
             }

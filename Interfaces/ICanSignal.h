@@ -61,6 +61,12 @@ public:
    virtual void ModifyValueType(IValueType_e valueType) = 0;
    virtual uint8_t GetValueTypeSymbol(void) const = 0;
 
+   virtual int32_t GetRawInitialValue(void) const = 0;
+   virtual void ModifyRawInitialValue(int32_t initialValue) = 0;
+
+   virtual double GetInitialValue(void) const = 0;
+   virtual void ModifyInitialValue(double initialValue) = 0;
+
    virtual double GetFactor(void) const = 0;
    virtual void ModifyFactor(double factor) = 0;
 
@@ -90,4 +96,7 @@ public:
    static constexpr uint32_t INVALID_MULTIPLEX_VALUE = 0xFFFFFFFF;
    static constexpr uint8_t UNDEFINED_BYTE_ORDER_SYMBOL = 0xFF;
    static constexpr uint8_t UNDEFINED_VALUE_TYPE_SYMBOL = 0x00;
+   static constexpr uint32_t DEFAULT_RAW_INITIAL_VALUE = 0;
+
+   static constexpr const char * RAW_INITIAL_VALUE = "GenSigStartValue";
 };

@@ -1,6 +1,7 @@
 #include "CanSignal.h"
 #include "CanMessage.h" // circular dependency
 #include "helpers.h"
+#include "CanAttributeManager.h"
 #include <algorithm>
 
 namespace ranges = std::ranges;
@@ -25,6 +26,7 @@ void CanSignal::Clear(void)
    this->byteOrder = IByteOrder_e::UNDEFINED;
    this->valueTypeSymbol = ICanSignal::UNDEFINED_VALUE_TYPE_SYMBOL;
    this->valueType = IValueType_e::UNDEFINED_TYPE;
+   this->rawInitialValue = ICanSignal::DEFAULT_RAW_INITIAL_VALUE;
    this->factor = 0.0;
    this->offset = 0.0;
    this->minimum = 0.0;
@@ -211,6 +213,38 @@ void CanSignal::SetValueTypeSymbol(uint8_t valueTypeSymbol)
          this->valueType = ICanSignal::IValueType_e::UNDEFINED_TYPE;
          break;
       }
+   }
+}
+
+int32_t CanSignal::GetRawInitialValue(void) const
+{
+   return this->rawInitialValue;
+}
+
+void CanSignal::ModifyRawInitialValue(int32_t rawInitialValue)
+{
+   this->rawInitialValue = rawInitialValue;
+}
+
+void CanSignal::SetRawInitialValue(int32_t rawInitialValue)
+{
+   this->rawInitialValue = rawInitialValue;
+}
+
+double CanSignal::GetInitialValue(void) const
+{
+   return this->rawInitialValue * this->factor + this->offset;
+}
+
+void CanSignal::ModifyInitialValue(double initialValue)
+{
+   int32_t rawInitialValue = (int32_t)((initialValue - this->offset) / this->factor);
+   if (this->rawInitialValue != rawInitialValue)
+   {
+      this->rawInitialValue = rawInitialValue;
+      const auto attribute = this->GetAttributeByName(ICanSignal::RAW_INITIAL_VALUE);
+      auto attributeValue = this->GetAttributeValue(attribute->GetName());
+      CanAttributeManager::SetValue(attributeValue, std::to_string(rawInitialValue));
    }
 }
 

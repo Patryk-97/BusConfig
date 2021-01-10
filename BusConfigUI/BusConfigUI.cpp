@@ -327,84 +327,65 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
       const int column = item->column();
       const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+      const auto itemName = this->ui.tableWidget_Properties->item(row, 0)->text();
 
-      if (itemType == ItemId::CAN_MESSAGE.data())
+      if (itemType == ItemId::CAN_MESSAGE.data() || itemType == ItemId::CAN_MESSAGES.data() ||
+         itemType == ItemId::CAN_TX_MESSAGES.data() || itemType == ItemId::CAN_RX_MESSAGES.data())
       {
-         if (CanMessageManager::Validate(this->canBusConfig, row, data, column))
+         QString newData;
+         if (CanMessageManager::Validate(this->canBusConfig, itemName, data, column, newData))
          {
             if (column == 0)
             {
-               const QString name = CanMessageManager::GetData(this->canBusConfig, row, column);
+               const QString name = CanMessageManager::GetData(this->canBusConfig, itemName, column);
                this->ChangeTreeWidgetItemName(name, data);
             }
-            CanMessageManager::Modify(this->canBusConfig, row, data, column);
+            CanMessageManager::Modify(this->canBusConfig, itemName, data, column);
          }
          else
          {
-            const QString data = CanMessageManager::GetData(this->canBusConfig, row, column);
-            this->ui.tableWidget_Properties->item(row, column)->setText(data);
+            newData = CanMessageManager::GetData(this->canBusConfig, itemName, column);
          }
+         this->ui.tableWidget_Properties->item(row, column)->setText(newData);
       }
-      else if (itemType == ItemId::CAN_MESSAGES.data())
+      else if (itemType == ItemId::CAN_SIGNAL.data() || itemType == ItemId::CAN_SIGNALS.data() ||
+         itemType == ItemId::CAN_MESSAGE_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data() ||
+         itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data() ||
+         itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
       {
-         if (CanMessageManager::Validate(this->canBusConfig, row, data, column))
+         QString newData;
+         if (CanSignalManager::Validate(this->canBusConfig, itemName, data, column, newData))
          {
             if (column == 0)
             {
-               const QString name = CanMessageManager::GetData(this->canBusConfig, row, column);
+               const QString name = CanSignalManager::GetData(this->canBusConfig, itemName, column);
                this->ChangeTreeWidgetItemName(name, data);
             }
-            CanMessageManager::Modify(this->canBusConfig, row, data, column);
+            CanSignalManager::Modify(this->canBusConfig, itemName, data, column);
          }
          else
          {
-            const QString data = CanMessageManager::GetData(this->canBusConfig, row, column);
-            this->ui.tableWidget_Properties->item(row, column)->setText(data);
+            newData = CanSignalManager::GetData(this->canBusConfig, itemName, column);
          }
+         this->ui.tableWidget_Properties->item(row, column)->setText(newData);
       }
-      else if (itemType == ItemId::CAN_SIGNAL.data())
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data() || itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
       {
-         if (CanSignalManager::Validate(this->canBusConfig, row, data, column))
+         QString newData;
+         if (CanEnvVarManager::Validate(this->canBusConfig, itemName, data, column, newData))
          {
             if (column == 0)
             {
-               const QString name = CanSignalManager::GetData(this->canBusConfig, row, column);
+               const QString name = CanEnvVarManager::GetData(this->canBusConfig, itemName, column);
                this->ChangeTreeWidgetItemName(name, data);
             }
-            CanSignalManager::Modify(this->canBusConfig, row, data, column);
+            CanEnvVarManager::Modify(this->canBusConfig, itemName, data, column);
          }
          else
          {
-            const QString data = CanSignalManager::GetData(this->canBusConfig, row, column);
-            this->ui.tableWidget_Properties->item(row, column)->setText(data);
+            newData = CanEnvVarManager::GetData(this->canBusConfig, itemName, column);
          }
-      }
-      else if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         if (CanSignalManager::Validate(this->canBusConfig, row, data, column))
-         {
-            if (column == 0)
-            {
-               const QString name = CanSignalManager::GetData(this->canBusConfig, row, column);
-               this->ChangeTreeWidgetItemName(name, data);
-            }
-            CanSignalManager::Modify(this->canBusConfig, row, data, column);
-         }
-         else
-         {
-            const QString data = CanSignalManager::GetData(this->canBusConfig, row, column);
-            this->ui.tableWidget_Properties->item(row, column)->setText(data);
-         }
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
-      {
-         //this->BuildCanEnvironmentVariableProperties(text);
-         /* todo */
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-      {
-         //this->BuildCanEnvironmentVariablesProperties();
-         /* todo */
+         this->ui.tableWidget_Properties->item(row, column)->setText(newData);
       }
    }
 
@@ -416,30 +397,23 @@ void BusConfigUI::on_tableWidget_Properties_cellChanged(int row, int column)
    {
       const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
+      const auto itemName = this->ui.tableWidget_Properties->item(row, 0)->text();
 
-      if (itemType == ItemId::CAN_MESSAGE.data())
+      if (itemType == ItemId::CAN_MESSAGE.data() || itemType == ItemId::CAN_MESSAGES.data() ||
+         itemType == ItemId::CAN_TX_MESSAGES.data() || itemType == ItemId::CAN_RX_MESSAGES.data())
       {
-         CanMessageManager::Modify(this->canBusConfig, row, data, column);
+         CanMessageManager::Modify(this->canBusConfig, itemName, data, column);
       }
-      else if (itemType == ItemId::CAN_MESSAGES.data())
+      else if (itemType == ItemId::CAN_SIGNAL.data() || itemType == ItemId::CAN_SIGNALS.data() ||
+         itemType == ItemId::CAN_MESSAGE_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data() ||
+         itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data() ||
+         itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
       {
-         CanMessageManager::Modify(this->canBusConfig, row, data, column);
+         CanSignalManager::Modify(this->canBusConfig, itemName, data, column);
       }
-      else if (itemType == ItemId::CAN_SIGNAL.data())
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data() || itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
       {
-         CanSignalManager::Modify(this->canBusConfig, row, data, column);
-      }
-      else if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         CanSignalManager::Modify(this->canBusConfig, row, data, column);
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
-      {
-         //this->BuildCanEnvironmentVariableProperties(text);
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-      {
-         //this->BuildCanEnvironmentVariablesProperties();
+         CanEnvVarManager::Modify(this->canBusConfig, itemName, data, column);
       }
    }
 }
@@ -1289,14 +1263,15 @@ void BusConfigUI::BuildCanSignalRow(const ICanSignal* signal, int row)
       this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ byteOrder });
       this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ valueType });
 
-      this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ toQString(signal->GetFactor()) });
-      this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ toQString(signal->GetOffset()) });
-      this->ui.tableWidget_Properties->setItem(row, 8, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
-      this->ui.tableWidget_Properties->setItem(row, 9, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
+      this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ toQString(signal->GetInitialValue()) });
+      this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ toQString(signal->GetFactor()) });
+      this->ui.tableWidget_Properties->setItem(row, 8, new QTableWidgetItem{ toQString(signal->GetOffset()) });
+      this->ui.tableWidget_Properties->setItem(row, 9, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
+      this->ui.tableWidget_Properties->setItem(row, 10, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
 
-      this->ui.tableWidget_Properties->setItem(row, 10, new QTableWidgetItem{ signal->GetUnit() });
-      this->ui.tableWidget_Properties->setItem(row, 11, new QTableWidgetItem{ valueTableName });
-      this->ui.tableWidget_Properties->setItem(row, 12, new QTableWidgetItem{ signal->GetComment() });
+      this->ui.tableWidget_Properties->setItem(row, 11, new QTableWidgetItem{ signal->GetUnit() });
+      this->ui.tableWidget_Properties->setItem(row, 12, new QTableWidgetItem{ valueTableName });
+      this->ui.tableWidget_Properties->setItem(row, 13, new QTableWidgetItem{ signal->GetComment() });
    }
 }
 

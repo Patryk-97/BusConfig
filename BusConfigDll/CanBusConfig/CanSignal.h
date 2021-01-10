@@ -53,6 +53,13 @@ public:
    uint8_t GetValueTypeSymbol(void) const override;
    void SetValueTypeSymbol(uint8_t valueTypeSymbol);
 
+   int32_t GetRawInitialValue(void) const override;
+   void ModifyRawInitialValue(int32_t rawInitialValue) override;
+   void SetRawInitialValue(int32_t rawInitialValue);
+
+   double GetInitialValue(void) const override;
+   void ModifyInitialValue(double initialValue) override;
+
    double GetFactor(void) const override;
    void ModifyFactor(double factor) override;
    void SetFactor(double factor);
@@ -112,6 +119,8 @@ private:
 
    uint8_t valueTypeSymbol = ICanSignal::UNDEFINED_VALUE_TYPE_SYMBOL; //The value_type defines the signal as being of type unsigned (+) or signed (-). 
    IValueType_e valueType = IValueType_e::UNDEFINED_TYPE;
+
+   uint32_t rawInitialValue { ICanSignal::DEFAULT_RAW_INITIAL_VALUE };
 
    double factor {};
    double offset {};

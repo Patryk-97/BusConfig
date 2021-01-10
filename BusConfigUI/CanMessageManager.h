@@ -74,7 +74,7 @@ public:
    const static inline QStringList TX_METHODS { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod::CYCLIC,
       ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod::NOT_USED };
 
-   static bool Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
-   static QString GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column);
-   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
+   static bool Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData);
+   static QString GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column);
+   static void Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column);
 };

@@ -1,7 +1,7 @@
 #include "CanSignalManager.h"
 #include "Conversions.h"
 
-bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column)
+bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData)
 {
    // locals
    bool rV { true };
@@ -13,21 +13,24 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
       INT = 2
    };
 
-   auto validate = [] (ValidationType_e validationType, const QString& data)
+   auto validate = [&newData] (ValidationType_e validationType, const QString& data)
    {
       try
       {
          if (validationType == ValidationType_e::DOUBLE)
          {
             auto val = std::stod(data.toStdString());
+            newData = QString::number(val);
          }
          else if (validationType == ValidationType_e::INT)
          {
             auto val = std::stoi(data.toStdString());
+            newData = QString::number(val);
          }
          else if (validationType == ValidationType_e::UINT)
          {
             auto val = std::stoul(data.toStdString());
+            newData = QString::number(val);
          }
          return true;
       }
@@ -39,7 +42,7 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
 
    if (canBusConfig)
    {
-      if (auto canSignal = canBusConfig->GetSignalByIndex(index); canSignal)
+      if (auto canSignal = canBusConfig->GetSignalByName(name.toUtf8()); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -54,7 +57,7 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
                   rV = validate(ValidationType_e::UINT, data);
                   break;
                }
-               case FACTOR_POS: case OFFSET_POS: case MINIMUM_POS: case MAXIMUM_POS:
+               case INITIAL_VALUE_POS: case FACTOR_POS: case OFFSET_POS: case MINIMUM_POS: case MAXIMUM_POS:
                {
                   rV = validate(ValidationType_e::DOUBLE, data);
                   break;
@@ -71,14 +74,14 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
    return rV;
 }
 
-QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column)
+QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column)
 {
    // locals
    QString previousData;
 
    if (canBusConfig)
    {
-      if (auto canSignal = canBusConfig->GetSignalByIndex(index); canSignal)
+      if (auto canSignal = canBusConfig->GetSignalByName(name.toUtf8()); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -107,6 +110,11 @@ QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, size_t index, uin
                case VALUE_TYPE_POS:
                {
                   previousData = VALUE_TYPES[static_cast<int>(canSignal->GetValueType())];
+                  break;
+               }
+               case INITIAL_VALUE_POS:
+               {
+                  previousData = toQString(canSignal->GetInitialValue());
                   break;
                }
                case FACTOR_POS:
@@ -146,11 +154,11 @@ QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, size_t index, uin
    return previousData;
 }
 
-void CanSignalManager::Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column)
+void CanSignalManager::Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column)
 {
    if (canBusConfig)
    {
-      if (auto canSignal = canBusConfig->GetSignalByIndex(index); canSignal)
+      if (auto canSignal = canBusConfig->GetSignalByName(name.toUtf8()); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -168,7 +176,7 @@ void CanSignalManager::Modify(ICanBusConfig* canBusConfig, size_t index, const Q
                }
                case SIZE_POS:
                {
-                  canSignal->ModifySize(data.toUInt());
+                  canSignal->ModifySize((uint32_t)data.toDouble());
                   break;
                }
                case BYTE_ORDER_POS:
@@ -179,6 +187,11 @@ void CanSignalManager::Modify(ICanBusConfig* canBusConfig, size_t index, const Q
                case VALUE_TYPE_POS:
                {
                   canSignal->ModifyValueType(ValueType::MAP[data]);
+                  break;
+               }
+               case INITIAL_VALUE_POS:
+               {
+                  canSignal->ModifyInitialValue(data.toDouble());
                   break;
                }
                case FACTOR_POS:

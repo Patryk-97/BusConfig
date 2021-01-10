@@ -1,7 +1,7 @@
 #include "CanEnvVarManager.h"
 #include "Conversions.h"
 
-bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column)
+bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData)
 {
    // locals
    bool rV { true };
@@ -13,21 +13,24 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
       INT = 2
    };
 
-   auto validate = [](ValidationType_e validationType, const QString& data)
+   auto validate = [&newData] (ValidationType_e validationType, const QString& data)
    {
       try
       {
          if (validationType == ValidationType_e::DOUBLE)
          {
             auto val = std::stod(data.toStdString());
+            newData = QString::number(val);
          }
          else if (validationType == ValidationType_e::INT)
          {
             auto val = std::stoi(data.toStdString());
+            newData = QString::number(val);
          }
          else if (validationType == ValidationType_e::UINT)
          {
             auto val = std::stoul(data.toStdString());
+            newData = QString::number(val);
          }
          return true;
       }
@@ -39,7 +42,7 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
 
    if (canBusConfig)
    {
-      if (auto canSignal = canBusConfig->GetSignalByIndex(index); canSignal)
+      if (auto canEnvVar = canBusConfig->GetEnvVarByName(name.toUtf8()); canEnvVar)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -85,14 +88,14 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
    return rV;
 }
 
-QString CanEnvVarManager::GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column)
+QString CanEnvVarManager::GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column)
 {
    // locals
    QString previousData;
 
    if (canBusConfig)
    {
-      if (const auto canEnvVar = canBusConfig->GetEnvVarByIndex(index); canEnvVar)
+      if (const auto canEnvVar = canBusConfig->GetEnvVarByName(name.toUtf8()); canEnvVar)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -155,11 +158,11 @@ QString CanEnvVarManager::GetData(ICanBusConfig* canBusConfig, size_t index, uin
    return previousData;
 }
 
-void CanEnvVarManager::Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column)
+void CanEnvVarManager::Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column)
 {
    if (canBusConfig)
    {
-      if (auto canEnvVar = canBusConfig->GetEnvVarByIndex(index); canEnvVar)
+      if (auto canEnvVar = canBusConfig->GetEnvVarByName(name.toUtf8()); canEnvVar)
       {
          if (column < PROPERTIES_COUNT)
          {

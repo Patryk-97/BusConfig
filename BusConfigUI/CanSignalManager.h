@@ -17,13 +17,14 @@ public:
    constexpr static uint8_t SIZE_POS = 3;
    constexpr static uint8_t BYTE_ORDER_POS = 4;
    constexpr static uint8_t VALUE_TYPE_POS = 5;
-   constexpr static uint8_t FACTOR_POS = 6;
-   constexpr static uint8_t OFFSET_POS = 7;
-   constexpr static uint8_t MINIMUM_POS = 8;
-   constexpr static uint8_t MAXIMUM_POS = 9;
-   constexpr static uint8_t UNIT_POS = 10;
-   constexpr static uint8_t VALUE_TABLE_POS = 11;
-   constexpr static uint8_t COMMENT_POS = 12;
+   constexpr static uint8_t INITIAL_VALUE_POS = 6;
+   constexpr static uint8_t FACTOR_POS = 7;
+   constexpr static uint8_t OFFSET_POS = 8;
+   constexpr static uint8_t MINIMUM_POS = 9;
+   constexpr static uint8_t MAXIMUM_POS = 10;
+   constexpr static uint8_t UNIT_POS = 11;
+   constexpr static uint8_t VALUE_TABLE_POS = 12;
+   constexpr static uint8_t COMMENT_POS = 13;
    constexpr static uint8_t PROPERTIES_COUNT = COMMENT_POS + 1;
 
    constexpr static std::string_view NAME = "Name";
@@ -33,6 +34,7 @@ public:
    constexpr static std::string_view SIZE = "Size";
    constexpr static std::string_view BYTE_ORDER = "Byte order";
    constexpr static std::string_view VALUE_TYPE = "Value type";
+   constexpr static std::string_view INITIAL_VALUE = "Initial value";
    constexpr static std::string_view FACTOR = "Factor";
    constexpr static std::string_view OFFSET = "Offset";
    constexpr static std::string_view MINIMUM = "Minimum";
@@ -43,7 +45,8 @@ public:
 
    constexpr static std::array<std::string_view, PROPERTIES_COUNT> PROPERTIES = 
    {
-      NAME, MESSAGE, START_BIT, SIZE, BYTE_ORDER, VALUE_TYPE, FACTOR, OFFSET, MINIMUM, MAXIMUM, UNIT, VALUE_TABLE, COMMENT
+      NAME, MESSAGE, START_BIT, SIZE, BYTE_ORDER, VALUE_TYPE, INITIAL_VALUE, FACTOR, OFFSET, MINIMUM, MAXIMUM,
+      UNIT, VALUE_TABLE, COMMENT
    };
 
    class ByteOrder
@@ -84,7 +87,7 @@ public:
 
    const static inline QStringList VALUE_TYPES { ValueType::UNSIGNED.data(), ValueType::SIGNED.data() };
 
-   static bool Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
-   static QString GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column);
-   static void Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column);
+   static bool Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData);
+   static QString GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column);
+   static void Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column);
 };

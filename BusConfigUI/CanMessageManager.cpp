@@ -1,10 +1,10 @@
 #include "CanMessageManager.h"
 #include "Conversions.h"
 
-bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column)
+bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData)
 {
    // locals
-   bool rV{ true };
+   bool rV { true };
 
    enum class ValidationType_e
    {
@@ -13,21 +13,24 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, size_t index, cons
       INT = 2
    };
 
-   auto validate = [](ValidationType_e validationType, const QString& data)
+   auto validate = [&newData] (ValidationType_e validationType, const QString& data)
    {
       try
       {
          if (validationType == ValidationType_e::DOUBLE)
          {
             auto val = std::stod(data.toStdString());
+            newData = QString::number(val);
          }
          else if (validationType == ValidationType_e::INT)
          {
             auto val = std::stoi(data.toStdString());
+            newData = QString::number(val);
          }
          else if (validationType == ValidationType_e::UINT)
          {
             auto val = std::stoul(data.toStdString());
+            newData = QString::number(val);
          }
          return true;
       }
@@ -39,7 +42,7 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, size_t index, cons
 
    if (canBusConfig)
    {
-      if (auto canMessage = canBusConfig->GetMessageByIndex(index); canMessage)
+      if (auto canMessage = canBusConfig->GetMessageByName(name.toUtf8()); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -90,14 +93,14 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, size_t index, cons
    return rV;
 }
 
-QString CanMessageManager::GetData(ICanBusConfig* canBusConfig, size_t index, uint8_t column)
+QString CanMessageManager::GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column)
 {
    // locals
    QString previousData;
 
    if (canBusConfig)
    {
-      if (auto canMessage = canBusConfig->GetMessageByIndex(index); canMessage)
+      if (auto canMessage = canBusConfig->GetMessageByName(name.toUtf8()); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -150,11 +153,11 @@ QString CanMessageManager::GetData(ICanBusConfig* canBusConfig, size_t index, ui
    return previousData;
 }
 
-void CanMessageManager::Modify(ICanBusConfig* canBusConfig, size_t index, const QString& data, uint8_t column)
+void CanMessageManager::Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column)
 {
    if (canBusConfig)
    {
-      if (auto canMessage = canBusConfig->GetMessageByIndex(index); canMessage)
+      if (auto canMessage = canBusConfig->GetMessageByName(name.toUtf8()); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {
