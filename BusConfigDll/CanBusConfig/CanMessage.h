@@ -35,6 +35,8 @@ public:
    std::vector<CanSignal*> GetSignals(void);
    bool RemoveSignalByIndex(size_t index) override;
    bool RemoveSignalByName(const char* name) override;
+   void SortSignalsByName(void) override;
+   void SortSignalsByStartBit(void) override;
    void AddSignal(CanSignal* signal);
 
    size_t GetAttributesCount(void) const override;

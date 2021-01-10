@@ -120,6 +120,18 @@ bool CanMessage::RemoveSignalByName(const char* name)
       { return !std::strcmp(signal->GetName(), name); }));
 }
 
+void CanMessage::SortSignalsByName(void)
+{
+   ranges::sort(this->signals, [] (CanSignal* signal1, CanSignal* signal2)
+      { return std::strcmp(signal1->GetName(), signal2->GetName()) < 0; });
+}
+
+void CanMessage::SortSignalsByStartBit(void)
+{
+   ranges::sort(this->signals, [] (CanSignal* signal1, CanSignal* signal2)
+      { return signal1->GetStartBit() < signal2->GetStartBit(); });
+}
+
 void CanMessage::AddSignal(CanSignal* signal)
 {
    if (signal)
