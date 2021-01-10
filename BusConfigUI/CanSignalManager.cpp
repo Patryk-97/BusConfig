@@ -54,15 +54,6 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, size_t index, const
                   rV = validate(ValidationType_e::UINT, data);
                   break;
                }
-               case BYTE_ORDER_POS:
-               {
-                  break;
-               }
-               case VALUE_TYPE_POS:
-               {
-
-                  break;
-               }
                case FACTOR_POS: case OFFSET_POS: case MINIMUM_POS: case MAXIMUM_POS:
                {
                   rV = validate(ValidationType_e::DOUBLE, data);
@@ -110,11 +101,12 @@ QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, size_t index, uin
                }
                case BYTE_ORDER_POS:
                {
+                  previousData = BYTE_ORDERS[static_cast<int>(canSignal->GetByteOrder())];
                   break;
                }
                case VALUE_TYPE_POS:
                {
-
+                  previousData = VALUE_TYPES[static_cast<int>(canSignal->GetValueType())];
                   break;
                }
                case FACTOR_POS:

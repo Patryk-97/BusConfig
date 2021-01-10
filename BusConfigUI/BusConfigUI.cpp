@@ -399,10 +399,12 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
       else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
       {
          //this->BuildCanEnvironmentVariableProperties(text);
+         /* todo */
       }
       else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
       {
          //this->BuildCanEnvironmentVariablesProperties();
+         /* todo */
       }
    }
 
@@ -415,27 +417,27 @@ void BusConfigUI::on_tableWidget_Properties_cellChanged(int row, int column)
       const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
 
-      if (itemType == "CanMessage")
+      if (itemType == ItemId::CAN_MESSAGE.data())
       {
          CanMessageManager::Modify(this->canBusConfig, row, data, column);
       }
-      else if (itemType == "CanMessages")
+      else if (itemType == ItemId::CAN_MESSAGES.data())
       {
          CanMessageManager::Modify(this->canBusConfig, row, data, column);
       }
-      else if (itemType == "CanSignal")
+      else if (itemType == ItemId::CAN_SIGNAL.data())
       {
          CanSignalManager::Modify(this->canBusConfig, row, data, column);
       }
-      else if (itemType == "CanSignals")
+      else if (itemType == ItemId::CAN_SIGNALS.data())
       {
          CanSignalManager::Modify(this->canBusConfig, row, data, column);
       }
-      else if (itemType == "CanEnvironmentVariable")
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
       {
          //this->BuildCanEnvironmentVariableProperties(text);
       }
-      else if (itemType == "CanEnvironmentVariables")
+      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
       {
          //this->BuildCanEnvironmentVariablesProperties();
       }
@@ -461,27 +463,27 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
       connect(itemMenuEntry, &QAction::triggered, this, [this, &itemType, row]
       {
          QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
-         if (itemType == "CanMessage")
+         if (itemType == ItemId::CAN_MESSAGE.data())
          {
             this->RemoveCanMessage(name);
          }
-         else if (itemType == "CanMessages")
+         else if (itemType == ItemId::CAN_MESSAGES.data())
          {
             this->RemoveCanMessage(row);
          }
-         else if (itemType == "CanSignal")
+         else if (itemType == ItemId::CAN_SIGNAL.data())
          {
             this->RemoveCanSignal(name);
          }
-         else if (itemType == "CanSignals")
+         else if (itemType == ItemId::CAN_SIGNALS.data())
          {
             this->RemoveCanSignal(row);
          }
-         else if (itemType == "CanEnvironmentVariable")
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
          {
             this->RemoveCanEnvVar(name);
          }
-         else if (itemType == "CanEnvironmentVariables")
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
          {
             this->RemoveCanEnvVar(row);
          }

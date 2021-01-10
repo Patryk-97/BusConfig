@@ -44,6 +44,7 @@ public:
    ICanMessage* GetMessageBack(void) const override;
    bool RemoveMessageByIndex(size_t index) override;
    bool RemoveMessageByName(const char* name) override;
+   bool RemoveMessageById(uint32_t id) override;
    void AddMessage(CanMessage* message);
    CanMessage* CreateAndAddMessage(void);
 

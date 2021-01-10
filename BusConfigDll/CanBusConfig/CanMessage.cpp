@@ -101,6 +101,25 @@ std::vector<CanSignal*> CanMessage::GetSignals(void)
    return this->signals;
 }
 
+bool CanMessage::RemoveSignalByIndex(size_t index)
+{
+   if (index < this->signals.size())
+   {
+      this->signals.erase(this->signals.begin() + index);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+bool CanMessage::RemoveSignalByName(const char* name)
+{
+   return (0 != std::erase_if(this->signals, [&name] (CanSignal* signal)
+      { return !std::strcmp(signal->GetName(), name); }));
+}
+
 void CanMessage::AddSignal(CanSignal* signal)
 {
    if (signal)

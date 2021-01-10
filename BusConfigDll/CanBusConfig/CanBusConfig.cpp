@@ -187,6 +187,7 @@ bool CanBusConfig::RemoveNodeByIndex(size_t index)
 {
    if (index < this->nodes.size())
    {
+      helpers::ClearPtr(this->nodes[index]);
       this->nodes.erase(this->nodes.begin() + index);
       return true;
    }
@@ -198,8 +199,19 @@ bool CanBusConfig::RemoveNodeByIndex(size_t index)
 
 bool CanBusConfig::RemoveNodeByName(const char* name)
 {
-   return (0 != std::erase_if(this->nodes, [&name] (CanNode* node)
-      { return !std::strcmp(node->GetName(), name); }));
+   auto it = ranges::find_if(this->nodes, [&name] (CanNode* node)
+      { return !std::strcmp(node->GetName(), name); });
+
+   if (it != this->nodes.end())
+   {
+      helpers::ClearPtr(*it);
+      this->nodes.erase(it);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 void CanBusConfig::AddNode(CanNode* node)
@@ -253,6 +265,13 @@ bool CanBusConfig::RemoveMessageByIndex(size_t index)
 {
    if (index < this->messages.size())
    {
+      for (auto& node : this->nodes)
+      {
+         node->RemoveTxMessageById(this->messages[index]->GetId());
+         node->RemoveRxMessageById(this->messages[index]->GetId());
+      }
+
+      helpers::ClearPtr(this->messages[index]);
       this->messages.erase(this->messages.begin() + index);
       return true;
    }
@@ -264,8 +283,48 @@ bool CanBusConfig::RemoveMessageByIndex(size_t index)
 
 bool CanBusConfig::RemoveMessageByName(const char* name)
 {
-   return (0 != std::erase_if(this->messages, [&name](CanMessage* message)
-      { return !std::strcmp(message->GetName(), name); }));
+   auto it = ranges::find_if(this->messages, [&name] (CanMessage* message)
+      { return !std::strcmp(message->GetName(), name); });
+
+   if (it != this->messages.end())
+   {
+      for (auto& node : this->nodes)
+      {
+         node->RemoveTxMessageByName(name);
+         node->RemoveRxMessageByName(name);
+      }
+
+      helpers::ClearPtr(*it);
+      this->messages.erase(it);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+
+bool CanBusConfig::RemoveMessageById(uint32_t id)
+{
+   auto it = ranges::find_if(this->messages, [&id] (CanMessage* message)
+      { return message->GetId() == id; });
+
+   if (it != this->messages.end())
+   {
+      for (auto& node : this->nodes)
+      {
+         node->RemoveTxMessageById(id);
+         node->RemoveRxMessageById(id);
+      }
+
+      helpers::ClearPtr(*it);
+      this->messages.erase(it);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 size_t CanBusConfig::GetSignalsCount(void) const
@@ -295,6 +354,17 @@ bool CanBusConfig::RemoveSignalByIndex(size_t index)
 {
    if (index < this->signals.size())
    {
+      for (auto& node : this->nodes)
+      {
+         node->RemoveMappedTxSignalByName(this->signals[index]->GetName());
+         node->RemoveMappedRxSignalByName(this->signals[index]->GetName());
+      }
+      if (auto message = this->signals[index]->GetMessage(); message)
+      {
+         message->RemoveSignalByName(this->signals[index]->GetName());
+      }
+
+      helpers::ClearPtr(this->signals[index]);
       this->signals.erase(this->signals.begin() + index);
       return true;
    }
@@ -306,8 +376,29 @@ bool CanBusConfig::RemoveSignalByIndex(size_t index)
 
 bool CanBusConfig::RemoveSignalByName(const char* name)
 {
-   return (0 != std::erase_if(this->signals, [&name](CanSignal* signal)
-      { return !std::strcmp(signal->GetName(), name); }));
+   auto it = ranges::find_if(this->signals, [&name] (CanSignal* signal)
+      { return !std::strcmp(signal->GetName(), name); });
+
+   if (it != this->signals.end() && *it)
+   {
+      for (auto& node : this->nodes)
+      {
+         node->RemoveMappedTxSignalByName(name);
+         node->RemoveMappedRxSignalByName(name);
+      }
+      if (auto message = (*it)->GetMessage(); message)
+      {
+         message->RemoveSignalByName((*it)->GetName());
+      }
+
+      helpers::ClearPtr(*it);
+      this->signals.erase(it);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 void CanBusConfig::AddSignal(CanSignal* signal)
@@ -360,6 +451,7 @@ bool CanBusConfig::RemoveEnvVarByIndex(size_t index)
 {
    if (index < this->envVars.size())
    {
+      helpers::ClearPtr(this->envVars[index]);
       this->envVars.erase(this->envVars.begin() + index);
       return true;
    }
@@ -371,8 +463,19 @@ bool CanBusConfig::RemoveEnvVarByIndex(size_t index)
 
 bool CanBusConfig::RemoveEnvVarByName(const char* name)
 {
-   return (0 != std::erase_if(this->envVars, [&name](CanEnvVar* envVar)
-      { return !std::strcmp(envVar->GetName(), name); }));
+   auto it = ranges::find_if(this->envVars, [&name] (CanEnvVar* envVar)
+      { return !std::strcmp(envVar->GetName(), name); });
+
+   if (it != this->envVars.end())
+   {
+      helpers::ClearPtr(*it);
+      this->envVars.erase(it);
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 void CanBusConfig::AddEnvVar(CanEnvVar* envVar)

@@ -3,7 +3,7 @@
 #include "ICanNode.h"
 #include "CanMessage.h"
 #include <string>
-#include <set>
+#include <vector>
 
 class CanNode : public CanAttributeOwner, public ICanNode
 {
@@ -17,18 +17,34 @@ public:
 
    size_t GetTxMessagesCount(void) const override;
    ICanMessage* GetTxMessageByIndex(size_t index) const override;
+   bool RemoveTxMessageByIndex(size_t index) override;
+   bool RemoveTxMessageByName(const char* name) override;
+   bool RemoveTxMessageById(size_t id) override;
+   void SortTxMessagesByName(void) override;
+   void SortTxMessagesById(void) override;
    void AddTxMessage(CanMessage* txMessage);
 
    size_t GetRxMessagesCount(void) const override;
    ICanMessage* GetRxMessageByIndex(size_t index) const override;
+   bool RemoveRxMessageByIndex(size_t index) override;
+   bool RemoveRxMessageByName(const char* name) override;
+   bool RemoveRxMessageById(size_t id) override;
+   void SortRxMessagesByName(void) override;
+   void SortRxMessagesById(void) override;
    void AddRxMessage(CanMessage* rxMessage);
 
    size_t GetMappedTxSignalsCount(void) const override;
    ICanSignal* GetMappedTxSignalByIndex(size_t index) const override;
+   bool RemoveMappedTxSignalByIndex(size_t index) override;
+   bool RemoveMappedTxSignalByName(const char* name) override;
+   void SortMappedTxSignalsByName(void) override;
    void AddMappedTxSignal(CanSignal* mappedTxSignal);
 
    size_t GetMappedRxSignalsCount(void) const override;
    ICanSignal* GetMappedRxSignalByIndex(size_t index) const override;
+   bool RemoveMappedRxSignalByIndex(size_t index) override;
+   bool RemoveMappedRxSignalByName(const char* name) override;
+   void SortMappedRxSignalsByName(void) override;
    void AddMappedRxSignal(CanSignal* mappedRxSignal);
 
    size_t GetAttributesCount(void) const override;
@@ -43,19 +59,10 @@ public:
 
 private:
 
-   template <typename T>
-   struct Comparator
-   {
-      bool operator() (const T* t1, const T* t2) const
-      {
-         return std::strcmp(t1->GetName(), t2->GetName()) < 0;
-      }
-   };
-
    std::string name;
-   std::set<CanMessage*, Comparator<CanMessage>> txMessages;
-   std::set<CanMessage*, Comparator<CanMessage>> rxMessages;
-   std::set<CanSignal*, Comparator<CanSignal>> mappedTxSignals;
-   std::set<CanSignal*, Comparator<CanSignal>> mappedRxSignals;
+   std::vector<CanMessage*> txMessages;
+   std::vector<CanMessage*> rxMessages;
+   std::vector<CanSignal*> mappedTxSignals;
+   std::vector<CanSignal*> mappedRxSignals;
    std::string comment;
 };

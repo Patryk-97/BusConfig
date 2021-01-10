@@ -90,6 +90,8 @@ public:
    virtual size_t GetSignalsCount(void) const = 0;
    virtual ICanSignal* GetSignalByName(const char* name) const = 0;
    virtual ICanSignal* GetSignalByIndex(size_t index) const = 0;
+   virtual bool RemoveSignalByIndex(size_t index) = 0;
+   virtual bool RemoveSignalByName(const char* name) = 0;
 
    virtual size_t GetAttributesCount(void) const = 0;
    virtual ICanAttribute* GetAttributeByIndex(size_t index) const = 0;
