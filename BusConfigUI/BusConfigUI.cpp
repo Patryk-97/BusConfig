@@ -465,31 +465,71 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
          QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
          if (itemType == ItemId::CAN_MESSAGE.data())
          {
+            this->RemoveCanMessageFromTreeWidget(name);
             this->RemoveCanMessage(name);
          }
          else if (itemType == ItemId::CAN_MESSAGES.data())
          {
+            this->RemoveCanMessageFromTreeWidget(name);
             this->RemoveCanMessage(row);
+         }
+         else if (itemType == ItemId::CAN_TX_MESSAGES.data())
+         {
+            this->RemoveCanMessageFromTreeWidget(name);
+            this->RemoveCanMessage(name);
+         }
+         else if (itemType == ItemId::CAN_RX_MESSAGES.data())
+         {
+            this->RemoveCanMessageFromTreeWidget(name);
+            this->RemoveCanMessage(name);
          }
          else if (itemType == ItemId::CAN_SIGNAL.data())
          {
+            this->RemoveFromTreeWidget(name);
             this->RemoveCanSignal(name);
          }
          else if (itemType == ItemId::CAN_SIGNALS.data())
          {
+            this->RemoveFromTreeWidget(name);
             this->RemoveCanSignal(row);
+         }
+         else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(name);
          }
          else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
          {
+            this->RemoveFromTreeWidget(name);
             this->RemoveCanEnvVar(name);
          }
          else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
          {
+            this->RemoveFromTreeWidget(name);
             this->RemoveCanEnvVar(row);
          }
 
          this->ui.tableWidget_Properties->removeRow(row);
-         this->RemoveFromTreeWidget(name);
       });
 
       QAction* input = itemMenu->exec(globalPos);
@@ -1378,6 +1418,21 @@ void BusConfigUI::RemoveFromTreeWidget(const QString& itemName)
    {
       auto parent = treeItem->parent();
       parent->removeChild(treeItem);
+   }
+}
+
+void BusConfigUI::RemoveCanMessageFromTreeWidget(const QString& messageName)
+{
+   if (const auto canMessage = this->canBusConfig->GetMessageByName(messageName.toUtf8()); canMessage)
+   {
+      for (size_t i = 0; i < canMessage->GetSignalsCount(); i++)
+      {
+         if (const auto canSignal = canMessage->GetSignalByIndex(i); canSignal)
+         {
+            this->RemoveFromTreeWidget(canSignal->GetName());
+         }
+      }
+      this->RemoveFromTreeWidget(messageName);
    }
 }
 

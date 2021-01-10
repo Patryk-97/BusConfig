@@ -62,6 +62,7 @@ private:
 
    auto Find(const QString& itemName);
    void RemoveFromTreeWidget(const QString& itemName);
+   void RemoveCanMessageFromTreeWidget(const QString& messageName);
    void ChangeTreeWidgetItemName(const QString& itemName, const QString& newItemName);
 
    template <std::integral Integral>

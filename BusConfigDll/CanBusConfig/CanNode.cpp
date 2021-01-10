@@ -132,7 +132,17 @@ void CanNode::AddTxMessage(CanMessage* txMessage)
 {
    if (txMessage)
    {
-      this->txMessages.push_back(txMessage);
+      if (this->txMessages.size() > 0)
+      {
+         if (this->txMessages.back()->GetId() != txMessage->GetId())
+         {
+            this->txMessages.push_back(txMessage);
+         }
+      }
+      else
+      {
+         this->txMessages.push_back(txMessage);
+      }
    }
 }
 
@@ -237,9 +247,19 @@ void CanNode::SortRxMessagesById(void)
 
 void CanNode::AddRxMessage(CanMessage* rxMessage)
 {
-   if (rxMessage != nullptr)
+   if (rxMessage)
    {
-      this->rxMessages.push_back(rxMessage);
+      if (this->rxMessages.size() > 0)
+      {
+         if (this->rxMessages.back()->GetId() != rxMessage->GetId())
+         {
+            this->rxMessages.push_back(rxMessage);
+         }
+      }
+      else
+      {
+         this->rxMessages.push_back(rxMessage);
+      }
    }
 }
 
