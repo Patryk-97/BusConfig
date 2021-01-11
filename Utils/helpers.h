@@ -136,24 +136,28 @@ namespace helpers
       return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) == std::tolower(b); });
    }
 
+   static inline int icompare(const std::string& str1, const std::string& str2)
+   {
+      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), str2.end(), [] (char a, char b)
+         { return std::tolower(a) == std::tolower(b); });
+      if (it.first != str1.end() && it.second != str2.end())
+      {
+         return (std::tolower(*(it.first)) - std::tolower(*(it.second)));
+      }
+      if (it.first == str1.end() && it.second == str2.end())
+      {
+         return 0;
+      }
+      return (int)str1.size() - (int)str2.size();
+   }
+
    static inline bool iless(const std::string& str1, const std::string& str2)
    {
-      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), [] (char a, char b)
-         { return std::tolower(a) == std::tolower(b); });
-      return (it.first != str1.end() ? (std::tolower(*(it.first)) < std::tolower(*(it.second))) : false);
+      return icompare(str1, str2) < 0;
    }
 
    static inline bool igreater(const std::string& str1, const std::string& str2)
    {
-      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), [] (char a, char b)
-         { return std::tolower(a) == std::tolower(b); });
-      return (it.first != str1.end() ? (std::tolower(*(it.first)) > std::tolower(*(it.second))) : false);
-   }
-
-   static inline int icompare(const std::string& str1, const std::string& str2)
-   {
-      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), [] (char a, char b)
-         { return std::tolower(a) == std::tolower(b); });
-      return (it.first != str1.end() ? (std::tolower(*(it.first)) - std::tolower(*(it.second))) : 0);
+      return icompare(str1, str2) > 0;
    }
 }
