@@ -374,6 +374,37 @@ bool CanBusConfig::RemoveSignalByIndex(size_t index)
    }
 }
 
+void CanBusConfig::SortSignalsByName(bool caseSensitive)
+{
+   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
+      { return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2); };
+   ranges::sort(this->signals, [&comparator] (CanSignal* signal1, CanSignal* signal2)
+      { return comparator(signal1->GetName(), signal2->GetName()); });
+}
+
+void CanBusConfig::SortSignalsByMessageName(bool caseSensitive)
+{
+   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
+      { return caseSensitive ? name1.compare(name2) : helpers::icompare(name1, name2); };
+   ranges::sort(this->signals, [&comparator] (CanSignal* signal1, CanSignal* signal2)
+   {
+      const auto message1 = signal1->GetMessage();
+      const auto message2 = signal2->GetMessage();
+      if (message1 && message2)
+      {
+         if (int cmp = comparator(message1->GetName(), message2->GetName()); !cmp)
+         {
+            return signal1->GetStartBit() < signal2->GetStartBit();
+         }
+         else
+         {
+            return cmp < 0;
+         }
+      }
+      return false;
+   });
+}
+
 bool CanBusConfig::RemoveSignalByName(const char* name)
 {
    auto it = ranges::find_if(this->signals, [&name] (CanSignal* signal)

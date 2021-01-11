@@ -48,6 +48,8 @@ public:
    virtual size_t GetSignalIndex(const char* name) const = 0;
    virtual bool RemoveSignalByIndex(size_t index) = 0;
    virtual bool RemoveSignalByName(const char* name) = 0;
+   virtual void SortSignalsByName(bool caseSensitive = false) = 0;
+   virtual void SortSignalsByMessageName(bool caseSensitive = false) = 0;
 
    virtual size_t GetEnvVarsCount(void) const = 0;
    virtual ICanEnvVar* GetEnvVarByIndex(size_t index) const = 0;

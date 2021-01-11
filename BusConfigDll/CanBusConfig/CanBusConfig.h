@@ -54,6 +54,8 @@ public:
    size_t GetSignalIndex(const char* name) const override;
    bool RemoveSignalByIndex(size_t index) override;
    bool RemoveSignalByName(const char* name) override;
+   void SortSignalsByName(bool caseSensitive = false) override;
+   void SortSignalsByMessageName(bool caseSensitive = false) override;
    void AddSignal(CanSignal* signal);
    CanSignal* CreateAndAddSignal(void);
 

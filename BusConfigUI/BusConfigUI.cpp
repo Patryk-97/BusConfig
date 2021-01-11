@@ -424,6 +424,36 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
          }
       }
 
+      if (itemType == ItemId::CAN_SIGNALS.data())
+      {
+         auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", itemMenu };
+         caseSensitiveMenuEntry->setCheckable(true);
+         caseSensitiveMenuEntry->setChecked(this->caseSensitive);
+         itemMenu->addAction(caseSensitiveMenuEntry);
+         connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
+         {
+            this->caseSensitive = caseSensitiveMenuEntry->isChecked();
+         });
+
+         auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
+         itemMenu->addAction(sortByNameMenuEntry);
+
+         connect(sortByNameMenuEntry, &QAction::triggered, this, [this]
+         {
+            this->canBusConfig->SortSignalsByName(this->caseSensitive);
+            this->BuildTable();
+         });
+
+         auto sortByMessageMenuEntry = new QAction{ "Sort signals by message", itemMenu };
+         itemMenu->addAction(sortByMessageMenuEntry);
+
+         connect(sortByMessageMenuEntry, &QAction::triggered, this, [this]
+         {
+            this->canBusConfig->SortSignalsByMessageName(this->caseSensitive);
+            this->BuildTable();
+         });
+      }
+
       QAction* input = itemMenu->exec(globalPos);
    }
 }
