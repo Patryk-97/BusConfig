@@ -131,31 +131,31 @@ namespace helpers
       return rV;
    }
 
+   // case insetitively checking if std::strings are equal
    static inline bool iequals(const std::string& str1, const std::string& str2)
    {
       return ranges::equal(str1, str2, [] (char a, char b) { return std::tolower(a) == std::tolower(b); });
    }
 
+   // case insetitively comparing std strings
    static inline int icompare(const std::string& str1, const std::string& str2)
    {
-      auto it = std::mismatch(str1.begin(), str1.end(), str2.begin(), str2.end(), [] (char a, char b)
+      auto it = ranges::mismatch(str1, str2, [] (char a, char b)
          { return std::tolower(a) == std::tolower(b); });
-      if (it.first != str1.end() && it.second != str2.end())
+      if (it.in1 != str1.end() && it.in2 != str2.end())
       {
-         return (std::tolower(*(it.first)) - std::tolower(*(it.second)));
+         return (std::tolower(*(it.in1)) - std::tolower(*(it.in2)));
       }
-      if (it.first == str1.end() && it.second == str2.end())
-      {
-         return 0;
-      }
-      return (int)str1.size() - (int)str2.size();
+      return (it.in1 == str1.end() && it.in2 == str2.end() ? 0 : (int)str1.size() - (int)str2.size());
    }
 
+   // case insetitively version of std::less<std::string>
    static inline bool iless(const std::string& str1, const std::string& str2)
    {
       return icompare(str1, str2) < 0;
    }
 
+   // case insetitively version of std::greater<std::string>
    static inline bool igreater(const std::string& str1, const std::string& str2)
    {
       return icompare(str1, str2) > 0;
