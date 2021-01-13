@@ -59,7 +59,7 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, const QString& nam
                }
                case ID_FORMAT_POS:
                {
-
+                  newData = data;
                   break;
                }
                case SIZE_POS:
@@ -69,7 +69,7 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, const QString& nam
                }
                case TX_METHOD_POS:
                {
-
+                  newData = data;
                   break;
                }
                case CYCLE_TIME_POS:

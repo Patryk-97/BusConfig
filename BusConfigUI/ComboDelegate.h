@@ -2,7 +2,7 @@
 
 #include <qstyleditemdelegate.h>
 #include <qstringlist.h>
-#include <qlistwidget.h>
+#include <qcombobox.h>
 
 class ComboDelegate : public QStyledItemDelegate
 {
@@ -14,11 +14,11 @@ public:
    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
    void setEditorData(QWidget* editor, const QModelIndex& index) const override;
    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
-   void currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
+   void currentTextChanged(const QString& text);
 
 private:
    QStringList items;
-   mutable QListWidget* editor { nullptr };
+   mutable QComboBox* editor { nullptr };
    int minimumHeight {};
    int minimumWidth {};
 };

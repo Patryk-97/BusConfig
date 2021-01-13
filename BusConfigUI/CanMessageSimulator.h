@@ -3,6 +3,7 @@
 #include "ICanBusConfig.h"
 #include <QDialog>
 #include <qtablewidget.h>
+#include "ICanBusConfig.h"
 
 namespace Ui
 {
@@ -20,8 +21,21 @@ public:
 
 private slots:
    void on_tableWidget_CanDataBytes_itemChanged(QTableWidgetItem* item);
+   void on_tableWidget_CanMessage_itemChanged(QTableWidgetItem* item);
+   void on_tableWidget_CanSignal_itemChanged(QTableWidgetItem* item);
+
+private:
+   void UpdatedCanDataBytesHex(QTableWidgetItem* item);
+   void UpdatedCanDataBytesBin(QTableWidgetItem* item);
+   void UpdatedCanDataBytesBitDataBytes(QTableWidgetItem* item);
+   void CalculateDataHexResult(void);
+   void BuildCanMessageTableWidget(const ICanMessage* canMessage);
+   void BuildCanSignalTableWidget(const ICanSignal* canSignal);
 
 private:
    Ui::CanMessageSimulator* ui;
-   bool canDataBytesTableFilled = false;
+   bool canDataBytesTableFilled { false };
+   bool canMessageTableFilled = { false };
+   bool canSignalTableFilled = { false };
+   ICanBusConfig* canBusConfig { nullptr };
 };

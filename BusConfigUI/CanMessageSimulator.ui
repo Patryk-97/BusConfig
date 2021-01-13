@@ -29,7 +29,7 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,2">
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,1,8">
        <property name="leftMargin">
@@ -114,6 +114,12 @@
           </property>
          </item>
          <item row="0" column="1">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -134,6 +140,9 @@
           </property>
          </item>
          <item row="1" column="1">
+          <property name="text">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -208,6 +217,12 @@
           </property>
          </item>
          <item row="0" column="1">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -228,6 +243,9 @@
           </property>
          </item>
          <item row="1" column="1">
+          <property name="text">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -248,6 +266,9 @@
           </property>
          </item>
          <item row="2" column="1">
+          <property name="text">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -268,6 +289,9 @@
           </property>
          </item>
          <item row="3" column="1">
+          <property name="text">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -288,6 +312,9 @@
           </property>
          </item>
          <item row="4" column="1">
+          <property name="text">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
@@ -308,6 +335,9 @@
           </property>
          </item>
          <item row="5" column="1">
+          <property name="text">
+           <string/>
+          </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>

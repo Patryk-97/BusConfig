@@ -1,6 +1,8 @@
 #include "ComboDelegate.h"
-#include <qlistwidget.h>
+#include <qcombobox.h>
 #include <qdebug.h>
+#include <qscrollbar.h>
+#include <qlistwidget.h>
 
 void ComboDelegate::SetItems(const QStringList& items)
 {
@@ -9,11 +11,11 @@ void ComboDelegate::SetItems(const QStringList& items)
 
 QWidget* ComboDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-   editor = new QListWidget { parent };
-   editor->setMinimumHeight(minimumHeight * this->items.size());
+   editor = new QComboBox { parent };
+   editor->setMinimumHeight(minimumHeight);
    editor->setMinimumWidth(minimumWidth);
 
-   QObject::connect(editor, &QListWidget::currentItemChanged, this, &ComboDelegate::currentItemChanged);
+   QObject::connect(editor, &QComboBox::currentTextChanged, this, &ComboDelegate::currentTextChanged);
    
    return editor;
 }
@@ -22,11 +24,11 @@ void ComboDelegate::setEditorData(QWidget* editor, const QModelIndex& index) con
 {
    for (size_t i {}; const auto& item : items)
    {
-      auto listItem = new QListWidgetItem { item };
-      qobject_cast<QListWidget*>(editor)->addItem(listItem);
+      //auto listItem = new QListWidgetItem { item };
+      qobject_cast<QComboBox*>(editor)->addItem(item);
       if (item == index.data())
       {
-         qobject_cast<QListWidget*>(editor)->setCurrentItem(qobject_cast<QListWidget*>(editor)->item(i));
+         qobject_cast<QComboBox*>(editor)->setCurrentText(qobject_cast<QComboBox*>(editor)->itemText(i));
       }
       ++i;
    }
@@ -34,12 +36,12 @@ void ComboDelegate::setEditorData(QWidget* editor, const QModelIndex& index) con
 
 void ComboDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-   auto editorIndex = qobject_cast<QListWidget*>(editor)->currentIndex();
-   auto text = qobject_cast<QListWidget*>(editor)->currentItem()->text();
+   auto editorIndex = qobject_cast<QComboBox*>(editor)->currentIndex();
+   auto text = qobject_cast<QComboBox*>(editor)->currentText();
    model->setData(index, text);
 }
 
-void ComboDelegate::currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous)
+void ComboDelegate::currentTextChanged(const QString& text)
 {
    this->commitData(this->editor);
    this->closeEditor(this->editor);

@@ -57,6 +57,11 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, const QString& name
                   rV = validate(ValidationType_e::UINT, data);
                   break;
                }
+               case BYTE_ORDER_POS: case VALUE_TYPE_POS:
+               {
+                  newData = data;
+                  break;
+               }
                case INITIAL_VALUE_POS: case FACTOR_POS: case OFFSET_POS: case MINIMUM_POS: case MAXIMUM_POS:
                {
                   rV = validate(ValidationType_e::DOUBLE, data);

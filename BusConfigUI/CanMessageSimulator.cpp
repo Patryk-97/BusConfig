@@ -163,6 +163,11 @@ CanMessageSimulator::CanMessageSimulator(QWidget* parent) :
       this->ui->tableWidget_CanSignal->setItem(i++, 0, item);
    }
 
+   for (size_t i = 0; i < this->ui->tableWidget_CanSignal->rowCount(); i++)
+   {
+      this->ui->tableWidget_CanSignal->item(i, 1)->setTextAlignment(Qt::AlignCenter);
+   }
+
    this->canDataBytesTableFilled = true;
 }
 
@@ -175,51 +180,33 @@ bool CanMessageSimulator::Create(ICanBusConfig* canBusConfig, ICanMessage* canMe
 {
    if (canBusConfig)
    {
+      this->canBusConfig = canBusConfig;
       if (const auto message = canBusConfig->GetMessageByIndex(0); message)
       {
-         this->ui->tableWidget_CanMessage->setItem(0, 1, new QTableWidgetItem{ message->GetName() });
-         this->ui->tableWidget_CanMessage->setItem(1, 1, new QTableWidgetItem{ toHexQString(message->GetId()) });
-
-         for (size_t i = 0; i < this->ui->tableWidget_CanMessage->rowCount(); i++)
+         this->canMessageTableFilled = false; this->canSignalTableFilled = false;
+         this->BuildCanMessageTableWidget(message);
+         QStringList messagesNames;
+         QStringList signalsNames;
+         for (size_t i = 0; i < canBusConfig->GetMessagesCount(); i++)
          {
-            this->ui->tableWidget_CanMessage->item(i, 1)->setTextAlignment(Qt::AlignCenter);
-         }
-
-         if (const auto signal = message->GetSignalByIndex(1); signal)
-         {
-            this->ui->tableWidget_CanSignal->setItem(0, 1, new QTableWidgetItem{ signal->GetName() });
-            this->ui->tableWidget_CanSignal->setItem(1, 1, new QTableWidgetItem{ toQString(signal->GetStartBit()) });
-            this->ui->tableWidget_CanSignal->setItem(2, 1, new QTableWidgetItem{ toQString(signal->GetSize()) });
-            this->ui->tableWidget_CanSignal->setItem(3, 1, new QTableWidgetItem{ "Little endian" });
-            this->ui->tableWidget_CanSignal->setItem(4, 1, new QTableWidgetItem{ toQString(signal->GetFactor()) });
-            this->ui->tableWidget_CanSignal->setItem(5, 1, new QTableWidgetItem{ toQString(signal->GetOffset()) });
-
-            for (size_t i = 0; i < signal->GetSize(); i++)
+            if (const auto message = canBusConfig->GetMessageByIndex(i); message)
             {
-               auto item = this->ui->tableWidget_SignalMaskBin->item((i + signal->GetStartBit()) / 8, 7 - (signal->GetStartBit() + i) % 8);
-               item->setText("1");
-            }
-
-            for (size_t i = 0; i < 8; i++)
-            {
-               QString row;
-               for (size_t j = 0; j < 8; j++)
+               messagesNames.append(message->GetName());
+               for (size_t j = 0; j < message->GetSignalsCount(); j++)
                {
-                  row += this->ui->tableWidget_SignalMaskBin->item(i, j)->text();
+                  if (const auto signal = message->GetSignalByIndex(j); signal)
+                  {
+                     signalsNames.append(signal->GetName());
+                  }
                }
-               std::bitset<8> binaryNumber { row.toUtf8().constData() };
-               this->ui->tableWidget_SignalMaskHex->item(i, 0)->setText(toHexQString(binaryNumber.to_ulong()));
-
-               std::bitset<8> rawBinaryNumber { this->ui->tableWidget_CanDataBytes->item(i, 1)->text().toUtf8().constData() };
-               rawBinaryNumber &= binaryNumber;
-               this->ui->tableWidget_DataHex->item(i, 0)->setText(toHexQString(rawBinaryNumber.to_ulong()));
             }
          }
+         ComboDelegate* messageDelegate = new ComboDelegate(messagesNames);
+         this->ui->tableWidget_CanMessage->setItemDelegateForRow(0, messageDelegate);
+         ComboDelegate* signalDelegate = new ComboDelegate(signalsNames);
+         this->ui->tableWidget_CanSignal->setItemDelegateForRow(0, signalDelegate);
 
-         for (size_t i = 0; i < this->ui->tableWidget_CanSignal->rowCount(); i++)
-         {
-            this->ui->tableWidget_CanSignal->item(i, 1)->setTextAlignment(Qt::AlignCenter);
-         }
+         this->canMessageTableFilled = true; this->canSignalTableFilled = true;
       }
    }
 
@@ -231,48 +218,201 @@ void CanMessageSimulator::on_tableWidget_CanDataBytes_itemChanged(QTableWidgetIt
    if (this->canDataBytesTableFilled)
    {
       this->canDataBytesTableFilled = false;
-      const int row = item->row();
       const int column = item->column();
 
       if (column == 0)
       {
-         const uint8_t value = item->text().toUInt(nullptr, 16);
-         std::bitset<8> binaryNumber{ value };
-         this->ui->tableWidget_CanDataBytes->item(row, 1)->setText(binaryNumber.to_string().c_str());
-
-         for (size_t i = 0; i < 8; i++)
-         {
-            this->ui->tableWidget_CanDataBytes->item(row, i + 2)->setText(std::to_string(binaryNumber[7 - i]).c_str());
-         }
+         this->UpdatedCanDataBytesHex(item);
       }
       else if (column == 1)
       {
-         std::bitset<8> binaryNumber{ item->text().toUtf8().constData() };
-         const uint8_t value = static_cast<uint8_t>(binaryNumber.to_ulong());
-         this->ui->tableWidget_CanDataBytes->item(row, 0)->setText(toHexQString(value));
-
-         for (size_t i = 0; i < 8; i++)
-         {
-            this->ui->tableWidget_CanDataBytes->item(row, i + 2)->setText(std::to_string(binaryNumber[7 - i]).c_str());
-         }
+         this->UpdatedCanDataBytesBin(item);
       }
       else
       {
-         auto bit = item->text();
-         std::bitset<8> binaryNumber{ this->ui->tableWidget_CanDataBytes->item(row, 1)->text().toUtf8().constData() };
-
-         if (bit == "1")
-         {
-            binaryNumber.set(static_cast<size_t>(9) - column);
-         }
-         else if (bit == "0")
-         {
-            binaryNumber.reset(static_cast<size_t>(9) - column);
-         }
-
-         this->ui->tableWidget_CanDataBytes->item(row, 0)->setText(toHexQString(binaryNumber.to_ulong()));
-         this->ui->tableWidget_CanDataBytes->item(row, 1)->setText(binaryNumber.to_string().c_str());
+         this->UpdatedCanDataBytesBitDataBytes(item);
       }
       this->canDataBytesTableFilled = true;
+   }
+}
+
+void CanMessageSimulator::on_tableWidget_CanMessage_itemChanged(QTableWidgetItem* item)
+{
+   if (this->canBusConfig && this->canMessageTableFilled)
+   {
+      this->canMessageTableFilled = false;
+      if (const auto canMessage = this->canBusConfig->GetMessageByName(item->text().toUtf8()); canMessage)
+      {
+         this->BuildCanMessageTableWidget(canMessage);
+      }
+      this->canMessageTableFilled = true;
+   }
+}
+
+void CanMessageSimulator::on_tableWidget_CanSignal_itemChanged(QTableWidgetItem* item)
+{
+   if (this->canBusConfig && this->canSignalTableFilled)
+   {
+      this->canSignalTableFilled = false;
+      if (const auto canSignal = this->canBusConfig->GetSignalByName(item->text().toUtf8()); canSignal)
+      {
+         this->BuildCanSignalTableWidget(canSignal);
+      }
+      this->canSignalTableFilled = true;
+   }
+}
+
+void CanMessageSimulator::UpdatedCanDataBytesHex(QTableWidgetItem* item)
+{
+   const int row = item->row();
+   const uint8_t value = item->text().toUInt(nullptr, 16);
+   std::bitset<8> binaryNumber{ value };
+   this->ui->tableWidget_CanDataBytes->item(row, 1)->setText(binaryNumber.to_string().c_str());
+
+   for (size_t i = 0; i < 8; i++)
+   {
+      this->ui->tableWidget_CanDataBytes->item(row, i + 2)->setText(std::to_string(binaryNumber[7 - i]).c_str());
+   }
+
+   const auto canSignalBitStartItem = this->ui->tableWidget_CanSignal->item(1, 1);
+   const auto canSignalSizeItem = this->ui->tableWidget_CanSignal->item(2, 1);
+
+   if (!canSignalBitStartItem->text().isEmpty() && !canSignalSizeItem->text().isEmpty())
+   {
+      this->CalculateDataHexResult();
+   }
+}
+
+void CanMessageSimulator::UpdatedCanDataBytesBin(QTableWidgetItem* item)
+{
+   const int row = item->row();
+   std::bitset<8> binaryNumber{ item->text().toUtf8().constData() };
+   const uint8_t value = static_cast<uint8_t>(binaryNumber.to_ulong());
+   this->ui->tableWidget_CanDataBytes->item(row, 0)->setText(toHexQString(value));
+
+   for (size_t i = 0; i < 8; i++)
+   {
+      this->ui->tableWidget_CanDataBytes->item(row, i + 2)->setText(std::to_string(binaryNumber[7 - i]).c_str());
+   }
+
+   const auto canSignalBitStartItem = this->ui->tableWidget_CanSignal->item(1, 1);
+   const auto canSignalSizeItem = this->ui->tableWidget_CanSignal->item(2, 1);
+
+   if (!canSignalBitStartItem->text().isEmpty() && !canSignalSizeItem->text().isEmpty())
+   {
+      this->CalculateDataHexResult();
+   }
+}
+
+void CanMessageSimulator::UpdatedCanDataBytesBitDataBytes(QTableWidgetItem* item)
+{
+   const int row = item->row();
+   const int column = item->column();
+   auto bit = item->text();
+   std::bitset<8> binaryNumber{ this->ui->tableWidget_CanDataBytes->item(row, 1)->text().toUtf8().constData() };
+
+   if (bit == "1")
+   {
+      binaryNumber.set(static_cast<size_t>(9) - column);
+   }
+   else if (bit == "0")
+   {
+      binaryNumber.reset(static_cast<size_t>(9) - column);
+   }
+
+   this->ui->tableWidget_CanDataBytes->item(row, 0)->setText(toHexQString(binaryNumber.to_ulong()));
+   this->ui->tableWidget_CanDataBytes->item(row, 1)->setText(binaryNumber.to_string().c_str());
+
+   const auto canSignalBitStartItem = this->ui->tableWidget_CanSignal->item(1, 1);
+   const auto canSignalSizeItem = this->ui->tableWidget_CanSignal->item(2, 1);
+
+   if (!canSignalBitStartItem->text().isEmpty() && !canSignalSizeItem->text().isEmpty())
+   {
+      this->CalculateDataHexResult();
+   }
+}
+
+void CanMessageSimulator::CalculateDataHexResult(void)
+{
+   for (size_t i = 0; i < this->ui->tableWidget_SignalMaskBin->rowCount(); i++)
+   {
+      QString binStr;
+      bool maskEnabled {};
+      for (size_t j = 0; j < this->ui->tableWidget_SignalMaskBin->columnCount(); j++)
+      {
+         auto item = this->ui->tableWidget_SignalMaskBin->item(i, j);
+         binStr += item->text();
+         if (item->text() == "1")
+         {
+            maskEnabled = true;
+         }
+      }
+
+      if (maskEnabled)
+      {
+         std::bitset<8> binaryNumber { binStr.toUtf8().constData() };
+         qDebug(std::to_string(binaryNumber.to_ulong()).c_str());
+         std::bitset<8> rawBinaryNumber { this->ui->tableWidget_CanDataBytes->item(i, 1)->text().toUtf8().constData() };
+         rawBinaryNumber &= binaryNumber;
+         this->ui->tableWidget_DataHex->item(i, 0)->setText(toHexQString(rawBinaryNumber.to_ulong()));
+      }
+   }
+}
+
+void CanMessageSimulator::BuildCanMessageTableWidget(const ICanMessage* canMessage)
+{
+   if (canMessage)
+   {
+      this->ui->tableWidget_CanMessage->item(0, 1)->setText(canMessage->GetName());
+      this->ui->tableWidget_CanMessage->item(1, 1)->setText(toHexQString(canMessage->GetId()));
+
+      for (size_t i = 0; i < this->ui->tableWidget_CanMessage->rowCount(); i++)
+      {
+         this->ui->tableWidget_CanMessage->item(i, 1)->setTextAlignment(Qt::AlignCenter);
+      }
+
+      if (const auto canSignal = canMessage->GetSignalByIndex(0); canSignal)
+      {
+         this->BuildCanSignalTableWidget(canSignal);
+      }
+   }
+}
+
+void CanMessageSimulator::BuildCanSignalTableWidget(const ICanSignal* canSignal)
+{
+   if (canSignal)
+   {
+      this->ui->tableWidget_CanSignal->item(0, 1)->setText(canSignal->GetName());
+      this->ui->tableWidget_CanSignal->item(1, 1)->setText(toQString(canSignal->GetStartBit()));
+      this->ui->tableWidget_CanSignal->item(2, 1)->setText(toQString(canSignal->GetSize()));
+      this->ui->tableWidget_CanSignal->item(3, 1)->setText("Little endian");
+      this->ui->tableWidget_CanSignal->item(4, 1)->setText(toQString(canSignal->GetFactor()));
+      this->ui->tableWidget_CanSignal->item(5, 1)->setText(toQString(canSignal->GetOffset()));
+
+      for (size_t i = 0; i < this->ui->tableWidget_SignalMaskBin->rowCount(); i++)
+      {
+         for (size_t j = 0; j < this->ui->tableWidget_SignalMaskBin->columnCount(); j++)
+         {
+            this->ui->tableWidget_SignalMaskBin->item(i, j)->setText("0");
+         }
+         this->ui->tableWidget_DataHex->item(i, 0)->setText("");
+      }
+
+      for (size_t i = 0; i < canSignal->GetSize(); i++)
+      {
+         auto item = this->ui->tableWidget_SignalMaskBin->item((i + canSignal->GetStartBit()) / 8, 7 - (canSignal->GetStartBit() + i) % 8);
+         item->setText("1");
+      }
+
+      for (size_t i = 0; i < 8; i++)
+      {
+         QString row;
+         for (size_t j = 0; j < 8; j++)
+         {
+            row += this->ui->tableWidget_SignalMaskBin->item(i, j)->text();
+         }
+      }
+
+      this->CalculateDataHexResult();
    }
 }

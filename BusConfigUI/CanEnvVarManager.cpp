@@ -48,7 +48,16 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, const QString& name
          {
             switch (column)
             {
-               case NAME_POS: case TYPE_POS: case UNIT_POS:
+               case NAME_POS:
+               {
+                  break;
+               }
+               case TYPE_POS:
+               {
+                  newData = data;
+                  break;
+               }
+               case UNIT_POS:
                {
                   break;
                }
@@ -72,7 +81,12 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, const QString& name
                   //canSignal->ModifyOffset(data.toDouble());
                   break;
                }
-               case ACCESS_POS: COMMENT_POS:
+               case ACCESS_POS:
+               {
+                  newData = data;
+                  break;
+               }
+               case COMMENT_POS:
                {
                   break;
                }
