@@ -65,6 +65,9 @@
     <ClCompile Include="CanEnvVarManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CanMessageSimulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h">
@@ -108,12 +111,18 @@
     <QtMoc Include="AttributeDefinitions.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="CanMessageSimulator.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="CommunicationMatrix.ui">
       <Filter>Resource Files</Filter>
     </QtUic>
     <QtUic Include="AttributeDefinitions.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+    <QtUic Include="CanMessageSimulator.ui">
       <Filter>Resource Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -77,6 +77,7 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->icons[Icon_e::HEX] = QIcon{ ":/BusConfigUI/Icons/hex.ico" };
        this->icons[Icon_e::DEC] = QIcon{ ":/BusConfigUI/Icons/dec.ico" };
        this->icons[Icon_e::COMMUNICATION_MATRIX] = QIcon{ ":/BusConfigUI/Icons/communication-matrix.png" };
+       this->icons[Icon_e::CAN_MESSAGE_SIMULATOR] = QIcon{ ":/BusConfigUI/Icons/can-message-simulator.png" };
 
        foreach(QToolButton * button, ui.mainToolBar->findChildren<QToolButton*>())
        {
@@ -93,6 +94,11 @@ BusConfigUI::BusConfigUI(QWidget *parent)
           {
              button->setText("");
              button->setIcon(this->icons[Icon_e::ATTRIBUTES]);
+          }
+          if (button->text() == "Can message simulator")
+          {
+             button->setText("");
+             button->setIcon(this->icons[Icon_e::CAN_MESSAGE_SIMULATOR]);
           }
        }
 
@@ -119,6 +125,7 @@ BusConfigUI::~BusConfigUI()
 {
    delete this->communicationMatrix;
    delete this->attributeDefinitions;
+   delete this->canMessageSimulator;
 }
 
 void BusConfigUI::on_actionClear_triggered()
@@ -182,6 +189,12 @@ void BusConfigUI::on_actionCommunication_matrix_triggered()
 {
    this->communicationMatrix->Create(this->canBusConfig);
    this->communicationMatrix->show();
+}
+
+void BusConfigUI::on_actionCan_message_simulator_triggered()
+{
+   this->canMessageSimulator->Create(this->canBusConfig);
+   this->canMessageSimulator->show();
 }
 
 void BusConfigUI::on_actionExit_triggered()

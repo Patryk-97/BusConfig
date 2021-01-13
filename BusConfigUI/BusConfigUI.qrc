@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="BusConfigUI">
+    <file>Icons/can-message-simulator.png</file>
     <file>Icons/value-table.png</file>
     <file>Icons/attributes-list.png</file>
     <file>Icons/export.png</file>

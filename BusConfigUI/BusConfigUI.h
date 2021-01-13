@@ -5,6 +5,7 @@
 #include "ICanBusConfig.h"
 #include "CommunicationMatrix.h"
 #include "AttributeDefinitions.h"
+#include "CanMessageSimulator.h"
 #include <qmap.h>
 
 class BusConfigUI : public QMainWindow
@@ -24,6 +25,7 @@ private slots:
    void on_actionBase_triggered();
    void on_actionAttribute_definitions_triggered();
    void on_actionCommunication_matrix_triggered();
+   void on_actionCan_message_simulator_triggered();
    void on_treeWidget_MainView_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
    void on_tableWidget_Properties_itemChanged(QTableWidgetItem* item);
    void on_tableWidget_Properties_cellChanged(int row, int column);
@@ -104,6 +106,7 @@ private:
     ICanBusConfig* canBusConfig { nullptr };
     CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
     AttributeDefinitions* attributeDefinitions { new AttributeDefinitions {} };
+    CanMessageSimulator* canMessageSimulator { new CanMessageSimulator {} };
     bool isTableWidgetFilled { false };
     QTreeWidgetItem* currentTreeWidgetItem { nullptr };
     bool caseSensitive { false };
@@ -119,7 +122,8 @@ private:
        ATTRIBUTES = 6,
        HEX = 10,
        DEC = 11,
-       COMMUNICATION_MATRIX = 12
+       COMMUNICATION_MATRIX = 12,
+       CAN_MESSAGE_SIMULATOR = 13
     };
 
     enum class Base_e

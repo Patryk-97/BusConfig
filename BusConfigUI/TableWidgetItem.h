@@ -2,11 +2,23 @@
 
 #include <qtablewidget.h>
 
-template <typename T>
+template <typename T = QString, bool enabled = true>
 class TableWidgetItem : public QTableWidgetItem
 {
 public:
-   TableWidgetItem(const QString& text, int type = 0) : QTableWidgetItem(text, type) {}
+   TableWidgetItem(const QString& text, Qt::AlignmentFlag textAlignment = Qt::AlignmentFlag::AlignLeft) :
+      QTableWidgetItem(text, 0)
+   {
+      this->setTextAlignment(textAlignment);
+      if constexpr (enabled)
+      {
+         this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+      }
+      else
+      {
+         this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      }
+   }
 
    inline bool operator <(const QTableWidgetItem& other) const
    {
@@ -21,6 +33,10 @@ public:
       else if (std::is_same_v<T, double>)
       {
          return this->text().toDouble() < other.text().toDouble();
+      }
+      else
+      {
+         QTableWidgetItem::operator<(other);
       }
    }
 };

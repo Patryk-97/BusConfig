@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qstring.h>
-#include <sstream>
 
 template <typename T>
 inline QString toQString(const T& parameter)
@@ -12,7 +11,12 @@ inline QString toQString(const T& parameter)
 template <std::integral T>
 inline QString toHexQString(const T& hexNumber)
 {
-   std::stringstream stream;
-   stream << "0x" << std::hex << hexNumber;
-   return QString::fromStdString(stream.str());
+   QString rV = "0x";
+
+   if (hexNumber <= 0xF || (hexNumber >= 0xFF && hexNumber <= 0xFFF))
+   {
+      rV += "0";
+   }
+
+   return rV + QString::number(hexNumber, 16);
 }
