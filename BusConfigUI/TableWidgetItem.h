@@ -2,7 +2,7 @@
 
 #include <qtablewidget.h>
 
-template <typename T = QString, bool enabled = true>
+template <typename T = QString, bool editable = true>
 class TableWidgetItem : public QTableWidgetItem
 {
 public:
@@ -10,7 +10,7 @@ public:
       QTableWidgetItem(text, 0)
    {
       this->setTextAlignment(textAlignment);
-      if constexpr (enabled)
+      if constexpr (editable)
       {
          this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
       }

@@ -31,6 +31,7 @@ private:
    void CalculateDataHexResult(void);
    void BuildCanMessageTableWidget(const ICanMessage* canMessage);
    void BuildCanSignalTableWidget(const ICanSignal* canSignal);
+   void ResetSignalMaskBinAndHexTableWidget(void);
 
 private:
    Ui::CanMessageSimulator* ui;

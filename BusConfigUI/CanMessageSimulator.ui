@@ -146,6 +146,9 @@
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+          </property>
          </item>
         </widget>
        </item>
@@ -249,6 +252,9 @@
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+          </property>
          </item>
          <item row="2" column="0">
           <property name="text">
@@ -271,6 +277,9 @@
           </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
           </property>
          </item>
          <item row="3" column="0">
@@ -295,6 +304,9 @@
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+          </property>
          </item>
          <item row="4" column="0">
           <property name="text">
@@ -318,6 +330,9 @@
           <property name="textAlignment">
            <set>AlignCenter</set>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+          </property>
          </item>
          <item row="5" column="0">
           <property name="text">
@@ -340,6 +355,9 @@
           </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
           </property>
          </item>
         </widget>
@@ -379,7 +397,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label">
           <property name="font">
            <font>
@@ -391,8 +409,8 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="label_2">
+        <item row="3" column="1">
+         <widget class="QLabel" name="label_DataHex">
           <property name="font">
            <font>
             <pointsize>12</pointsize>
@@ -404,14 +422,14 @@
 }</string>
           </property>
           <property name="text">
-           <string>0</string>
+           <string>0x00</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignJustify|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_3">
           <property name="font">
            <font>
@@ -423,7 +441,65 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="4" column="1">
+         <widget class="QLabel" name="label_DataDec">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+	margin-left: 30px;
+}</string>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Value:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLabel" name="label_Value">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+	margin-left: 30px;
+}</string>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Formula:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
          <widget class="QLabel" name="label_4">
           <property name="font">
            <font>
@@ -436,36 +512,7 @@
 }</string>
           </property>
           <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Value:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="label_6">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-	margin-left: 30px;
-}</string>
-          </property>
-          <property name="text">
-           <string>0</string>
+           <string>data * factor + offset</string>
           </property>
          </widget>
         </item>
