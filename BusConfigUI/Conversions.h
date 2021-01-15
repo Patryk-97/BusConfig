@@ -13,7 +13,7 @@ inline QString toHexQString(const T& hexNumber)
 {
    QString rV = "0x";
 
-   if (hexNumber <= 0xF || (hexNumber >= 0xFF && hexNumber <= 0xFFF))
+   if (hexNumber <= 0xF || (hexNumber > 0xFF && hexNumber <= 0xFFF))
    {
       rV += "0";
    }
