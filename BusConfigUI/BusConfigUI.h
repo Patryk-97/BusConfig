@@ -38,6 +38,7 @@ private:
    void BuildTree(void);
    void BuildTable(void);
    void Clear(void);
+   void ClearTableWidget(void);
    
    void AttachAttributesToTree(QTreeWidgetItem* parent);
    void AttachValueTableToTree(QTreeWidgetItem* parent);

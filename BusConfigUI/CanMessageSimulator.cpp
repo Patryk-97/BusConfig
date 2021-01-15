@@ -363,66 +363,70 @@ void CanMessageSimulator::UpdatedCanDataBytesBitDataBytes(QTableWidgetItem* item
 void CanMessageSimulator::CalculateDataHexResult(void)
 {
    QString binStr;
-   const auto canSignalByteOrderItem = this->ui->tableWidget_CanSignal->item(3, 1);
-   const auto canSignalByteOrder = CanSignalManager::ByteOrder::MAP[canSignalByteOrderItem->text()];
 
-   for (size_t i = 0; i < this->ui->tableWidget_SignalMaskBin->rowCount(); i++)
+   const auto canSignal = this->canBusConfig->GetSignalByName(this->ui->tableWidget_CanSignal->item(0, 1)->text().toUtf8());
+   if (canSignal)
    {
-      QString rowBinStr;
-      for (size_t j = 0; j < this->ui->tableWidget_SignalMaskBin->columnCount(); j++)
+      const auto canSignalByteOrder = canSignal->GetByteOrder();
+
+      for (size_t i = 0; i < this->ui->tableWidget_SignalMaskBin->rowCount(); i++)
       {
-         const auto itemText = this->ui->tableWidget_SignalMaskBin->item(i, j)->text();
-         if (itemText == "1")
+         QString rowBinStr;
+         for (size_t j = 0; j < this->ui->tableWidget_SignalMaskBin->columnCount(); j++)
          {
-            const auto rawBit = this->ui->tableWidget_CanDataBytes->item(i, j + 2)->text();
-            rowBinStr += rawBit;
+            const auto itemText = this->ui->tableWidget_SignalMaskBin->item(i, j)->text();
+            if (itemText == "1")
+            {
+               const auto rawBit = this->ui->tableWidget_CanDataBytes->item(i, j + 2)->text();
+               rowBinStr += rawBit;
+            }
+         }
+
+         if (!rowBinStr.isEmpty())
+         {
+            if (canSignalByteOrder == ICanSignal::IByteOrder_e::BIG_ENDIAN)
+            {
+               binStr.append(rowBinStr);
+            }
+            else // (canSignalByteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
+            {
+               binStr = rowBinStr + binStr;
+            }
          }
       }
 
-      if (!rowBinStr.isEmpty())
+      if (!binStr.isEmpty())
       {
-         if (canSignalByteOrder == ICanSignal::IByteOrder_e::BIG_ENDIAN)
+         std::bitset<64> binaryNumber{ binStr.toUtf8().constData() };
+         const auto value = binaryNumber.to_ullong();
+
+         this->ui->label_DataDec->setText(toQString(value));
+         this->ui->label_DataHex->setText(toHexQString(value));
+
+         const auto canSignalFactor = this->ui->tableWidget_CanSignal->item(4, 1)->text().toDouble();
+         const auto canSignalOffset = this->ui->tableWidget_CanSignal->item(5, 1)->text().toDouble();
+         this->ui->label_ValueFormula->setText(toQString(value) + " * " + toQString(canSignalFactor) + " + " + toQString(canSignalOffset));
+         this->ui->label_Value->setText(toQString(value * canSignalFactor + canSignalOffset) + " " + canSignal->GetUnit());
+
+         const auto canSignalSize = this->ui->tableWidget_CanSignal->item(2, 1)->text().toUInt();
+         this->ui->tableWidget_CanSignalRawData->setRowCount(canSignalSize);
+         this->ui->tableWidget_CanSignalRawData->setColumnCount(1);
+
+         for (size_t i = 0; i < canSignalSize; i++)
          {
-            binStr.append(rowBinStr);
+            auto item = new TableWidgetItem<uint32_t, false>{ binStr.at(i), Qt::AlignCenter };
+            auto boldFont = QFont{}; boldFont.setBold(true);
+            item->setFont(boldFont);
+            item->setForeground(Qt::black); item->setBackground(CAN_SIGNAL_COLOR);
+            this->ui->tableWidget_CanSignalRawData->setItem(i, 0, item);
          }
-         else // (canSignalByteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
+         this->ui->tableWidget_CanSignalRawData->item(0, 0)->setBackground(MSB_BG_COLOR);
+
+         if (canSignalSize != 1)
          {
-            binStr = rowBinStr + binStr;
+            this->ui->tableWidget_CanSignalRawData->item(canSignalSize - 1, 0)->setBackground(LSB_BG_COLOR);
+            this->ui->tableWidget_CanSignalRawData->item(canSignalSize - 1, 0)->setForeground(LSB_FG_COLOR);
          }
-      }
-   }
-
-   if (!binStr.isEmpty())
-   {
-      std::bitset<64> binaryNumber { binStr.toUtf8().constData() };
-      const auto value = binaryNumber.to_ullong();
-
-      this->ui->label_DataDec->setText(toQString(value));
-      this->ui->label_DataHex->setText(toHexQString(value));
-
-      const auto canSignalFactor = this->ui->tableWidget_CanSignal->item(4, 1)->text().toDouble();
-      const auto canSignalOffset = this->ui->tableWidget_CanSignal->item(5, 1)->text().toDouble();
-      this->ui->label_ValueFormula->setText(toQString(value) + " * " + toQString(canSignalFactor) + " + " + toQString(canSignalOffset));
-      this->ui->label_Value->setText(toQString(value * canSignalFactor + canSignalOffset));
-
-      const auto canSignalSize = this->ui->tableWidget_CanSignal->item(2, 1)->text().toUInt();
-      this->ui->tableWidget_CanSignalRawData->setRowCount(canSignalSize);
-      this->ui->tableWidget_CanSignalRawData->setColumnCount(1);
-
-      for (size_t i = 0; i < canSignalSize; i++)
-      {
-         auto item = new TableWidgetItem<uint32_t, false>{ binStr.at(i), Qt::AlignCenter };
-         auto boldFont = QFont{}; boldFont.setBold(true);
-         item->setFont(boldFont);
-         item->setForeground(Qt::black); item->setBackground(CAN_SIGNAL_COLOR);
-         this->ui->tableWidget_CanSignalRawData->setItem(i, 0, item);
-      }
-      this->ui->tableWidget_CanSignalRawData->item(0, 0)->setBackground(MSB_BG_COLOR);
-
-      if (canSignalSize != 1)
-      {
-         this->ui->tableWidget_CanSignalRawData->item(canSignalSize - 1, 0)->setBackground(LSB_BG_COLOR);
-         this->ui->tableWidget_CanSignalRawData->item(canSignalSize - 1, 0)->setForeground(LSB_FG_COLOR);
       }
    }
 }

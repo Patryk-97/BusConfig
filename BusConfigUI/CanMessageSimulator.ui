@@ -29,7 +29,7 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0">
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,1,8">
        <property name="leftMargin">
@@ -383,7 +383,7 @@
          <number>6</number>
         </property>
         <property name="leftMargin">
-         <number>60</number>
+         <number>40</number>
         </property>
         <property name="topMargin">
          <number>40</number>

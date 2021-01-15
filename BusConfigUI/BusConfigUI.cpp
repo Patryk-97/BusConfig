@@ -106,7 +106,7 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->ui.tableWidget_Properties->setContextMenuPolicy(Qt::CustomContextMenu);
        connect(this->ui.tableWidget_Properties, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowMenuForTableWidgetItem(const QPoint&)));
 
-       this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 0 10px; border: 0; }");
+       this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 5 10px; border: 0; }");
        this->ui.tableWidget_Properties->horizontalHeader()->setStyleSheet(
          "QHeaderView::section { padding: 0 10px; border: 0; }");
        this->ui.tableWidget_Properties->setFocusPolicy(Qt::FocusPolicy::NoFocus);
@@ -768,9 +768,7 @@ void BusConfigUI::BuildTable(void)
    {
       this->isTableWidgetFilled = false;
 
-      this->ui.tableWidget_Properties->clear();
-      this->ui.tableWidget_Properties->setRowCount(0);
-      this->ui.tableWidget_Properties->setColumnCount(0);
+      this->ClearTableWidget();
       this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::ResizeToContents);
 
       const auto text = currentTreeWidgetItem->text(0);
@@ -891,6 +889,11 @@ void BusConfigUI::Clear(void)
 {
    this->canBusConfig->Clear();
    this->ui.treeWidget_MainView->clear();
+   this->ClearTableWidget();
+}
+
+void BusConfigUI::ClearTableWidget(void)
+{
    for (size_t i = 0; i < this->ui.tableWidget_Properties->columnCount(); i++)
    {
       this->ui.tableWidget_Properties->setItemDelegateForColumn(i, nullptr);
