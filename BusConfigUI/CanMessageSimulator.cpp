@@ -462,63 +462,27 @@ void CanMessageSimulator::BuildCanSignalTableWidget(const ICanSignal* canSignal)
 {
    if (canSignal)
    {
+      const auto byteOrder = canSignal->GetByteOrder();
+      const auto canSignalSize = canSignal->GetSize();
+
       this->ui->tableWidget_CanSignal->item(0, 1)->setText(canSignal->GetName());
       this->ui->tableWidget_CanSignal->item(1, 1)->setText(toQString(canSignal->GetStartBit()));
-      this->ui->tableWidget_CanSignal->item(2, 1)->setText(toQString(canSignal->GetSize()));
-      this->ui->tableWidget_CanSignal->item(3, 1)->setText(CanSignalManager::BYTE_ORDERS[static_cast<int>(canSignal->GetByteOrder())]);
+      this->ui->tableWidget_CanSignal->item(2, 1)->setText(toQString(canSignalSize));
+      this->ui->tableWidget_CanSignal->item(3, 1)->setText(CanSignalManager::BYTE_ORDERS[static_cast<int>(byteOrder)]);
       this->ui->tableWidget_CanSignal->item(4, 1)->setText(toQString(canSignal->GetFactor()));
       this->ui->tableWidget_CanSignal->item(5, 1)->setText(toQString(canSignal->GetOffset()));
 
       this->ResetSignalMaskBinAndHexTableWidget();
 
-      if (canSignal->GetByteOrder() == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
+      uint8_t bitIndex = canSignal->GetStartBit();
+      auto moveBitIndex = [&byteOrder] (uint8_t& bitIndex)
       {
-         for (size_t i = 0; i < canSignal->GetSize(); i++)
+         if (byteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN)
          {
-            int row = (i + canSignal->GetStartBit()) / 8;
-            int column = 7 - ((canSignal->GetStartBit() + i) % 8);
-            auto item = this->ui->tableWidget_SignalMaskBin->item(row, column);
-            item->setText("1");
-            if (i == 0)
-            {
-               item->setBackground(LSB_BG_COLOR);
-               item->setForeground(LSB_FG_COLOR);
-            }
-            else if (i == canSignal->GetSize() - 1)
-            {
-               item->setBackground(MSB_BG_COLOR);
-               item->setForeground(MSB_FG_COLOR);
-            }
-            else
-            {
-               item->setBackground(CAN_SIGNAL_COLOR);
-            }
+            ++bitIndex;
          }
-      }
-      else if (canSignal->GetByteOrder() == ICanSignal::IByteOrder_e::BIG_ENDIAN)
-      {
-         uint8_t bitIndex = canSignal->GetStartBit();
-         for (size_t i = 0; i < canSignal->GetSize(); i++)
+         else if (byteOrder == ICanSignal::IByteOrder_e::BIG_ENDIAN)
          {
-            int row = (int)(bitIndex / 8);
-            int column = 7 - (bitIndex % 8);
-            auto item = this->ui->tableWidget_SignalMaskBin->item(row, column);
-            item->setText("1");
-            if (i == 0)
-            {
-               item->setBackground(MSB_BG_COLOR);
-               item->setForeground(MSB_BG_COLOR);
-            }
-            else if (i == canSignal->GetSize() - 1)
-            {
-               item->setBackground(LSB_BG_COLOR);
-               item->setForeground(LSB_FG_COLOR);
-            }
-            else
-            {
-               item->setBackground(CAN_SIGNAL_COLOR);
-            }
-
             if (bitIndex % 8 == 0)
             {
                bitIndex += 15;
@@ -528,6 +492,30 @@ void CanMessageSimulator::BuildCanSignalTableWidget(const ICanSignal* canSignal)
                --bitIndex;
             }
          }
+      };
+      for (size_t i = 0; i < canSignalSize; i++)
+      {
+         int row = bitIndex / 8;
+         int column = 7 - (bitIndex % 8);
+         auto item = this->ui->tableWidget_SignalMaskBin->item(row, column);
+         item->setText("1");
+
+         if (i == 0)
+         {
+            item->setBackground(byteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN ? LSB_BG_COLOR : MSB_BG_COLOR);
+            item->setForeground(byteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN ? LSB_FG_COLOR : MSB_FG_COLOR);
+         }
+         else if (i == canSignal->GetSize() - 1)
+         {
+            item->setBackground(byteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN ? MSB_BG_COLOR : LSB_BG_COLOR);
+            item->setForeground(byteOrder == ICanSignal::IByteOrder_e::LITTLE_ENDIAN ? MSB_FG_COLOR : LSB_FG_COLOR);
+         }
+         else
+         {
+            item->setBackground(CAN_SIGNAL_COLOR);
+         }
+
+         moveBitIndex(bitIndex);
       }
 
       for (size_t i = 0; i < 8; i++)
