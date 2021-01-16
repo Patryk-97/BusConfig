@@ -50,7 +50,7 @@ std::vector<CanAttribute*> CanAttributeOwner::GetAttributes(void) const
 
 void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
 {
-   /*if (attribute)
+   if (attribute)
    {
       if (this->objectType != ICanAttribute::IObjectType_e::NETWORK)
       {
@@ -63,10 +63,6 @@ void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
       {
          this->attributes.push_back(attribute);
       }
-   }*/
-   if (attribute)
-   {
-      this->attributes.push_back(attribute);
    }
 }
 

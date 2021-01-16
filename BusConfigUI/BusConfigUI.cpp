@@ -106,7 +106,7 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->ui.tableWidget_Properties->setContextMenuPolicy(Qt::CustomContextMenu);
        connect(this->ui.tableWidget_Properties, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowMenuForTableWidgetItem(const QPoint&)));
 
-       this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 5 10px; border: 0; }");
+       this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 0px 10px; border: 0; }");
        this->ui.tableWidget_Properties->horizontalHeader()->setStyleSheet(
          "QHeaderView::section { padding: 0 10px; border: 0; }");
        this->ui.tableWidget_Properties->setFocusPolicy(Qt::FocusPolicy::NoFocus);

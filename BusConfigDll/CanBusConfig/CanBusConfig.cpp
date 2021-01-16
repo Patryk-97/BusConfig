@@ -48,13 +48,9 @@ CanBusConfig::~CanBusConfig()
 
 void CanBusConfig::Clear()
 {
-   CanAttributeOwner::Clear();
+   this->fileName.clear();
    this->log.clear();
-   helpers::ClearContainer(this->messages);
-   helpers::ClearContainer(this->nodes);
-   helpers::ClearContainer(this->signals);
-   helpers::ClearContainer(this->envVars);
-   this->comment.clear();
+   helpers::ClearContainer(this->networks);
 }
 
 const char* CanBusConfig::GetLog(void) const
@@ -160,400 +156,45 @@ bool CanBusConfig::Export(const char* fileName) const
    return rV;
 }
 
-size_t CanBusConfig::GetNodesCount(void) const
+size_t CanBusConfig::GetNetworksCount(void) const
 {
-   return this->nodes.size();
+   return this->networks.size();
 }
 
-ICanNode* CanBusConfig::GetNodeByIndex(size_t index) const
+ICanNetwork* CanBusConfig::GetNetworkByIndex(size_t index) const
 {
-   return (index < this->nodes.size() ? this->nodes[index] : nullptr);
+   return (index < this->networks.size() ? this->networks[index] : nullptr);
 }
 
-ICanNode* CanBusConfig::GetNodeByName(const char* name) const
+ICanNetwork* CanBusConfig::GetNetworkByName(const char* name) const
 {
-   auto it = ranges::find_if(this->nodes, [&name](CanNode* node) { return !std::strcmp(node->GetName(), name); });
-   return (it != this->nodes.end() ? *it : nullptr);
+   auto it = ranges::find_if(this->networks, [&name](CanNetwork* network) { return !std::strcmp(network->GetName(), name); });
+   return (it != this->networks.end() ? *it : nullptr);
 }
 
-size_t CanBusConfig::GetNodeIndex(const char* name) const
+ICanNetwork* CanBusConfig::GetNetworkFront(void) const
 {
-   auto it = ranges::find_if(this->nodes, [&name](CanNode* node) { return !std::strcmp(node->GetName(), name); });
-   return (it != this->nodes.end() ? std::distance(this->nodes.begin(), it) :
-      ICanBusConfig::INVALID_INDEX);
+   return (this->networks.size() > 0 ? this->networks[0] : nullptr);
 }
 
-bool CanBusConfig::RemoveNodeByIndex(size_t index)
+ICanNetwork* CanBusConfig::GetNetworkBack(void) const
 {
-   if (index < this->nodes.size())
+   return (this->networks.size() > 0 ? this->networks[this->networks.size() - 1] : nullptr);
+}
+
+void CanBusConfig::AddNetwork(CanNetwork* network)
+{
+   if (network)
    {
-      helpers::ClearPtr(this->nodes[index]);
-      this->nodes.erase(this->nodes.begin() + index);
-      return true;
+      this->networks.push_back(network);
    }
-   else
-   {
-      return false;
-   }
-}
-
-bool CanBusConfig::RemoveNodeByName(const char* name)
-{
-   auto it = ranges::find_if(this->nodes, [&name] (CanNode* node)
-      { return !std::strcmp(node->GetName(), name); });
-
-   if (it != this->nodes.end())
-   {
-      helpers::ClearPtr(*it);
-      this->nodes.erase(it);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-void CanBusConfig::AddNode(CanNode* node)
-{
-   if (node)
-   {
-      this->nodes.push_back(node);
-   }
-}
-
-CanNode* CanBusConfig::CreateAndAddNode(void)
-{
-   CanNode* node = new CanNode{};
-   this->nodes.push_back(node);
-   return node;
-}
-
-size_t CanBusConfig::GetMessagesCount(void) const
-{
-   return this->messages.size();
-}
-
-ICanMessage* CanBusConfig::GetMessageById(uint32_t id) const
-{
-   auto it = ranges::find_if(this->messages, [&id] (CanMessage* message) { return message->GetId() == id; });
-   return (it != this->messages.end() ? *it : nullptr);
-}
-
-ICanMessage* CanBusConfig::GetMessageByName(const char* name) const
-{
-   auto it = ranges::find_if(this->messages, [&name](CanMessage* message) { return !std::strcmp(message->GetName(), name); });
-   return (it != this->messages.end() ? *it : nullptr);
-}
-
-ICanMessage* CanBusConfig::GetMessageByIndex(size_t index) const
-{
-   return (index < this->messages.size() ? this->messages[index] : nullptr);
-}
-
-ICanMessage* CanBusConfig::GetMessageFront(void) const
-{
-   return (this->messages.size() > 0 ? this->messages.front() : nullptr);
-}
-
-ICanMessage* CanBusConfig::GetMessageBack(void) const
-{
-   return (this->messages.size() > 0 ? this->messages.back() : nullptr);
-}
-
-bool CanBusConfig::RemoveMessageByIndex(size_t index)
-{
-   if (index < this->messages.size())
-   {
-      for (auto& node : this->nodes)
-      {
-         node->RemoveTxMessageById(this->messages[index]->GetId());
-         node->RemoveRxMessageById(this->messages[index]->GetId());
-      }
-
-      helpers::ClearPtr(this->messages[index]);
-      this->messages.erase(this->messages.begin() + index);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-bool CanBusConfig::RemoveMessageByName(const char* name)
-{
-   auto it = ranges::find_if(this->messages, [&name] (CanMessage* message)
-      { return !std::strcmp(message->GetName(), name); });
-
-   if (it != this->messages.end())
-   {
-      for (auto& node : this->nodes)
-      {
-         node->RemoveTxMessageByName(name);
-         node->RemoveRxMessageByName(name);
-      }
-
-      helpers::ClearPtr(*it);
-      this->messages.erase(it);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-bool CanBusConfig::RemoveMessageById(uint32_t id)
-{
-   auto it = ranges::find_if(this->messages, [&id] (CanMessage* message)
-      { return message->GetId() == id; });
-
-   if (it != this->messages.end())
-   {
-      for (auto& node : this->nodes)
-      {
-         node->RemoveTxMessageById(id);
-         node->RemoveRxMessageById(id);
-      }
-
-      helpers::ClearPtr(*it);
-      this->messages.erase(it);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-size_t CanBusConfig::GetSignalsCount(void) const
-{
-   return this->signals.size();
-}
-
-ICanSignal* CanBusConfig::GetSignalByIndex(size_t index) const
-{
-   return (index < this->signals.size() ? this->signals[index] : nullptr);
-}
-
-ICanSignal* CanBusConfig::GetSignalByName(const char* name) const
-{
-   auto it = ranges::find_if(this->signals, [&name](CanSignal* signal) { return !std::strcmp(signal->GetName(), name); });
-   return (it != this->signals.end() ? *it : nullptr);
-}
-
-size_t CanBusConfig::GetSignalIndex(const char* name) const
-{
-   auto it = ranges::find_if(this->signals, [&name](CanSignal* signal) { return !std::strcmp(signal->GetName(), name); });
-   return (it != this->signals.end() ? std::distance(this->signals.begin(), it) :
-      ICanBusConfig::INVALID_INDEX);
-}
-
-bool CanBusConfig::RemoveSignalByIndex(size_t index)
-{
-   if (index < this->signals.size())
-   {
-      for (auto& node : this->nodes)
-      {
-         node->RemoveMappedTxSignalByName(this->signals[index]->GetName());
-         node->RemoveMappedRxSignalByName(this->signals[index]->GetName());
-      }
-      if (auto message = this->signals[index]->GetMessage(); message)
-      {
-         message->RemoveSignalByName(this->signals[index]->GetName());
-      }
-
-      helpers::ClearPtr(this->signals[index]);
-      this->signals.erase(this->signals.begin() + index);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-void CanBusConfig::SortSignalsByName(bool caseSensitive)
-{
-   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
-      { return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2); };
-   ranges::sort(this->signals, [&comparator] (CanSignal* signal1, CanSignal* signal2)
-      { return comparator(signal1->GetName(), signal2->GetName()); });
-}
-
-void CanBusConfig::SortSignalsByMessageName(bool caseSensitive)
-{
-   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
-      { return caseSensitive ? name1.compare(name2) : helpers::icompare(name1, name2); };
-   ranges::sort(this->signals, [&comparator] (CanSignal* signal1, CanSignal* signal2)
-   {
-      const auto message1 = signal1->GetMessage();
-      const auto message2 = signal2->GetMessage();
-      if (message1 && message2)
-      {
-         if (int cmp = comparator(message1->GetName(), message2->GetName()); !cmp)
-         {
-            return signal1->GetStartBit() < signal2->GetStartBit();
-         }
-         else
-         {
-            return cmp < 0;
-         }
-      }
-      return false;
-   });
-}
-
-bool CanBusConfig::RemoveSignalByName(const char* name)
-{
-   auto it = ranges::find_if(this->signals, [&name] (CanSignal* signal)
-      { return !std::strcmp(signal->GetName(), name); });
-
-   if (it != this->signals.end() && *it)
-   {
-      for (auto& node : this->nodes)
-      {
-         node->RemoveMappedTxSignalByName(name);
-         node->RemoveMappedRxSignalByName(name);
-      }
-      if (auto message = (*it)->GetMessage(); message)
-      {
-         message->RemoveSignalByName((*it)->GetName());
-      }
-
-      helpers::ClearPtr(*it);
-      this->signals.erase(it);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-void CanBusConfig::AddSignal(CanSignal* signal)
-{
-   if (signal)
-   {
-      this->signals.push_back(signal);
-   }
-}
-
-CanSignal* CanBusConfig::CreateAndAddSignal(void)
-{
-   CanSignal* signal = new CanSignal {};
-   this->signals.push_back(signal);
-   return signal;
-}
-
-void CanBusConfig::AddMessage(CanMessage* message)
-{
-   if (message)
-   {
-      this->messages.push_back(message);
-   }
-}
-
-CanMessage* CanBusConfig::CreateAndAddMessage(void)
-{
-   CanMessage* message = new CanMessage {};
-   this->messages.push_back(message);
-   return message;
-}
-
-size_t CanBusConfig::GetEnvVarsCount(void) const
-{
-   return this->envVars.size();
-}
-
-ICanEnvVar* CanBusConfig::GetEnvVarByIndex(size_t index) const
-{
-   return (index < this->envVars.size() ? this->envVars[index] : nullptr);
-}
-
-ICanEnvVar* CanBusConfig::GetEnvVarByName(const char* name) const
-{
-   auto it = ranges::find_if(this->envVars, [&name](CanEnvVar* envVar) { return !std::strcmp(envVar->GetName(), name); });
-   return (it != this->envVars.end() ? *it : nullptr);
-}
-
-bool CanBusConfig::RemoveEnvVarByIndex(size_t index)
-{
-   if (index < this->envVars.size())
-   {
-      helpers::ClearPtr(this->envVars[index]);
-      this->envVars.erase(this->envVars.begin() + index);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-bool CanBusConfig::RemoveEnvVarByName(const char* name)
-{
-   auto it = ranges::find_if(this->envVars, [&name] (CanEnvVar* envVar)
-      { return !std::strcmp(envVar->GetName(), name); });
-
-   if (it != this->envVars.end())
-   {
-      helpers::ClearPtr(*it);
-      this->envVars.erase(it);
-      return true;
-   }
-   else
-   {
-      return false;
-   }
-}
-
-void CanBusConfig::AddEnvVar(CanEnvVar* envVar)
-{
-   if (envVar)
-   {
-      this->envVars.push_back(envVar);
-   }
-}
-
-size_t CanBusConfig::GetAttributesCount(void) const
-{
-   return CanAttributeOwner::GetAttributesCount();
-}
-
-ICanAttribute* CanBusConfig::GetAttributeByIndex(size_t index) const
-{
-   return CanAttributeOwner::GetAttributeByIndex(index);
-}
-
-ICanAttribute* CanBusConfig::GetAttributeByName(const char* name) const
-{
-   return CanAttributeOwner::GetAttributeByName(name);
-}
-
-size_t CanBusConfig::GetAttributesValuesCount(void) const
-{
-   return CanAttributeOwner::GetAttributesValuesCount();
-}
-
-ICanAttributeValue* CanBusConfig::GetAttributeValue(const char* attributeName) const
-{
-   return CanAttributeOwner::GetAttributeValue(attributeName);
-}
-
-const char* CanBusConfig::GetComment(void) const
-{
-   return this->comment.c_str();
-}
-
-void CanBusConfig::SetComment(const char* comment)
-{
-   this->comment = comment;
 }
 
 bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV { true };
 
@@ -565,7 +206,7 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
       // If everything's okay
       if (ranges::distance(tokenizer) == MESSAGE_DEFINITION_ELEMENTS_COUNT)
       {
-         CanMessage* message = this->CreateAndAddMessage();
+         CanMessage* message = network->CreateAndAddMessage();
          for (uint8_t pos{}; const auto& token : tokenizer)
          {
             switch (pos)
@@ -609,7 +250,7 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
                case MESSAGE_TRANSMITTER_POS:
                {
                   message->SetMainTransmitter(token.c_str());
-                  if (CanNode* node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
+                  if (CanNode* node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node != nullptr)
                   {
                      node->AddTxMessage(message);
                   }
@@ -642,8 +283,10 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
 
 bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineData)
 {
-   CanMessage* message = this->messages.back();
-   if (message == nullptr) { return false; }
+   auto network = this->networks.back();
+   if (!network) { return false; }
+   CanMessage* message = dynamic_cast<CanMessage*>(network->GetMessageBack());
+   if (!message) { return false; }
 
    // locals
    bool rV { true };
@@ -655,7 +298,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
       std::vector<std::string> tokens;
 
       // prepare signal definition tokens
-      std::invoke([&tokenizer, &tokens, this]
+      std::invoke([&tokenizer, &tokens, network]
       {
          for (size_t pos{}; const auto& token : tokenizer)
          {
@@ -668,7 +311,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                   pos += 2;
                }
                else if (pos == SIGNAL_UNIT_POS &&
-                  (this->GetNodeByName(token.c_str()) != nullptr || token == ICanNode::PSEUDO_NODE_NAME)) // if "" - for unit element
+                  (network->GetNodeByName(token.c_str()) != nullptr || token == ICanNode::PSEUDO_NODE_NAME)) // if "" - for unit element
                {
                   tokens.push_back("");
                   tokens.push_back(token);
@@ -692,10 +335,10 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
       // If everything's okay
       if (const auto elementsCount = ranges::distance(tokens); elementsCount >= SIGNAL_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         CanSignal* signal = this->CreateAndAddSignal();
+         CanSignal* signal = network->CreateAndAddSignal();
          message->AddSignal(signal);
          signal->SetMessage(message);
-         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(this->GetNodeByName(message->GetMainTransmitter())); transmitterNode)
+         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(network->GetNodeByName(message->GetMainTransmitter())); transmitterNode)
          {
             transmitterNode->AddMappedTxSignal(signal);
          }
@@ -818,7 +461,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
                default:
                {
                   signal->AddReceiver(token.c_str());
-                  if (CanNode* node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
+                  if (CanNode* node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node != nullptr)
                   {
                      node->AddMappedRxSignal(signal);
                      node->AddRxMessage(dynamic_cast<CanMessage*>(signal->GetMessage()));
@@ -853,6 +496,9 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
 
 bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV{ true };
 
@@ -871,7 +517,7 @@ bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData
                ++pos;
                continue;
             }
-            CanNode* node = this->CreateAndAddNode();
+            CanNode* node = network->CreateAndAddNode();
             node->SetName(token.c_str());
          }
       }
@@ -892,6 +538,9 @@ bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData
 
 bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV { true };
 
@@ -960,7 +609,7 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
                      else
                      {
                         envVar->SetName(envVarName.c_str());
-                        this->AddEnvVar(envVar);
+                        network->AddEnvVar(envVar);
                      }
                   }
                   catch (...)
@@ -1098,7 +747,7 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
                }
                default:
                {
-                  if (ICanNode* accessNode = this->GetNodeByName(token.c_str()); accessNode)
+                  if (ICanNode* accessNode = network->GetNodeByName(token.c_str()); accessNode)
                   {
                      envVar->AddAccessNode(dynamic_cast<CanNode*>(accessNode));
                   }
@@ -1132,6 +781,9 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
 
 bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV{ true };
 
@@ -1173,7 +825,7 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                {
                   try
                   {
-                     message = this->GetMessageById(std::stoul(token));
+                     message = network->GetMessageById(std::stoul(token));
                      if (message == nullptr)
                      {
                         rV = false;
@@ -1182,7 +834,7 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
                   }
                   catch (...)
                   {
-                     if (CanEnvVar* envVar = dynamic_cast<CanEnvVar*>(this->GetEnvVarByName(token.c_str())); envVar != nullptr)
+                     if (CanEnvVar* envVar = dynamic_cast<CanEnvVar*>(network->GetEnvVarByName(token.c_str())); envVar != nullptr)
                      {
                         valueTable = new CanValueTable {};
                         std::string valueTableName = "VtEv_"s + envVar->GetName();
@@ -1273,6 +925,9 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
 
 bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV{ true };
 
@@ -1393,7 +1048,7 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
                      {
                         attribute->SetObjectType(objectType);
                         attribute->SetName(attributeName.c_str());
-                        this->AddAttribute(attribute);
+                        network->AddAttribute(attribute);
                      }
                      break;
                   }
@@ -1434,6 +1089,10 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
 
 bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   // locals
    bool rV { true };
 
    if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFAULT_DEFINITION_HEADER))
@@ -1466,7 +1125,7 @@ bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData
                }
                case ATTRIBUTE_DEFAULT_NAME_POS:
                {
-                  if (attribute = dynamic_cast<CanAttribute*>(this->GetAttributeByName(token.c_str())); attribute == nullptr)
+                  if (attribute = dynamic_cast<CanAttribute*>(network->GetAttributeByName(token.c_str())); attribute == nullptr)
                   {
                      rV = false;
                      this->log += "Not found attribute with this name [line: " + line + ", lineNr: " + std::to_string(lineNr) + "].\r\n";
@@ -1512,6 +1171,9 @@ bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData
 
 bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV { true };
 
@@ -1541,7 +1203,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
       // If everything's okay
       if (ranges::distance(tokens) >= ATTRIBUTE_VALUE_DEFINITION_ELEMENTS_MIN_COUNT)
       {
-         attribute = dynamic_cast<CanAttribute*>(this->GetAttributeByName(tokens[ATTRIBUTE_VALUE_NAME_POS].c_str()));
+         attribute = dynamic_cast<CanAttribute*>(network->GetAttributeByName(tokens[ATTRIBUTE_VALUE_NAME_POS].c_str()));
          if (attribute)
          {
             if (objectType = attribute->GetObjectType(); objectType == ICanAttribute::IObjectType_e::NETWORK)
@@ -1582,7 +1244,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                   if (pos == ATTRIBUTE_VALUE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
                   {
                      pos = ATTRIBUTE_VALUE_POS;
-                     attributeOwner = this;
+                     attributeOwner = network;
                   }
 
                   switch (pos)
@@ -1626,7 +1288,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                            try
                            {
                               messageId = std::stoul(token);
-                              if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                              if (auto message = dynamic_cast<CanMessage*>(network->GetMessageById(messageId)); message != nullptr)
                               {
                                  attributeOwner = message;
                                  ++pos;
@@ -1657,7 +1319,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                         }
                         else if (objectType == ICanAttribute::IObjectType_e::NODE)
                         {
-                           if (auto node = dynamic_cast<CanNode*>(this->GetNodeByName(token.c_str())); node != nullptr)
+                           if (auto node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node != nullptr)
                            {
                               attributeOwner = node;
                               ++pos;
@@ -1670,7 +1332,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                         }
                         else if (objectType == ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE)
                         {
-                           if (auto envVar = dynamic_cast<CanEnvVar*>(this->GetEnvVarByName(token.c_str())); envVar != nullptr)
+                           if (auto envVar = dynamic_cast<CanEnvVar*>(network->GetEnvVarByName(token.c_str())); envVar != nullptr)
                            {
                               attributeOwner = envVar;
                               ++pos;
@@ -1687,7 +1349,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
                      {
                         if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
                         {
-                           if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                           if (auto message = dynamic_cast<CanMessage*>(network->GetMessageById(messageId)); message != nullptr)
                            {
                               if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
                               {
@@ -1797,6 +1459,9 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
 
 bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV { true };
 
@@ -1819,10 +1484,10 @@ bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, L
                }
                case ENVIRONMENT_VARIABLE_NAME_POS:
                {
-                  this->RemoveEnvVarByName(token.c_str());
+                  network->RemoveEnvVarByName(token.c_str());
                   dataEnvVar = new CanDataEnvVar {};
                   dataEnvVar->SetName(token.c_str());
-                  this->AddEnvVar(dataEnvVar);
+                  network->AddEnvVar(dataEnvVar);
                   break;
                }
                case ENVIRONMENT_VARIABLE_DATA_SIZE_POS:
@@ -1872,6 +1537,9 @@ bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, L
 
 bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineData)
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    // locals
    bool rV { true };
 
@@ -1959,7 +1627,7 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
                if (pos == COMMENT_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
                {
                   pos = COMMENT_DATA_POS;
-                  commentOwner = this;
+                  commentOwner = network;
                }
 
                switch (pos)
@@ -1978,7 +1646,7 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
                      {
                         case ICanAttribute::IObjectType_e::NODE:
                         {
-                           ICanNode* node = this->GetNodeByName(token.c_str());
+                           ICanNode* node = network->GetNodeByName(token.c_str());
                            if (node)
                            {
                               commentOwner = dynamic_cast<CanNode*>(node);
@@ -1996,7 +1664,7 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
                            try
                            {
                               messageId = std::stoul(token);
-                              if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                              if (auto message = dynamic_cast<CanMessage*>(network->GetMessageById(messageId)); message != nullptr)
                               {
                                  commentOwner = message;
                                  ++pos;
@@ -2029,7 +1697,7 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
                         }
                         case ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE:
                         {
-                           ICanEnvVar* envVar = this->GetEnvVarByName(token.c_str());
+                           ICanEnvVar* envVar = network->GetEnvVarByName(token.c_str());
                            if (envVar)
                            {
                               commentOwner = dynamic_cast<CanEnvVar*>(envVar);
@@ -2049,7 +1717,7 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
                   {
                      if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
                      {
-                        if (auto message = dynamic_cast<CanMessage*>(this->GetMessageById(messageId)); message != nullptr)
+                        if (auto message = dynamic_cast<CanMessage*>(network->GetMessageById(messageId)); message != nullptr)
                         {
                            if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
                            {
@@ -2109,7 +1777,7 @@ bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineD
             }
 
             helpers::typecase(commentOwner,
-               [&comment] (CanBusConfig* network)
+               [&comment] (CanNetwork* network)
                {
                   network->SetComment(comment.c_str());
                },
@@ -2286,68 +1954,74 @@ bool CanBusConfig::ParseAttributeEnumParams(std::span<std::string> paramTokens, 
 
 void CanBusConfig::SetMainAttributes(void)
 {
-   for (auto& message : this->messages)
+   for (auto& network : this->networks)
    {
-      if (message)
+      if (network)
       {
-         for (auto& attribute : message->GetAttributes())
+         for (auto& message : network->GetMessages())
          {
-            if (attribute)
+            if (message)
             {
-               std::string_view attributeName = attribute->GetName();
-               if (attributeName == ICanMessage::ID_FORMAT)
+               for (auto& attribute : message->GetAttributes())
                {
-                  auto attributeValue = message->GetAttributeValue(attributeName.data());
-                  if (attributeValue)
+                  if (attribute)
                   {
-                     auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::IdFormat::VALUE_TYPE>
-                        (attributeValue);
-                     const auto idFormat = CanMessage::ID_FORMATS.at(value);
-                     message->SetIdFormat(idFormat);
-                  }
-               }
-               else if (attributeName == ICanMessage::TX_METHOD)
-               {
-                  auto attributeValue = message->GetAttributeValue(attributeName.data());
-                  if (attributeValue)
-                  {
-                     auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::TxMethod::VALUE_TYPE>
-                        (attributeValue);
-                     const auto txMethod = CanMessage::TX_METHODS.at(value);
-                     message->SetTxMethod(txMethod);
-                  }
-               }
-               else if (attributeName == ICanMessage::CYCLE_TIME)
-               {
-                  auto attributeValue = message->GetAttributeValue(attributeName.data());
-                  if (attributeValue)
-                  {
-                     auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::CycleTime::VALUE_TYPE>
-                        (attributeValue);
-                     message->SetCycleTime(value);
+                     std::string_view attributeName = attribute->GetName();
+                     if (attributeName == ICanMessage::ID_FORMAT)
+                     {
+                        auto attributeValue = message->GetAttributeValue(attributeName.data());
+                        if (attributeValue)
+                        {
+                           auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::IdFormat::VALUE_TYPE>
+                              (attributeValue);
+                           const auto idFormat = CanMessage::ID_FORMATS.at(value);
+                           message->SetIdFormat(idFormat);
+                        }
+                     }
+                     else if (attributeName == ICanMessage::TX_METHOD)
+                     {
+                        auto attributeValue = message->GetAttributeValue(attributeName.data());
+                        if (attributeValue)
+                        {
+                           auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::TxMethod::VALUE_TYPE>
+                              (attributeValue);
+                           const auto txMethod = CanMessage::TX_METHODS.at(value);
+                           message->SetTxMethod(txMethod);
+                        }
+                     }
+                     else if (attributeName == ICanMessage::CYCLE_TIME)
+                     {
+                        auto attributeValue = message->GetAttributeValue(attributeName.data());
+                        if (attributeValue)
+                        {
+                           auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::CycleTime::VALUE_TYPE>
+                              (attributeValue);
+                           message->SetCycleTime(value);
+                        }
+                     }
                   }
                }
             }
          }
-      }
-   }
-   for (auto& signal : this->signals)
-   {
-      if (signal)
-      {
-         for (auto& attribute : signal->GetAttributes())
+         for (auto& signal : network->GetSignals())
          {
-            if (attribute)
+            if (signal)
             {
-               std::string_view attributeName = attribute->GetName();
-               if (attributeName == ICanSignal::RAW_INITIAL_VALUE)
+               for (auto& attribute : signal->GetAttributes())
                {
-                  auto attributeValue = signal->GetAttributeValue(attributeName.data());
-                  if (attributeValue)
+                  if (attribute)
                   {
-                     auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::INT>
-                        (attributeValue);
-                     signal->SetRawInitialValue(value);
+                     std::string_view attributeName = attribute->GetName();
+                     if (attributeName == ICanSignal::RAW_INITIAL_VALUE)
+                     {
+                        auto attributeValue = signal->GetAttributeValue(attributeName.data());
+                        if (attributeValue)
+                        {
+                           auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::INT>
+                              (attributeValue);
+                           signal->SetRawInitialValue(value);
+                        }
+                     }
                   }
                }
             }
@@ -2397,7 +2071,10 @@ bool CanBusConfig::WriteFileHeader(std::string& lineStr) const
 
 bool CanBusConfig::WriteMessageDefinition(std::string& lineStr) const
 {
-   for (const auto& message : this->messages)
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   for (const auto& message : network->GetMessages())
    {
       if (message)
       {
@@ -2446,8 +2123,11 @@ bool CanBusConfig::WriteSignalDefinition(CanMessage* message, std::string& lineS
 
 bool CanBusConfig::WriteNodeDefinition(std::string& lineStr) const
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    lineStr += NODE_DEFINITION_HEADER.data();
-   for (const auto& node : this->nodes)
+   for (const auto& node : network->GetNodes())
    {
       if (node)
       {
@@ -2461,7 +2141,10 @@ bool CanBusConfig::WriteNodeDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteEnvironmentVariableDefinition(std::string& lineStr) const
 {
-   for (const auto& envVar : this->envVars)
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   for (const auto& envVar : network->GetEnvVars())
    {
       lineStr += ENVIRONMENT_VARIABLE_DEFINITION_HEADER.data();
       lineStr += envVar->GetName() + ": "s;
@@ -2565,7 +2248,10 @@ bool CanBusConfig::WriteEnvironmentVariableDefinition(std::string& lineStr) cons
 
 bool CanBusConfig::WriteEnvironmentVariableDataDefinition(std::string& lineStr) const
 {
-   for (const auto& envVar : this->envVars)
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   for (const auto& envVar : network->GetEnvVars())
    {
       if (envVar)
       {
@@ -2587,14 +2273,17 @@ bool CanBusConfig::WriteEnvironmentVariableDataDefinition(std::string& lineStr) 
 
 bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    const std::string commentHeader = COMMENT_DEFINITION_HEADER.data();
-   std::string comment = this->GetComment();
+   std::string comment = network->GetComment();
    if (comment != "")
    {
       lineStr += commentHeader + "\"" + comment + "\";\n";
    }
 
-   for (const auto& node : this->nodes)
+   for (const auto& node : network->GetNodes())
    {
       if (node)
       {
@@ -2609,7 +2298,7 @@ bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
       }
    }
 
-   for (const auto& message : this->messages)
+   for (const auto& message : network->GetMessages())
    {
       if (message)
       {
@@ -2624,7 +2313,7 @@ bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
       }
    }
 
-   for (const auto& signal : this->signals)
+   for (const auto& signal : network->GetSignals())
    {
       if (signal)
       {
@@ -2641,7 +2330,7 @@ bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
       }
    }
 
-   for (const auto& envVar : this->envVars)
+   for (const auto& envVar : network->GetEnvVars())
    {
       if (envVar)
       {
@@ -2661,7 +2350,10 @@ bool CanBusConfig::WriteCommentDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteAttributeDefinition(std::string& lineStr) const
 {
-   for (const auto& attribute : this->GetAttributes())
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   for (const auto& attribute : network->GetAttributes())
    {
       if (attribute)
       {
@@ -2748,7 +2440,10 @@ bool CanBusConfig::WriteAttributeDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteAttributeDefaultDefinition(std::string& lineStr) const
 {
-   for (const auto& attribute : this->GetAttributes())
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   for (const auto& attribute : network->GetAttributes())
    {
       if (attribute)
       {
@@ -2787,6 +2482,9 @@ bool CanBusConfig::WriteAttributeDefaultDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
 {
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
    auto WriteAttributeValue = [&lineStr, this] (const CanAttributeOwner* attributeOwner)
    {
       for (const auto& attribute : attributeOwner->GetAttributes())
@@ -2885,24 +2583,24 @@ bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
       }
    };
 
-   WriteAttributeValue(this);
+   WriteAttributeValue(network);
 
-   for (const auto& node : this->nodes)
+   for (const auto& node : network->GetNodes())
    {
       WriteAttributeValue(node);
    }
 
-   for (const auto& message : this->messages)
+   for (const auto& message : network->GetMessages())
    {
       WriteAttributeValue(message);
    }
 
-   for (const auto& signal : this->messages)
+   for (const auto& signal : network->GetMessages())
    {
       WriteAttributeValue(signal);
    }
 
-   for (const auto& envVar : this->envVars)
+   for (const auto& envVar : network->GetEnvVars())
    {
       WriteAttributeValue(envVar);
    }
@@ -2912,7 +2610,10 @@ bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
 
 bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
 {
-   for (const auto& signal : this->signals)
+   auto network = this->networks.back();
+   if (!network) { return false; }
+
+   for (const auto& signal : network->GetSignals())
    {
       if (signal)
       {
@@ -2943,7 +2644,7 @@ bool CanBusConfig::WriteValueTableDefinition(std::string& lineStr) const
       }
    }
 
-   for (const auto& envVar : this->envVars)
+   for (const auto& envVar : network->GetEnvVars())
    {
       if (envVar)
       {

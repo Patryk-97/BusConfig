@@ -207,6 +207,12 @@
     <ClInclude Include="..\Interfaces\CanAttributeValueFactory.h">
       <Filter>Interfaces\CanAttributes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanNetwork.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanNetwork.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -295,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="..\Interfaces\CanAttributeValueFactory.cpp">
       <Filter>Interfaces\CanAttributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanNetwork.cpp">
+      <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

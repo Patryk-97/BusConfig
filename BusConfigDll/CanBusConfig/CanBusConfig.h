@@ -1,9 +1,7 @@
 #pragma once
 
 #include "ICanBusConfig.h"
-#include "CanMessage.h"
-#include "CanNode.h"
-#include "CanEnvVar.h"
+#include "CanNetwork.h"
 #include "CanAttributeOwner.h"
 #include <string>
 #include <vector>
@@ -13,10 +11,10 @@
 
 using LineData_t = std::pair<std::string, size_t>;
 
-class CanBusConfig : public CanAttributeOwner, public ICanBusConfig
+class CanBusConfig : public ICanBusConfig
 {
 public:
-   CanBusConfig() : CanAttributeOwner(ICanAttribute::IObjectType_e::NETWORK) {}
+   CanBusConfig() = default;
    ~CanBusConfig();
 
    void Clear(void) override;
@@ -27,54 +25,12 @@ public:
    bool Save(void) const override;
    bool Export(const char* fileName) const override;
 
-   size_t GetNodesCount(void) const override;
-   ICanNode* GetNodeByIndex(size_t index) const override;
-   ICanNode* GetNodeByName(const char* name) const override;
-   size_t GetNodeIndex(const char* name) const override;
-   bool RemoveNodeByIndex(size_t index) override;
-   bool RemoveNodeByName(const char* name) override;
-   void AddNode(CanNode* node);
-   CanNode* CreateAndAddNode(void);
-
-   size_t GetMessagesCount(void) const override;
-   ICanMessage* GetMessageById(uint32_t id) const override;
-   ICanMessage* GetMessageByName(const char* name) const override;
-   ICanMessage* GetMessageByIndex(size_t index) const override;
-   ICanMessage* GetMessageFront(void) const override;
-   ICanMessage* GetMessageBack(void) const override;
-   bool RemoveMessageByIndex(size_t index) override;
-   bool RemoveMessageByName(const char* name) override;
-   bool RemoveMessageById(uint32_t id) override;
-   void AddMessage(CanMessage* message);
-   CanMessage* CreateAndAddMessage(void);
-
-   size_t GetSignalsCount(void) const override;
-   ICanSignal* GetSignalByIndex(size_t index) const override;
-   ICanSignal* GetSignalByName(const char* name) const override;
-   size_t GetSignalIndex(const char* name) const override;
-   bool RemoveSignalByIndex(size_t index) override;
-   bool RemoveSignalByName(const char* name) override;
-   void SortSignalsByName(bool caseSensitive = false) override;
-   void SortSignalsByMessageName(bool caseSensitive = false) override;
-   void AddSignal(CanSignal* signal);
-   CanSignal* CreateAndAddSignal(void);
-
-   size_t GetEnvVarsCount(void) const override;
-   ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
-   ICanEnvVar* GetEnvVarByName(const char* name) const override;
-   bool RemoveEnvVarByIndex(size_t index) override;
-   bool RemoveEnvVarByName(const char* name) override;
-   void AddEnvVar(CanEnvVar* envVar);
-
-   size_t GetAttributesCount(void) const override;
-   ICanAttribute* GetAttributeByIndex(size_t index) const override;
-   ICanAttribute* GetAttributeByName(const char* name) const override;
-
-   size_t GetAttributesValuesCount(void) const override;
-   ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
-
-   const char* GetComment(void) const override;
-   void SetComment(const char* comment);
+   size_t GetNetworksCount(void) const override;
+   ICanNetwork* GetNetworkByIndex(size_t index) const override;
+   ICanNetwork* GetNetworkByName(const char* name) const override;
+   ICanNetwork* GetNetworkFront(void) const override;
+   ICanNetwork* GetNetworkBack(void) const override;
+   void AddNetwork(CanNetwork* network);
 
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
@@ -112,11 +68,7 @@ private:
    // member variables
    std::string fileName;
    std::string log;
-   std::vector<CanMessage*> messages;
-   std::vector<CanNode*> nodes;
-   std::vector<CanSignal*> signals;
-   std::vector<CanEnvVar*> envVars;
-   std::string comment;
+   std::vector<CanNetwork*> networks;
 
    // static variables
    static constexpr std::string_view MESSAGE_DEFINITION_HEADER = "BO_ ";
