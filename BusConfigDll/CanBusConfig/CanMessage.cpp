@@ -3,6 +3,7 @@
 #include "helpers.h"
 #include "CanAttributeManager.h"
 #include "CanNetwork.h" // circular dependency
+#include "ICanAttributeManager.h"
 
 namespace ranges = std::ranges;
 
@@ -258,4 +259,42 @@ const char* CanMessage::ToString(void)
    this->stringRepresentation += "Message { id: " + std::to_string(this->id) + ", name: " + this->name;
    this->stringRepresentation += ", size: " + std::to_string(this->size) + ", transmitter: " + this->mainTransmitter + " }";
    return this->stringRepresentation.c_str();
+}
+
+void CanMessage::SetMainAttributes(void)
+{
+   for (auto& attribute : this->GetAttributes())
+   {
+      if (attribute)
+      {
+         std::string_view attributeName = attribute->GetName();
+         if (attributeName == ICanMessage::ID_FORMAT)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::IdFormat::VALUE_TYPE>
+                  (attributeValue);
+               this->idFormat = CanMessage::ID_FORMATS.at(value);
+            }
+         }
+         else if (attributeName == ICanMessage::TX_METHOD)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::TxMethod::VALUE_TYPE>
+                  (attributeValue);
+               this->txMethod = CanMessage::TX_METHODS.at(value);
+            }
+         }
+         else if (attributeName == ICanMessage::CYCLE_TIME)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::CycleTime::VALUE_TYPE>
+                  (attributeValue);
+               this->SetCycleTime(value);
+            }
+         }
+      }
+   }
 }

@@ -50,4 +50,6 @@ public:
    virtual const char* GetComment(void) const = 0;
 
    static constexpr size_t INVALID_INDEX = (size_t)(-1);
+
+   static constexpr const char * NETWORK_NAME = "DBName";
 };

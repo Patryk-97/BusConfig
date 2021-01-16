@@ -1373,13 +1373,13 @@ void BusConfigUI::BuildCanSignalRow(const ICanSignal* signal, int row)
    {
       this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::SIGNAL], signal->GetName() });
 
-      const auto canMessage = signal->GetMessage();
-      const QString canMessageName = canMessage ? canMessage->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canMessage->GetName() });
-
       const auto canNetwork = signal->GetNetwork();
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ canNetwork->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetwork->GetName() });
+
+      const auto canMessage = signal->GetMessage();
+      const QString canMessageName = canMessage ? canMessage->GetName() : "";
+      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ canMessage->GetName() });
 
       this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem<uint32_t>{ toQString(signal->GetStartBit()) });
       this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ toQString(signal->GetSize()) });

@@ -68,6 +68,7 @@ public:
    void SetNetwork(CanNetwork* network);
 
    const char* ToString(void) override;
+   void SetMainAttributes(void);
 
    static const inline std::map<std::string_view, IdFormat_e> ID_FORMATS
    {

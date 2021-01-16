@@ -3,6 +3,7 @@
 #include "CanNetwork.h" // circular dependency
 #include "helpers.h"
 #include "CanAttributeManager.h"
+#include "ICanAttributeManager.h"
 #include <algorithm>
 
 namespace ranges = std::ranges;
@@ -430,4 +431,23 @@ const char* CanSignal::ToString(void)
    }
    this->stringRepresentation += "}";
    return this->stringRepresentation.c_str();
+}
+
+void CanSignal::SetMainAttributes(void)
+{
+   for (auto& attribute : this->GetAttributes())
+   {
+      if (attribute)
+      {
+         if (std::string_view attributeName = attribute->GetName(); attributeName == ICanSignal::RAW_INITIAL_VALUE)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::INT>
+                  (attributeValue);
+               this->SetRawInitialValue(value);
+            }
+         }
+      }
+   }
 }

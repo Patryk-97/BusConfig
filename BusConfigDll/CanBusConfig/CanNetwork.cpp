@@ -1,5 +1,6 @@
 #include "CanNetwork.h"
 #include "helpers.h"
+#include "ICanAttributeManager.h"
 #include <algorithm>
 
 namespace ranges = std::ranges;
@@ -456,4 +457,23 @@ const char* CanNetwork::GetComment(void) const
 void CanNetwork::SetComment(const char* comment)
 {
    this->comment = comment;
+}
+
+void CanNetwork::SetMainAttributes(void)
+{
+   for (auto& attribute : this->GetAttributes())
+   {
+      if (attribute)
+      {
+         if (std::string_view attributeName = attribute->GetName(); attributeName == ICanNetwork::NETWORK_NAME)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::STRING>
+                  (attributeValue);
+               this->SetName(value.c_str());
+            }
+         }
+      }
+   }
 }

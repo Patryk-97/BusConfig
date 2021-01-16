@@ -12,8 +12,8 @@ class CanMessageManager
 public:
 
    constexpr static uint8_t NAME_POS = 0;
-   constexpr static uint8_t ID_POS = 1;
-   constexpr static uint8_t NETWORK_POS = 2;
+   constexpr static uint8_t NETWORK_POS = 1;
+   constexpr static uint8_t ID_POS = 2;
    constexpr static uint8_t ID_FORMAT_POS = 3;
    constexpr static uint8_t SIZE_POS = 4;
    constexpr static uint8_t TX_METHOD_POS = 5;
@@ -22,8 +22,8 @@ public:
    constexpr static uint8_t PROPERTIES_COUNT = COMMENT_POS + 1;
 
    constexpr static std::string_view NAME = "Name";
-   constexpr static std::string_view ID = "ID";
    constexpr static std::string_view NETWORK = "Network";
+   constexpr static std::string_view ID = "ID";
    constexpr static std::string_view ID_FORMAT = "ID-Format";
    constexpr static std::string_view SIZE = "Size (Bytes)";
    constexpr static std::string_view TX_METHOD = "Tx Method";
@@ -32,7 +32,7 @@ public:
 
    constexpr static std::array<std::string_view, PROPERTIES_COUNT> PROPERTIES =
    {
-      NAME, ID, NETWORK, ID_FORMAT, SIZE, TX_METHOD, CYCLE_TIME, COMMENT
+      NAME, NETWORK, ID, ID_FORMAT, SIZE, TX_METHOD, CYCLE_TIME, COMMENT
    };
 
    class IdFormat

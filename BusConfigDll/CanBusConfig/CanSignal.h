@@ -106,6 +106,7 @@ public:
    void SetNetwork(CanNetwork* network);
 
    const char* ToString(void) override;
+   void SetMainAttributes(void);
 
 private:
    std::string name;

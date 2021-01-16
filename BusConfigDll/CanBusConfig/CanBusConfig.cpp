@@ -69,7 +69,8 @@ bool CanBusConfig::Load(const char* fileName)
    if (file.is_open())
    {
       rV = true;
-      const auto networkName = helpers::RemovePhrases(fileName, ".dbc");
+
+      auto networkName = helpers::RemovePhrases(fileName, ".dbc");
       auto network = this->CreateAndAddNetwork();
       network->SetName(networkName.c_str());
 
@@ -1972,72 +1973,20 @@ void CanBusConfig::SetMainAttributes(void)
    {
       if (network)
       {
+         network->SetMainAttributes();
+
          for (auto& message : network->GetMessages())
          {
             if (message)
             {
-               for (auto& attribute : message->GetAttributes())
-               {
-                  if (attribute)
-                  {
-                     std::string_view attributeName = attribute->GetName();
-                     if (attributeName == ICanMessage::ID_FORMAT)
-                     {
-                        auto attributeValue = message->GetAttributeValue(attributeName.data());
-                        if (attributeValue)
-                        {
-                           auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::IdFormat::VALUE_TYPE>
-                              (attributeValue);
-                           const auto idFormat = CanMessage::ID_FORMATS.at(value);
-                           message->SetIdFormat(idFormat);
-                        }
-                     }
-                     else if (attributeName == ICanMessage::TX_METHOD)
-                     {
-                        auto attributeValue = message->GetAttributeValue(attributeName.data());
-                        if (attributeValue)
-                        {
-                           auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::TxMethod::VALUE_TYPE>
-                              (attributeValue);
-                           const auto txMethod = CanMessage::TX_METHODS.at(value);
-                           message->SetTxMethod(txMethod);
-                        }
-                     }
-                     else if (attributeName == ICanMessage::CYCLE_TIME)
-                     {
-                        auto attributeValue = message->GetAttributeValue(attributeName.data());
-                        if (attributeValue)
-                        {
-                           auto value = ICanAttributeManager::GetAttributeValue<ICanMessage::CycleTime::VALUE_TYPE>
-                              (attributeValue);
-                           message->SetCycleTime(value);
-                        }
-                     }
-                  }
-               }
+               message->SetMainAttributes();
             }
          }
          for (auto& signal : network->GetSignals())
          {
             if (signal)
             {
-               for (auto& attribute : signal->GetAttributes())
-               {
-                  if (attribute)
-                  {
-                     std::string_view attributeName = attribute->GetName();
-                     if (attributeName == ICanSignal::RAW_INITIAL_VALUE)
-                     {
-                        auto attributeValue = signal->GetAttributeValue(attributeName.data());
-                        if (attributeValue)
-                        {
-                           auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::INT>
-                              (attributeValue);
-                           signal->SetRawInitialValue(value);
-                        }
-                     }
-                  }
-               }
+               signal->SetMainAttributes();
             }
          }
       }

@@ -71,6 +71,8 @@ public:
    const char* GetComment(void) const override;
    void SetComment(const char* comment);
 
+   void SetMainAttributes(void);
+
 private:
    std::string name;
    std::vector<CanMessage*> messages;
