@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ICanBusConfig.h"
+#include "ICanNetwork.h"
 #include <QDialog>
 #include <string_view>
 #include <qmap.h>
@@ -18,7 +18,7 @@ public:
    explicit AttributeDefinitions(QWidget* parent = nullptr);
    ~AttributeDefinitions();
 
-   bool Create(ICanBusConfig* canBusConfig);
+   bool Create(ICanNetwork* canNetwork);
 
 private:
    Ui::AttributeDefinitions* ui;

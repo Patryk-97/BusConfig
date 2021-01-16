@@ -1,5 +1,6 @@
 #include "CanSignal.h"
 #include "CanMessage.h" // circular dependency
+#include "CanNetwork.h" // circular dependency
 #include "helpers.h"
 #include "CanAttributeManager.h"
 #include <algorithm>
@@ -36,6 +37,7 @@ void CanSignal::Clear(void)
    this->message = nullptr;
    helpers::ClearPtr(this->valueTable);
    this->comment.clear();
+   this->network = nullptr;
    this->stringRepresentation.clear();
 }
 
@@ -399,6 +401,16 @@ void CanSignal::ModifyComment(const char* comment)
 void CanSignal::SetComment(const char* comment)
 {
    this->comment = comment;
+}
+
+ICanNetwork* CanSignal::GetNetwork(void) const
+{
+   return this->network;
+}
+
+void CanSignal::SetNetwork(CanNetwork* network)
+{
+   this->network = network;
 }
 
 const char* CanSignal::ToString(void)

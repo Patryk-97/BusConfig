@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "helpers.h"
 #include "CanAttributeManager.h"
+#include "CanNetwork.h" // circular dependency
 
 namespace ranges = std::ranges;
 
@@ -22,6 +23,7 @@ void CanMessage::Clear(void)
    this->txMethod = ICanMessage::DEFAULT_TX_METHOD;
    this->cycleTime =  ICanMessage::DEFAULT_CYCLE_TIME;
    this->comment.clear();
+   this->network = nullptr;
    this->stringRepresentation.clear();
 }
 
@@ -239,6 +241,16 @@ void CanMessage::ModifyComment(const char* comment)
 void CanMessage::SetComment(const char* comment)
 {
    this->comment = comment;
+}
+
+ICanNetwork* CanMessage::GetNetwork(void) const
+{
+   return this->network;
+}
+
+void CanMessage::SetNetwork(CanNetwork* network)
+{
+   this->network = network;
 }
 
 const char* CanMessage::ToString(void)

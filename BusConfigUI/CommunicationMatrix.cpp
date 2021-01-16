@@ -27,17 +27,18 @@ CommunicationMatrix::~CommunicationMatrix()
    delete ui;
 }
 
-bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
+bool CommunicationMatrix::Create(ICanNetwork* canNetwork)
 {
    // locals
    bool rV { false };
-   if (canBusConfig)
+
+   if (canNetwork)
    {
       this->ui->tableWidget->clear();
       uint16_t col = 0, row = 0;
-      this->ui->tableWidget->setRowCount(canBusConfig->GetSignalsCount());
-      this->ui->tableWidget->setColumnCount(canBusConfig->GetNodesCount());
-      ICanManager::ForEachNetworkNode(canBusConfig, [this, &col]
+      this->ui->tableWidget->setRowCount(canNetwork->GetSignalsCount());
+      this->ui->tableWidget->setColumnCount(canNetwork->GetNodesCount());
+      ICanManager::ForEachNetworkNode(canNetwork, [this, &col]
          (const ICanNode* canNetworkNode)
       {
          if (canNetworkNode)
@@ -47,7 +48,7 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
          }
       });
 
-      ICanManager::ForEachSignal(canBusConfig, [this, &row]
+      ICanManager::ForEachSignal(canNetwork, [this, &row]
          (const ICanSignal* canSignal)
       {
          if (canSignal)
@@ -68,17 +69,17 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
          lay->addWidget(label);
       }
 
-      for (size_t i = 0; i < canBusConfig->GetNodesCount(); ++i)
+      for (size_t i = 0; i < canNetwork->GetNodesCount(); ++i)
       {
-         if (const auto canNetworkNode = canBusConfig->GetNodeByIndex(i); canNetworkNode)
+         if (const auto canNetworkNode = canNetwork->GetNodeByIndex(i); canNetworkNode)
          {
             for (size_t j = 0; j < canNetworkNode->GetMappedTxSignalsCount(); ++j)
             {
                if (const auto mappedTxSignal = canNetworkNode->GetMappedTxSignalByIndex(j); mappedTxSignal)
                {
-                  size_t signalIndex = canBusConfig->GetSignalIndex(mappedTxSignal->GetName());
+                  size_t signalIndex = canNetwork->GetSignalIndex(mappedTxSignal->GetName());
                   const auto mappedTxMessage = mappedTxSignal->GetMessage();
-                  if (signalIndex != ICanBusConfig::INVALID_INDEX && mappedTxMessage)
+                  if (signalIndex != ICanNetwork::INVALID_INDEX && mappedTxMessage)
                   {
                      auto item = new QTableWidgetItem{ QString { "<Tx> " } + mappedTxMessage->GetName() };
                      item->setForeground(QBrush { QColor { 0, 0, 255 }});
@@ -91,9 +92,9 @@ bool CommunicationMatrix::Create(ICanBusConfig* canBusConfig)
             {
                if (const auto mappedRxSignal = canNetworkNode->GetMappedRxSignalByIndex(j); mappedRxSignal)
                {
-                  size_t signalIndex = canBusConfig->GetSignalIndex(mappedRxSignal->GetName());
+                  size_t signalIndex = canNetwork->GetSignalIndex(mappedRxSignal->GetName());
                   const auto mappedRxMessage = mappedRxSignal->GetMessage();
-                  if (signalIndex != ICanBusConfig::INVALID_INDEX && mappedRxMessage)
+                  if (signalIndex != ICanNetwork::INVALID_INDEX && mappedRxMessage)
                   {
                      auto item = new QTableWidgetItem{ mappedRxMessage->GetName() };
                      this->ui->tableWidget->setItem(signalIndex, i, item);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <qstring.h>
-#include "ICanBusConfig.h"
+#include "ICanNetwork.h"
 #include <string_view>
 #include <qtableview.h>
 #include <qmap.h>
@@ -86,7 +86,7 @@ public:
    const static inline QStringList ACCESS_TYPES { AccessType::UNRESTRICTED.data(), AccessType::READ.data(),
       AccessType::WRITE.data(), AccessType::READ_WRITE.data() };
 
-   static bool Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData);
-   static QString GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column);
-   static void Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column);
+   static bool Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData);
+   static QString GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column);
+   static void Modify(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column);
 };

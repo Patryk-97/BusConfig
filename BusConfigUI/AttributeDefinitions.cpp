@@ -28,26 +28,26 @@ AttributeDefinitions::~AttributeDefinitions()
    delete ui;
 }
 
-bool AttributeDefinitions::Create(ICanBusConfig* canBusConfig)
+bool AttributeDefinitions::Create(ICanNetwork* canNetwork)
 {
    // locals
    bool rV { false };
 
-   if (canBusConfig)
+   if (canNetwork)
    {
       this->ui->tableWidget->clear();
 
       QStringList headerLabels;
       headerLabels << "Object type" << "Name" << "Value type" << "Minimum" << "Maximum" << "Default";
        
-      size_t attributesCount = canBusConfig->GetAttributesCount();
+      size_t attributesCount = canNetwork->GetAttributesCount();
       this->ui->tableWidget->setRowCount(attributesCount);
       this->ui->tableWidget->setColumnCount(headerLabels.size());
       this->ui->tableWidget->setHorizontalHeaderLabels(headerLabels);
 
       for (size_t i = 0; i < attributesCount; i++)
       {
-         if (auto attribute = canBusConfig->GetAttributeByIndex(i); attribute)
+         if (auto attribute = canNetwork->GetAttributeByIndex(i); attribute)
          {
             const QIcon icon = std::invoke([this, &attribute]
             {

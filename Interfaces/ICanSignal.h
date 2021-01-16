@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 class ICanMessage; // circular dependency
+class ICanNetwork; // circular dependency
 
 class ICanSignal : public ICanAttributeOwner
 {
@@ -89,6 +90,8 @@ public:
 
    virtual const char* GetComment(void) const = 0;
    virtual void ModifyComment(const char* comment) = 0;
+
+   virtual ICanNetwork* GetNetwork(void) const = 0;
 
    virtual const char* ToString(void) = 0;
 

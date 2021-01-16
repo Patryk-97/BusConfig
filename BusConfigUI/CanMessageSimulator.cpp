@@ -207,20 +207,20 @@ CanMessageSimulator::~CanMessageSimulator()
    delete ui;
 }
 
-bool CanMessageSimulator::Create(ICanBusConfig* canBusConfig, ICanMessage* canMessage)
+bool CanMessageSimulator::Create(ICanNetwork* canNetwork, ICanMessage* canMessage)
 {
-   if (canBusConfig)
+   if (canNetwork)
    {
-      this->canBusConfig = canBusConfig;
-      if (const auto message = canBusConfig->GetMessageByIndex(0); message)
+      this->canNetwork = canNetwork;
+      if (const auto message = this->canNetwork->GetMessageByIndex(0); message)
       {
          this->canMessageTableFilled = false; this->canSignalTableFilled = false;
          this->BuildCanMessageTableWidget(message);
          QStringList messagesNames;
          QStringList signalsNames;
-         for (size_t i = 0; i < canBusConfig->GetMessagesCount(); i++)
+         for (size_t i = 0; i < canNetwork->GetMessagesCount(); i++)
          {
-            if (const auto message = canBusConfig->GetMessageByIndex(i); message)
+            if (const auto message = canNetwork->GetMessageByIndex(i); message)
             {
                messagesNames.append(message->GetName());
             }
@@ -260,10 +260,10 @@ void CanMessageSimulator::on_tableWidget_CanDataBytes_itemChanged(QTableWidgetIt
 
 void CanMessageSimulator::on_tableWidget_CanMessage_itemChanged(QTableWidgetItem* item)
 {
-   if (this->canBusConfig && this->canMessageTableFilled)
+   if (this->canNetwork && this->canMessageTableFilled)
    {
       this->canMessageTableFilled = false;
-      if (const auto canMessage = this->canBusConfig->GetMessageByName(item->text().toUtf8()); canMessage)
+      if (const auto canMessage = this->canNetwork->GetMessageByName(item->text().toUtf8()); canMessage)
       {
          this->BuildCanMessageTableWidget(canMessage);
       }
@@ -273,11 +273,11 @@ void CanMessageSimulator::on_tableWidget_CanMessage_itemChanged(QTableWidgetItem
 
 void CanMessageSimulator::on_tableWidget_CanSignal_itemChanged(QTableWidgetItem* item)
 {
-   if (this->canBusConfig && this->canSignalTableFilled)
+   if (this->canNetwork && this->canSignalTableFilled)
    {
       this->canSignalTableFilled = false;
 
-      const auto canMessage = this->canBusConfig->GetMessageByName(this->ui->tableWidget_CanMessage->item(0, 1)->text().toUtf8());
+      const auto canMessage = this->canNetwork->GetMessageByName(this->ui->tableWidget_CanMessage->item(0, 1)->text().toUtf8());
       if (canMessage)
       {
          if (const auto canSignal = canMessage->GetSignalByName(item->text().toUtf8()); canSignal)
@@ -364,7 +364,7 @@ void CanMessageSimulator::CalculateDataHexResult(void)
 {
    QString binStr;
 
-   const auto canSignal = this->canBusConfig->GetSignalByName(this->ui->tableWidget_CanSignal->item(0, 1)->text().toUtf8());
+   const auto canSignal = this->canNetwork->GetSignalByName(this->ui->tableWidget_CanSignal->item(0, 1)->text().toUtf8());
    if (canSignal)
    {
       const auto canSignalByteOrder = canSignal->GetByteOrder();

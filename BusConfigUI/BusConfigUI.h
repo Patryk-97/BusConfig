@@ -72,34 +72,34 @@ private:
    template <std::integral Integral>
    inline void RemoveCanMessage(const Integral& integral)
    {
-      this->canBusConfig->RemoveMessageByIndex(integral);
+      canNetwork->RemoveMessageByIndex(integral);
    }
 
    inline void RemoveCanMessage(const QString& name)
    {
-      this->canBusConfig->RemoveMessageByName(name.toUtf8());
+      canNetwork->RemoveMessageByName(name.toUtf8());
    }
 
    template <std::integral Integral>
    inline void RemoveCanSignal(const Integral& integral)
    {
-      this->canBusConfig->RemoveSignalByIndex(integral);
+      canNetwork->RemoveSignalByIndex(integral);
    }
 
    inline void RemoveCanSignal(const QString& name)
    {
-      this->canBusConfig->RemoveSignalByName(name.toUtf8());
+      canNetwork->RemoveSignalByName(name.toUtf8());
    }
 
    template <std::integral Integral>
    inline void RemoveCanEnvVar(const Integral& integral)
    {
-      this->canBusConfig->RemoveEnvVarByIndex(integral);
+      canNetwork->RemoveEnvVarByIndex(integral);
    }
 
    inline void RemoveCanEnvVar(const QString& name)
    {
-      this->canBusConfig->RemoveEnvVarByName(name.toUtf8());
+      canNetwork->RemoveEnvVarByName(name.toUtf8());
    }
 
    // member variables

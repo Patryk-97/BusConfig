@@ -1,7 +1,7 @@
 #include "CanMessageManager.h"
 #include "Conversions.h"
 
-bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData)
+bool CanMessageManager::Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData)
 {
    // locals
    bool rV { true };
@@ -40,9 +40,9 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, const QString& nam
       }
    };
 
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canMessage = canBusConfig->GetMessageByName(name.toUtf8()); canMessage)
+      if (auto canMessage = canNetwork->GetMessageByName(name.toUtf8()); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -93,14 +93,14 @@ bool CanMessageManager::Validate(ICanBusConfig* canBusConfig, const QString& nam
    return rV;
 }
 
-QString CanMessageManager::GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column)
+QString CanMessageManager::GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column)
 {
    // locals
    QString previousData;
 
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canMessage = canBusConfig->GetMessageByName(name.toUtf8()); canMessage)
+      if (auto canMessage = canNetwork->GetMessageByName(name.toUtf8()); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -153,11 +153,11 @@ QString CanMessageManager::GetData(ICanBusConfig* canBusConfig, const QString& n
    return previousData;
 }
 
-void CanMessageManager::Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column)
+void CanMessageManager::Modify(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column)
 {
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canMessage = canBusConfig->GetMessageByName(name.toUtf8()); canMessage)
+      if (auto canMessage = canNetwork->GetMessageByName(name.toUtf8()); canMessage)
       {
          if (column < PROPERTIES_COUNT)
          {

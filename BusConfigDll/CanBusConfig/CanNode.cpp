@@ -1,5 +1,6 @@
 #include "CanNode.h"
 #include <algorithm>
+#include "CanNetwork.h" // circular dependency
 
 namespace ranges = std::ranges;
 
@@ -17,6 +18,7 @@ void CanNode::Clear(void)
    this->mappedRxSignals.clear();
    this->mappedTxSignals.clear();
    this->comment.clear();
+   this->network = nullptr;
 }
 
 const char* CanNode::GetName(void) const
@@ -506,4 +508,14 @@ const char* CanNode::GetComment(void) const
 void CanNode::SetComment(const char* comment)
 {
    this->comment = comment;
+}
+
+ICanNetwork* CanNode::GetNetwork(void) const
+{
+   return this->network;
+}
+
+void CanNode::SetNetwork(CanNetwork* network)
+{
+   this->network = network;
 }

@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <iostream>
 
+class ICanNetwork;
+
 class ICanMessage : public ICanAttributeOwner
 {
 protected:
@@ -112,6 +114,8 @@ public:
 
    virtual const char* GetComment(void) const = 0;
    virtual void ModifyComment(const char* comment) = 0;
+
+   virtual ICanNetwork* GetNetwork(void) const = 0;
 
    virtual const char* ToString(void) = 0;
 

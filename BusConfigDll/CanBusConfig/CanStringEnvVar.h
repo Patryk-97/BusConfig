@@ -40,4 +40,6 @@ public:
 
    const char* GetComment(void) const override;
    void ModifyComment(const char* comment) override;
+
+   ICanNetwork* GetNetwork(void) const override;
 };

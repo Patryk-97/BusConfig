@@ -1,7 +1,7 @@
 #pragma once
 
 #include <qstring.h>
-#include "ICanBusConfig.h"
+#include "ICanNetwork.h"
 #include <qstringlist.h>
 #include <string_view>
 #include <array>
@@ -74,7 +74,7 @@ public:
    const static inline QStringList TX_METHODS { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod::CYCLIC,
       ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod::NOT_USED };
 
-   static bool Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData);
-   static QString GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column);
-   static void Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column);
+   static bool Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData);
+   static QString GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column);
+   static void Modify(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column);
 };

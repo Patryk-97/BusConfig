@@ -147,3 +147,8 @@ void CanFloatEnvVar::ModifyComment(const char* comment)
 {
    CanEnvVar::ModifyComment(comment);
 }
+
+ICanNetwork* CanFloatEnvVar::GetNetwork(void) const
+{
+   return CanEnvVar::GetNetwork();
+}

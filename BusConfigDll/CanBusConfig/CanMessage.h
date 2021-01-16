@@ -6,6 +6,8 @@
 #include <string>
 #include <map>
 
+class CanNetwork; // circular dependency
+
 class CanMessage : public CanAttributeOwner, public ICanMessage
 {
 public:
@@ -62,6 +64,9 @@ public:
    void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
+   ICanNetwork* GetNetwork(void) const override;
+   void SetNetwork(CanNetwork* network);
+
    const char* ToString(void) override;
 
    static const inline std::map<std::string_view, IdFormat_e> ID_FORMATS
@@ -112,6 +117,7 @@ private:
    std::string mainTransmitter;
    std::vector<CanSignal*> signals;
    std::string comment;
+   CanNetwork* network { nullptr };
 
    // Main attributes
    IdFormat_e idFormat { ICanMessage::DEFAULT_ID_FORMAT };

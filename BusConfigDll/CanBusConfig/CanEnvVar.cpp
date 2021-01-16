@@ -1,6 +1,7 @@
 #include "CanEnvVar.h"
 #include "helpers.h"
 #include <algorithm>
+#include "CanNetwork.h" // circular dependency
 
 namespace ranges = std::ranges;
 
@@ -187,4 +188,14 @@ void CanEnvVar::ModifyComment(const char* comment)
 void CanEnvVar::SetComment(const char* comment)
 {
    this->comment = comment;
+}
+
+ICanNetwork* CanEnvVar::GetNetwork(void) const
+{
+   return this->network;
+}
+
+void CanEnvVar::SetNetwork(CanNetwork* network)
+{
+   this->network = network;
 }

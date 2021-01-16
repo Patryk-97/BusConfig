@@ -3,7 +3,7 @@
 #include "ICanBusConfig.h"
 #include <QDialog>
 #include <qtablewidget.h>
-#include "ICanBusConfig.h"
+#include "ICanNetwork.h"
 
 namespace Ui
 {
@@ -17,7 +17,7 @@ public:
    explicit CanMessageSimulator(QWidget* parent = nullptr);
    ~CanMessageSimulator();
 
-   bool Create(ICanBusConfig* canBusConfig, ICanMessage* canMessage = nullptr);
+   bool Create(ICanNetwork* canNetwork, ICanMessage* canMessage = nullptr);
 
 private slots:
    void on_tableWidget_CanDataBytes_itemChanged(QTableWidgetItem* item);
@@ -38,5 +38,5 @@ private:
    bool canDataBytesTableFilled { false };
    bool canMessageTableFilled = { false };
    bool canSignalTableFilled = { false };
-   ICanBusConfig* canBusConfig { nullptr };
+   ICanNetwork* canNetwork{ nullptr };
 };

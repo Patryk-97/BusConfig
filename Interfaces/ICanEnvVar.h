@@ -4,6 +4,8 @@
 #include "ICanNode.h"
 #include "ICanValueTable.h"
 
+class ICanNetwork; // circular dependency
+
 class ICanEnvVar : public ICanAttributeOwner
 {
 protected:
@@ -52,6 +54,8 @@ public:
 
    virtual const char* GetComment(void) const = 0;
    virtual void ModifyComment(const char* comment) = 0;
+
+   virtual ICanNetwork* GetNetwork(void) const = 0;
 
    static constexpr const char * ACCESS_TYPE_PREFIX = "DUMMY_NODE_VECTOR";
 };

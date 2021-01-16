@@ -147,3 +147,8 @@ void CanIntEnvVar::ModifyComment(const char* comment)
 {
    CanEnvVar::ModifyComment(comment);
 }
+
+ICanNetwork* CanIntEnvVar::GetNetwork(void) const
+{
+   return CanEnvVar::GetNetwork();
+}

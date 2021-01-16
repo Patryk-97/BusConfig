@@ -6,6 +6,8 @@
 #include "CanNode.h"
 #include <string>
 
+class CanNetwork; // circular dependency
+
 class CanEnvVar : public CanAttributeOwner, public ICanEnvVar
 {
 public:
@@ -56,6 +58,9 @@ public:
    void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
+   ICanNetwork* GetNetwork(void) const override;
+   void SetNetwork(CanNetwork* network);
+
 private:
    std::string name;
    Type_e type { Type_e::UNDEFINED };
@@ -65,4 +70,5 @@ private:
    std::vector<CanNode*> accessNodes;
    CanValueTable* valueTable { nullptr };
    std::string comment;
+   CanNetwork* network { nullptr };
 };

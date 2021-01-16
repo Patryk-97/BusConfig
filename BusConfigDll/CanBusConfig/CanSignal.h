@@ -8,6 +8,7 @@
 #include <vector>
 
 class CanMessage; // circular dependency
+class CanNetwork; // circular dependency
 
 class CanSignal : public CanAttributeOwner, public ICanSignal
 {
@@ -101,6 +102,9 @@ public:
    void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
+   ICanNetwork* GetNetwork(void) const override;
+   void SetNetwork(CanNetwork* network);
+
    const char* ToString(void) override;
 
 private:
@@ -136,5 +140,6 @@ private:
    CanValueTable* valueTable { nullptr };
    std::vector<CanAttribute*> attributes;
    std::string comment;
+   CanNetwork* network { nullptr };
    std::string stringRepresentation;
 };

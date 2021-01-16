@@ -1,7 +1,7 @@
 #include "CanEnvVarManager.h"
 #include "Conversions.h"
 
-bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData)
+bool CanEnvVarManager::Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData)
 {
    // locals
    bool rV { true };
@@ -40,9 +40,9 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, const QString& name
       }
    };
 
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canEnvVar = canBusConfig->GetEnvVarByName(name.toUtf8()); canEnvVar)
+      if (auto canEnvVar = canNetwork->GetEnvVarByName(name.toUtf8()); canEnvVar)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -102,14 +102,14 @@ bool CanEnvVarManager::Validate(ICanBusConfig* canBusConfig, const QString& name
    return rV;
 }
 
-QString CanEnvVarManager::GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column)
+QString CanEnvVarManager::GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column)
 {
    // locals
    QString previousData;
 
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (const auto canEnvVar = canBusConfig->GetEnvVarByName(name.toUtf8()); canEnvVar)
+      if (const auto canEnvVar = canNetwork->GetEnvVarByName(name.toUtf8()); canEnvVar)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -172,11 +172,11 @@ QString CanEnvVarManager::GetData(ICanBusConfig* canBusConfig, const QString& na
    return previousData;
 }
 
-void CanEnvVarManager::Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column)
+void CanEnvVarManager::Modify(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column)
 {
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canEnvVar = canBusConfig->GetEnvVarByName(name.toUtf8()); canEnvVar)
+      if (auto canEnvVar = canNetwork->GetEnvVarByName(name.toUtf8()); canEnvVar)
       {
          if (column < PROPERTIES_COUNT)
          {

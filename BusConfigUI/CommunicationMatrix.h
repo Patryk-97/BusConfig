@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ICanBusConfig.h"
+#include "ICanNetwork.h"
 #include <QDialog>
 
 namespace Ui
@@ -15,7 +15,7 @@ public:
     explicit CommunicationMatrix(QWidget* parent = nullptr);
     ~CommunicationMatrix();
 
-    bool Create(ICanBusConfig* canBusConfig);
+    bool Create(ICanNetwork* canNetwork);
 
 private:
    Ui::CommunicationMatrix* ui;

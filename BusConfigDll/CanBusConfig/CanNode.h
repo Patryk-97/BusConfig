@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+class CanNetwork; // circular dependency
+
 class CanNode : public CanAttributeOwner, public ICanNode
 {
 public:
@@ -57,6 +59,9 @@ public:
    const char* GetComment(void) const override;
    void SetComment(const char* comment);
 
+   ICanNetwork* GetNetwork(void) const override;
+   void SetNetwork(CanNetwork* network);
+
 private:
 
    std::string name;
@@ -65,4 +70,5 @@ private:
    std::vector<CanSignal*> mappedTxSignals;
    std::vector<CanSignal*> mappedRxSignals;
    std::string comment;
+   CanNetwork* network { nullptr };
 };
