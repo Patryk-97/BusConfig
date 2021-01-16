@@ -15,6 +15,8 @@ public:
    virtual void Clear(void) = 0;
    virtual const char* GetName(void) const = 0;
 
+   virtual const char* GetProtocol(void) const = 0;
+
    virtual size_t GetNodesCount(void) const = 0;
    virtual ICanNode* GetNodeByIndex(size_t index) const = 0;
    virtual ICanNode* GetNodeByName(const char* name) const = 0;
@@ -52,4 +54,5 @@ public:
    static constexpr size_t INVALID_INDEX = (size_t)(-1);
 
    static constexpr const char * NETWORK_NAME = "DBName";
+   static constexpr const char * PROTOCOL = "BusType";
 };

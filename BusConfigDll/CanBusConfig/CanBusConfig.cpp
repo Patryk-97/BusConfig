@@ -70,9 +70,7 @@ bool CanBusConfig::Load(const char* fileName)
    {
       rV = true;
 
-      auto networkName = helpers::RemovePhrases(fileName, ".dbc");
       auto network = this->CreateAndAddNetwork();
-      network->SetName(networkName.c_str());
 
       while (std::getline(file, line))
       {

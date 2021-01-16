@@ -14,6 +14,7 @@ void CanNetwork::Clear(void)
 {
    CanAttributeOwner::Clear();
    this->name.clear();
+   this->protocol.clear();
    helpers::ClearContainer(this->messages);
    helpers::ClearContainer(this->nodes);
    helpers::ClearContainer(this->signals);
@@ -29,6 +30,16 @@ const char* CanNetwork::GetName(void) const
 void CanNetwork::SetName(const char* name)
 {
    this->name = name;
+}
+
+const char* CanNetwork::GetProtocol(void) const
+{
+   return this->protocol.c_str();
+}
+
+void CanNetwork::SetProtocol(const char* protocol)
+{
+   this->protocol = protocol;
 }
 
 size_t CanNetwork::GetNodesCount(void) const
@@ -472,6 +483,15 @@ void CanNetwork::SetMainAttributes(void)
                auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::STRING>
                   (attributeValue);
                this->SetName(value.c_str());
+            }
+         }
+         else if (attributeName == ICanNetwork::PROTOCOL)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::STRING>
+                  (attributeValue);
+               this->SetProtocol(value.c_str());
             }
          }
       }

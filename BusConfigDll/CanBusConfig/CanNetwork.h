@@ -18,6 +18,9 @@ public:
    const char* GetName(void) const override;
    void SetName(const char* name);
 
+   const char* GetProtocol(void) const override;
+   void SetProtocol(const char* protocol);
+
    size_t GetNodesCount(void) const override;
    ICanNode* GetNodeByIndex(size_t index) const override;
    ICanNode* GetNodeByName(const char* name) const override;
@@ -75,6 +78,7 @@ public:
 
 private:
    std::string name;
+   std::string protocol;
    std::vector<CanMessage*> messages;
    std::vector<CanNode*> nodes;
    std::vector<CanSignal*> signals;
