@@ -2543,7 +2543,7 @@ bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
       WriteAttributeValue(message);
    }
 
-   for (const auto& signal : network->GetMessages())
+   for (const auto& signal : network->GetSignals())
    {
       WriteAttributeValue(signal);
    }
