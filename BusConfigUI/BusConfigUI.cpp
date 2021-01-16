@@ -17,6 +17,7 @@
 #include "CanSignalManager.h"
 #include "CanMessageManager.h"
 #include "CanEnvVarManager.h"
+#include "CanNetworkManager.h"
 #include <algorithm>
 #include <qlocale.h>
 #include "LineEditFactory.h"
@@ -819,6 +820,15 @@ void BusConfigUI::BuildTable(void)
       const auto canNetworkName = canNetworkTreeItem ? canNetworkTreeItem->text(0) : "";
       const auto canNetwork = this->canBusConfig->GetNetworkByName(canNetworkName.toUtf8());
 
+      if (itemType == ItemId::NETWORKS.data())
+      {
+         this->BuildCanNetworksProperties();
+      }
+      else if (itemType == ItemId::NETWORK.data())
+      {
+         this->BuildCanNetworkProperties(canNetwork);
+      }
+
       if (canNetwork)
       {
          this->ui.tableWidget_Properties->setWhatsThis(itemType);
@@ -944,6 +954,43 @@ void BusConfigUI::AttachValueTableToTree(QTreeWidgetItem* parent)
    valueTableItem->setIcon(0, this->icons[Icon_e::VALUE_TABLE]);
    valueTableItem->setWhatsThis(0, ItemId::VALUE_TABLE.data());
    valueTableItem->setToolTip(0, "Value table");
+}
+
+void BusConfigUI::BuildCanNetworkProperties(const ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      QStringList headerLabels;
+      ranges::for_each(CanNetworkManager::PROPERTIES, [&headerLabels] (const std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(1);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      this->BuildCanNetworkRow(canNetwork, 0);
+   }
+}
+
+void BusConfigUI::BuildCanNetworksProperties(void)
+{
+   size_t canNetworksCount = this->canBusConfig->GetNetworksCount();
+   QStringList headerLabels;
+   ranges::for_each(CanNetworkManager::PROPERTIES, [&headerLabels] (std::string_view property)
+   {
+      headerLabels << property.data();
+   });
+
+   this->ui.tableWidget_Properties->setRowCount(canNetworksCount);
+   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+   for (size_t i = 0; i < canNetworksCount; i++)
+   {
+      this->BuildCanNetworkRow(this->canBusConfig->GetNetworkByIndex(i), i);
+   }
 }
 
 void BusConfigUI::BuildCanMessageProperties(const ICanNetwork* canNetwork, const QString& messageName)
@@ -1364,6 +1411,16 @@ void BusConfigUI::BuildAttributesProperties(const ICanAttributeOwner* attributeO
          }
       };
       ICanAttributeManager::ForEachAttribute(attributeOwner, fillAttributeValuesRow);
+   }
+}
+
+void BusConfigUI::BuildCanNetworkRow(const ICanNetwork* network, int row)
+{
+   if (network)
+   {
+      this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::NETWORK], network->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ network->GetProtocol() });
+      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ network->GetComment() });
    }
 }
 

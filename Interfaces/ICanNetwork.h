@@ -14,8 +14,10 @@ protected:
 public:
    virtual void Clear(void) = 0;
    virtual const char* GetName(void) const = 0;
+   virtual void ModifyName(const char* name) = 0;
 
    virtual const char* GetProtocol(void) const = 0;
+   virtual void ModifyProtocol(const char* protocol) = 0;
 
    virtual size_t GetNodesCount(void) const = 0;
    virtual ICanNode* GetNodeByIndex(size_t index) const = 0;
@@ -50,6 +52,7 @@ public:
    virtual bool RemoveEnvVarByName(const char* name) = 0;
 
    virtual const char* GetComment(void) const = 0;
+   virtual void ModifyComment(const char* comment) = 0;
 
    static constexpr size_t INVALID_INDEX = (size_t)(-1);
 

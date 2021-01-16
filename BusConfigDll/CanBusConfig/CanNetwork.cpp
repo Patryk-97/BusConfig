@@ -27,6 +27,11 @@ const char* CanNetwork::GetName(void) const
    return this->name.c_str();
 }
 
+void CanNetwork::ModifyName(const char* name)
+{
+   this->name = name;
+}
+
 void CanNetwork::SetName(const char* name)
 {
    this->name = name;
@@ -35,6 +40,11 @@ void CanNetwork::SetName(const char* name)
 const char* CanNetwork::GetProtocol(void) const
 {
    return this->protocol.c_str();
+}
+
+void CanNetwork::ModifyProtocol(const char* protocol)
+{
+   this->protocol = protocol;
 }
 
 void CanNetwork::SetProtocol(const char* protocol)
@@ -463,6 +473,11 @@ ICanAttributeValue* CanNetwork::GetAttributeValue(const char* attributeName) con
 const char* CanNetwork::GetComment(void) const
 {
    return this->comment.c_str();
+}
+
+void CanNetwork::ModifyComment(const char* comment)
+{
+   this->comment = comment;
 }
 
 void CanNetwork::SetComment(const char* comment)

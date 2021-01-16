@@ -16,9 +16,11 @@ public:
    void Clear(void) override;
 
    const char* GetName(void) const override;
+   void ModifyName(const char* name) override;
    void SetName(const char* name);
 
    const char* GetProtocol(void) const override;
+   void ModifyProtocol(const char* protocol) override;
    void SetProtocol(const char* protocol);
 
    size_t GetNodesCount(void) const override;
@@ -72,6 +74,7 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* GetComment(void) const override;
+   void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
    void SetMainAttributes(void);

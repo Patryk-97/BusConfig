@@ -44,6 +44,8 @@ private:
    void AttachValueTableToTree(QTreeWidgetItem* parent);
 
    // Table widget properties
+   void BuildCanNetworkProperties(const ICanNetwork* canNetwork);
+   void BuildCanNetworksProperties(void);
    void BuildCanMessageProperties(const ICanNetwork* canNetwork, const QString& messageName);
    void BuildCanMessagesProperties(const ICanNetwork* canNetwork);
    void BuildCanTxMessagesProperties(const ICanNetwork* canNetwork, const QString& networkNodeName);
@@ -60,6 +62,7 @@ private:
    void BuildCanValueTableProperties(const ICanNetwork* canNetwork, const QString& canValueTableOwnerType, const QString& canValueTableOwnerName);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
+   void BuildCanNetworkRow(const ICanNetwork* network, int row);
    void BuildCanSignalRow(const ICanSignal* signal, int row);
    void BuildCanMessageRow(const ICanMessage* message, int row);
    void BuildCanEnvVarRow(const ICanEnvVar* envVar, int row);
