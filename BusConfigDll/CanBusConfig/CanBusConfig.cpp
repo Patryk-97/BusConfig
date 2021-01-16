@@ -217,6 +217,7 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
       if (ranges::distance(tokenizer) == MESSAGE_DEFINITION_ELEMENTS_COUNT)
       {
          CanMessage* message = network->CreateAndAddMessage();
+         message->SetNetwork(network);
          for (uint8_t pos{}; const auto& token : tokenizer)
          {
             switch (pos)
@@ -348,6 +349,7 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
          CanSignal* signal = network->CreateAndAddSignal();
          message->AddSignal(signal);
          signal->SetMessage(message);
+         signal->SetNetwork(network);
          if (CanNode* transmitterNode = dynamic_cast<CanNode*>(network->GetNodeByName(message->GetMainTransmitter())); transmitterNode)
          {
             transmitterNode->AddMappedTxSignal(signal);
@@ -528,6 +530,7 @@ bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData
                continue;
             }
             CanNode* node = network->CreateAndAddNode();
+            node->SetNetwork(network);
             node->SetName(token.c_str());
          }
       }
@@ -620,6 +623,7 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
                      {
                         envVar->SetName(envVarName.c_str());
                         network->AddEnvVar(envVar);
+                        envVar->SetNetwork(network);
                      }
                   }
                   catch (...)
