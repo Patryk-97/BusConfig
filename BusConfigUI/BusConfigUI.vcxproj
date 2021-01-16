@@ -108,6 +108,7 @@
     <ClCompile Include="CanMessageManager.cpp" />
     <ClCompile Include="CanMessageSimulator.cpp" />
     <ClCompile Include="CanNetworkManager.cpp" />
+    <ClCompile Include="CanNodeManager.cpp" />
     <ClCompile Include="CanSignalManager.cpp" />
     <ClCompile Include="ComboDelegate.cpp" />
     <ClCompile Include="CommunicationMatrix.cpp" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\Utils\helpers.h" />
     <QtMoc Include="CanMessageSimulator.h" />
     <ClInclude Include="CanNetworkManager.h" />
+    <ClInclude Include="CanNodeManager.h" />
     <ClInclude Include="TableWidgetItem.h" />
     <QtMoc Include="AttributeDefinitions.h" />
     <ClInclude Include="CanEnvVarManager.h" />

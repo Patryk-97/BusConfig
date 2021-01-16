@@ -18,6 +18,7 @@
 #include "CanMessageManager.h"
 #include "CanEnvVarManager.h"
 #include "CanNetworkManager.h"
+#include "CanNodeManager.h"
 #include <algorithm>
 #include <qlocale.h>
 #include "LineEditFactory.h"
@@ -833,7 +834,15 @@ void BusConfigUI::BuildTable(void)
       {
          this->ui.tableWidget_Properties->setWhatsThis(itemType);
 
-         if (itemType == ItemId::CAN_MESSAGE.data())
+         if (itemType == ItemId::CAN_NETWORK_NODE.data())
+         {
+            this->BuildCanNodeProperties(canNetwork, text);
+         }
+         else if (itemType == ItemId::CAN_NETWORK_NODES.data())
+         {
+            this->BuildCanNodesProperties(canNetwork);
+         }
+         else if (itemType == ItemId::CAN_MESSAGE.data())
          {
             this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
             this->BuildCanMessageProperties(canNetwork, text);
@@ -990,6 +999,46 @@ void BusConfigUI::BuildCanNetworksProperties(void)
    for (size_t i = 0; i < canNetworksCount; i++)
    {
       this->BuildCanNetworkRow(this->canBusConfig->GetNetworkByIndex(i), i);
+   }
+}
+
+void BusConfigUI::BuildCanNodeProperties(const ICanNetwork* canNetwork, const QString& nodeName)
+{
+   if (canNetwork)
+   {
+      QStringList headerLabels;
+      ranges::for_each(CanNodeManager::PROPERTIES, [&headerLabels] (const std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(1);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      this->BuildCanNodeRow(canNetwork->GetNodeByName(nodeName.toUtf8()), 0);
+   }
+}
+
+void BusConfigUI::BuildCanNodesProperties(const ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      size_t canNodesCount = canNetwork->GetNodesCount();
+      QStringList headerLabels;
+      ranges::for_each(CanNodeManager::PROPERTIES, [&headerLabels] (std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(canNodesCount);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      for (size_t i = 0; i < canNodesCount; i++)
+      {
+         this->BuildCanNodeRow(canNetwork->GetNodeByIndex(i), i);
+      }
    }
 }
 
@@ -1421,6 +1470,21 @@ void BusConfigUI::BuildCanNetworkRow(const ICanNetwork* network, int row)
       this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::NETWORK], network->GetName() });
       this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ network->GetProtocol() });
       this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ network->GetComment() });
+   }
+}
+
+void BusConfigUI::BuildCanNodeRow(const ICanNode* node, int row)
+{
+   if (node)
+   {
+      this->ui.tableWidget_Properties->setItem(row, 0, new QTableWidgetItem{ this->icons[Icon_e::NETWORK_NODE], node->GetName() });
+
+      const auto canNetwork = node->GetNetwork();
+      const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
+      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetwork->GetName() });
+
+      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toHexQString(node->GetAddress()) });
+      this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ node->GetComment() });
    }
 }
 
