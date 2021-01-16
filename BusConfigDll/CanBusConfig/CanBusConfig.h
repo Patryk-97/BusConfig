@@ -34,16 +34,16 @@ public:
    CanNetwork* CreateAndAddNetwork(void);
 
 private:
-   bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseSignalDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseNodeDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseEnvironmentVariableDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseEnvironmentVariableDataDefinition(std::ifstream& file, LineData_t& lineData);
-   bool ParseCommentDefinition(std::ifstream& file, LineData_t& lineData);
+   bool ParseMessageDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseSignalDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseNodeDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseEnvironmentVariableDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseValueTableDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseAttributeDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseAttributeDefaultDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseAttributeValueDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseEnvironmentVariableDataDefinition(CanNetwork* network, LineData_t& lineData);
+   bool ParseCommentDefinition(std::ifstream& file, CanNetwork* network, LineData_t& lineData);
 
    // helpers for ParseAttributeDefinition() function
    bool ParseAttributeIntParams(std::span<std::string> paramTokens, CanAttribute*& attribute, LineData_t& lineData);

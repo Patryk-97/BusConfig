@@ -77,43 +77,43 @@ bool CanBusConfig::Load(const char* fileName)
          boost::algorithm::trim(line);
          if (line.starts_with(CanBusConfig::MESSAGE_DEFINITION_HEADER))
          {
-            this->ParseMessageDefinition(file, lineData);
+            this->ParseMessageDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::SIGNAL_DEFINITION_HEADER))
          {
-            this->ParseSignalDefinition(file, lineData);
+            this->ParseSignalDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::NODE_DEFINITION_HEADER))
          {
-            this->ParseNodeDefinition(file, lineData);
+            this->ParseNodeDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DEFINITION_HEADER))
          {
-            this->ParseEnvironmentVariableDefinition(file, lineData);
+            this->ParseEnvironmentVariableDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::VALUE_TABLE_DEFINITION_HEADER))
          {
-            this->ParseValueTableDefinition(file, lineData);
+            this->ParseValueTableDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFINITION_HEADER))
          {
-            this->ParseAttributeDefinition(file, lineData);
+            this->ParseAttributeDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::ATTRIBUTE_DEFAULT_DEFINITION_HEADER))
          {
-            this->ParseAttributeDefaultDefinition(file, lineData);
+            this->ParseAttributeDefaultDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::ATTRIBUTE_VALUE_DEFINITION_HEADER))
          {
-            this->ParseAttributeValueDefinition(file, lineData);
+            this->ParseAttributeValueDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::ENVIRONMENT_VARIABLE_DATA_DEFINITION_HEADER))
          {
-            this->ParseEnvironmentVariableDataDefinition(file, lineData);
+            this->ParseEnvironmentVariableDataDefinition(network, lineData);
          }
          else if (line.starts_with(CanBusConfig::COMMENT_DEFINITION_HEADER))
          {
-            this->ParseCommentDefinition(file, lineData);
+            this->ParseCommentDefinition(file, network, lineData);
          }
          lineNr++;
       }
@@ -170,7 +170,7 @@ ICanNetwork* CanBusConfig::GetNetworkByIndex(size_t index) const
 
 ICanNetwork* CanBusConfig::GetNetworkByName(const char* name) const
 {
-   auto it = ranges::find_if(this->networks, [&name](CanNetwork* network) { return !std::strcmp(network->GetName(), name); });
+   auto it = ranges::find_if(this->networks, [&name] (CanNetwork* network) { return !std::strcmp(network->GetName(), name); });
    return (it != this->networks.end() ? *it : nullptr);
 }
 
@@ -199,9 +199,8 @@ CanNetwork* CanBusConfig::CreateAndAddNetwork(void)
    return network;
 }
 
-bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseMessageDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -291,10 +290,10 @@ bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineD
    return rV;
 }
 
-bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseSignalDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
+
    CanMessage* message = dynamic_cast<CanMessage*>(network->GetMessageBack());
    if (!message) { return false; }
 
@@ -505,9 +504,8 @@ bool CanBusConfig::ParseSignalDefinition(std::ifstream& file, LineData_t& lineDa
    return rV;
 }
 
-bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseNodeDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -548,9 +546,8 @@ bool CanBusConfig::ParseNodeDefinition(std::ifstream& file, LineData_t& lineData
    return rV;
 }
 
-bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseEnvironmentVariableDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -792,9 +789,8 @@ bool CanBusConfig::ParseEnvironmentVariableDefinition(std::ifstream& file, LineD
    return rV;
 }
 
-bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseValueTableDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -936,9 +932,8 @@ bool CanBusConfig::ParseValueTableDefinition(std::ifstream& file, LineData_t& li
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -1100,9 +1095,8 @@ bool CanBusConfig::ParseAttributeDefinition(std::ifstream& file, LineData_t& lin
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeDefaultDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -1182,9 +1176,8 @@ bool CanBusConfig::ParseAttributeDefaultDefinition(std::ifstream& file, LineData
    return rV;
 }
 
-bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseAttributeValueDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -1470,9 +1463,8 @@ bool CanBusConfig::ParseAttributeValueDefinition(std::ifstream& file, LineData_t
    return rV;
 }
 
-bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseEnvironmentVariableDataDefinition(CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
@@ -1548,9 +1540,8 @@ bool CanBusConfig::ParseEnvironmentVariableDataDefinition(std::ifstream& file, L
    return rV;
 }
 
-bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, LineData_t& lineData)
+bool CanBusConfig::ParseCommentDefinition(std::ifstream& file, CanNetwork* network, LineData_t& lineData)
 {
-   auto network = this->networks.back();
    if (!network) { return false; }
 
    // locals
