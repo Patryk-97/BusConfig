@@ -12,18 +12,20 @@ class CanEnvVarManager
 public:
 
    constexpr static uint8_t NAME_POS = 0;
-   constexpr static uint8_t TYPE_POS = 1;
-   constexpr static uint8_t UNIT_POS = 2;
-   constexpr static uint8_t MINIMUM_POS = 3;
-   constexpr static uint8_t MAXIMUM_POS = 4;
-   constexpr static uint8_t INITIAL_VALUE_POS = 5;
-   constexpr static uint8_t LENGTH_POS = 6;
-   constexpr static uint8_t ACCESS_POS = 7;
-   constexpr static uint8_t VALUE_TABLE_POS = 8;
-   constexpr static uint8_t COMMENT_POS = 9;
+   constexpr static uint8_t NETWORK_POS = 1;
+   constexpr static uint8_t TYPE_POS = 2;
+   constexpr static uint8_t UNIT_POS = 3;
+   constexpr static uint8_t MINIMUM_POS = 4;
+   constexpr static uint8_t MAXIMUM_POS = 5;
+   constexpr static uint8_t INITIAL_VALUE_POS = 6;
+   constexpr static uint8_t LENGTH_POS = 7;
+   constexpr static uint8_t ACCESS_POS = 8;
+   constexpr static uint8_t VALUE_TABLE_POS = 9;
+   constexpr static uint8_t COMMENT_POS = 10;
    constexpr static uint8_t PROPERTIES_COUNT = COMMENT_POS + 1;
 
    constexpr static std::string_view NAME = "Name";
+   constexpr static std::string_view NETWORK = "Network";
    constexpr static std::string_view TYPE = "Type";
    constexpr static std::string_view UNIT = "Unit";
    constexpr static std::string_view MINIMUM = "Minimum";
@@ -36,7 +38,7 @@ public:
 
    constexpr static std::array<std::string_view, PROPERTIES_COUNT> PROPERTIES =
    {
-      NAME, TYPE, UNIT, MINIMUM, MAXIMUM, INITIAL_VALUE, LENGTH, ACCESS, VALUE_TABLE, COMMENT
+      NAME, NETWORK, TYPE, UNIT, MINIMUM, MAXIMUM, INITIAL_VALUE, LENGTH, ACCESS, VALUE_TABLE, COMMENT
    };
 
    class Type

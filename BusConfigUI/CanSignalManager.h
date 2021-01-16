@@ -1,7 +1,7 @@
 #pragma once
 
 #include <qstring.h>
-#include "ICanBusConfig.h"
+#include "ICanNetwork.h"
 #include <string_view>
 #include <qtableview.h>
 #include <qmap.h>
@@ -12,22 +12,24 @@ class CanSignalManager
 public:
    
    constexpr static uint8_t NAME_POS = 0;
-   constexpr static uint8_t MESSAGE_POS = 1;
-   constexpr static uint8_t START_BIT_POS = 2;
-   constexpr static uint8_t SIZE_POS = 3;
-   constexpr static uint8_t BYTE_ORDER_POS = 4;
-   constexpr static uint8_t VALUE_TYPE_POS = 5;
-   constexpr static uint8_t INITIAL_VALUE_POS = 6;
-   constexpr static uint8_t FACTOR_POS = 7;
-   constexpr static uint8_t OFFSET_POS = 8;
-   constexpr static uint8_t MINIMUM_POS = 9;
-   constexpr static uint8_t MAXIMUM_POS = 10;
-   constexpr static uint8_t UNIT_POS = 11;
-   constexpr static uint8_t VALUE_TABLE_POS = 12;
-   constexpr static uint8_t COMMENT_POS = 13;
+   constexpr static uint8_t NETWORK_POS = 1;
+   constexpr static uint8_t MESSAGE_POS = 2;
+   constexpr static uint8_t START_BIT_POS = 3;
+   constexpr static uint8_t SIZE_POS = 4;
+   constexpr static uint8_t BYTE_ORDER_POS = 5;
+   constexpr static uint8_t VALUE_TYPE_POS = 6;
+   constexpr static uint8_t INITIAL_VALUE_POS = 7;
+   constexpr static uint8_t FACTOR_POS = 8;
+   constexpr static uint8_t OFFSET_POS = 9;
+   constexpr static uint8_t MINIMUM_POS = 10;
+   constexpr static uint8_t MAXIMUM_POS = 11;
+   constexpr static uint8_t UNIT_POS = 12;
+   constexpr static uint8_t VALUE_TABLE_POS = 13;
+   constexpr static uint8_t COMMENT_POS = 14;
    constexpr static uint8_t PROPERTIES_COUNT = COMMENT_POS + 1;
 
    constexpr static std::string_view NAME = "Name";
+   constexpr static std::string_view NETWORK = "Network";
    constexpr static std::string_view MESSAGE = "Message";
    //constexpr static std::string_view MULTIPLEXING = "Multiplexing";
    constexpr static std::string_view START_BIT = "Start bit";
@@ -45,8 +47,8 @@ public:
 
    constexpr static std::array<std::string_view, PROPERTIES_COUNT> PROPERTIES = 
    {
-      NAME, MESSAGE, START_BIT, SIZE, BYTE_ORDER, VALUE_TYPE, INITIAL_VALUE, FACTOR, OFFSET, MINIMUM, MAXIMUM,
-      UNIT, VALUE_TABLE, COMMENT
+      NAME, NETWORK, MESSAGE, START_BIT, SIZE, BYTE_ORDER, VALUE_TYPE, INITIAL_VALUE,
+      FACTOR, OFFSET, MINIMUM, MAXIMUM, UNIT, VALUE_TABLE, COMMENT
    };
 
    class ByteOrder
@@ -87,7 +89,7 @@ public:
 
    const static inline QStringList VALUE_TYPES { ValueType::UNSIGNED.data(), ValueType::SIGNED.data() };
 
-   static bool Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData);
-   static QString GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column);
-   static void Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column);
+   static bool Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData);
+   static QString GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column);
+   static void Modify(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column);
 };

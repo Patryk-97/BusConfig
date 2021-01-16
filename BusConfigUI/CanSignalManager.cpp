@@ -1,7 +1,7 @@
 #include "CanSignalManager.h"
 #include "Conversions.h"
 
-bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column, QString& newData)
+bool CanSignalManager::Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData)
 {
    // locals
    bool rV { true };
@@ -40,9 +40,9 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, const QString& name
       }
    };
 
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canSignal = canBusConfig->GetSignalByName(name.toUtf8()); canSignal)
+      if (auto canSignal = canNetwork->GetSignalByName(name.toUtf8()); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -79,14 +79,14 @@ bool CanSignalManager::Validate(ICanBusConfig* canBusConfig, const QString& name
    return rV;
 }
 
-QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, const QString& name, uint8_t column)
+QString CanSignalManager::GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column)
 {
    // locals
    QString previousData;
 
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canSignal = canBusConfig->GetSignalByName(name.toUtf8()); canSignal)
+      if (auto canSignal = canNetwork->GetSignalByName(name.toUtf8()); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {
@@ -159,11 +159,11 @@ QString CanSignalManager::GetData(ICanBusConfig* canBusConfig, const QString& na
    return previousData;
 }
 
-void CanSignalManager::Modify(ICanBusConfig* canBusConfig, const QString& name, const QString& data, uint8_t column)
+void CanSignalManager::Modify(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column)
 {
-   if (canBusConfig)
+   if (canNetwork)
    {
-      if (auto canSignal = canBusConfig->GetSignalByName(name.toUtf8()); canSignal)
+      if (auto canSignal = canNetwork->GetSignalByName(name.toUtf8()); canSignal)
       {
          if (column < PROPERTIES_COUNT)
          {

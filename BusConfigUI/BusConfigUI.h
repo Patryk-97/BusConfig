@@ -69,6 +69,10 @@ private:
    void RemoveCanMessageFromTreeWidget(const QString& messageName);
    void ChangeTreeWidgetItemName(const QString& itemName, const QString& newItemName);
 
+   void SetComboDelegateForCanSignal(void);
+   void SetComboDelegateForCanMessage(void);
+   void SetComboDelegateForCanEnvVar(void);
+
    template <std::integral Integral>
    inline void RemoveCanMessage(const Integral& integral)
    {
@@ -156,6 +160,7 @@ private:
        static constexpr std::string_view CAN_NETWORK_NODES = "CanNetworkNodes";
        static constexpr std::string_view CAN_ENVIRONMENT_VARIABLE = "CanEnvironmentVariable";
        static constexpr std::string_view CAN_ENVIRONMENT_VARIABLES = "CanEnvironmentVariables";
+       static constexpr std::string_view NETWORKS = "Networks";
        static constexpr std::string_view NETWORK = "Network";
        static constexpr std::string_view ATTRIBUTES = "Attributes";
        static constexpr std::string_view VALUE_TABLE = "Value table";
