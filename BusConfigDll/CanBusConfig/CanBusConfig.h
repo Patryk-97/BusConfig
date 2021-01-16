@@ -31,6 +31,7 @@ public:
    ICanNetwork* GetNetworkFront(void) const override;
    ICanNetwork* GetNetworkBack(void) const override;
    void AddNetwork(CanNetwork* network);
+   CanNetwork* CreateAndAddNetwork(void);
 
 private:
    bool ParseMessageDefinition(std::ifstream& file, LineData_t& lineData);

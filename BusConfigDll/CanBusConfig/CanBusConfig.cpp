@@ -69,6 +69,9 @@ bool CanBusConfig::Load(const char* fileName)
    if (file.is_open())
    {
       rV = true;
+      const auto networkName = helpers::RemovePhrases(fileName, ".dbc");
+      auto network = this->CreateAndAddNetwork();
+      network->SetName(networkName.c_str());
 
       while (std::getline(file, line))
       {
@@ -188,6 +191,13 @@ void CanBusConfig::AddNetwork(CanNetwork* network)
    {
       this->networks.push_back(network);
    }
+}
+
+CanNetwork* CanBusConfig::CreateAndAddNetwork(void)
+{
+   auto network = new CanNetwork {};
+   this->networks.push_back(network);
+   return network;
 }
 
 bool CanBusConfig::ParseMessageDefinition(std::ifstream& file, LineData_t& lineData)

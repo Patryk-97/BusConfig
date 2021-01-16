@@ -34,17 +34,19 @@ int main()
 
       canBusConfig->Load("sample.dbc");
 
-      std::cout << "Nodes count: " << canBusConfig->GetNodesCount() << "\n";
-      for (size_t i = 0; i < canBusConfig->GetNodesCount(); i++)
+      const auto canNetwork = canBusConfig->GetNetworkByIndex(0);
+
+      std::cout << "Nodes count: " << canNetwork->GetNodesCount() << "\n";
+      for (size_t i = 0; i < canNetwork->GetNodesCount(); i++)
       {
-         auto node = canBusConfig->GetNodeByIndex(i);
+         auto node = canNetwork->GetNodeByIndex(i);
          std::cout << node->GetName() << ", ";
       }
       std::cout << "\n\n";
-      std::cout << "Messages count: " << canBusConfig->GetMessagesCount() << "\n";
-      for (size_t i = 0; i < canBusConfig->GetMessagesCount(); i++)
+      std::cout << "Messages count: " << canNetwork->GetMessagesCount() << "\n";
+      for (size_t i = 0; i < canNetwork->GetMessagesCount(); i++)
       {
-         auto message = canBusConfig->GetMessageByIndex(i);
+         auto message = canNetwork->GetMessageByIndex(i);
          std::cout << message->ToString() << "\n";
          for (size_t j = 0; j < message->GetSignalsCount(); j++)
          {

@@ -27,4 +27,6 @@ public:
    virtual ICanNetwork* GetNetworkByName(const char * name) const = 0;
    virtual ICanNetwork* GetNetworkFront(void) const = 0;
    virtual ICanNetwork* GetNetworkBack(void) const = 0;
+
+   static constexpr const char * DBC_FILE_EXTENSION = ".dbc";
 };
