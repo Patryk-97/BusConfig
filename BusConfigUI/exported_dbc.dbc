@@ -3039,6 +3039,7 @@ CM_ SG_ 64 AB_Heck_Crash "WirdfüralleneuanlaufendenProjekteumgesetzt:AB8.4,Audi8
 CM_ SG_ 64 AB_SF_Crash "Z.Zt.nurinVerbindungmitCrash-Intensität>=100b(Kraftstoffpumpenabschaltung)verwendet.";
 CM_ SG_ 64 AB_SB_Crash "Z.Zt.nurinVerbindungmitCrash-Intensität>=100b(Kraftstoffpumpenabschaltung)verwendet.
 ";
+CM_ SG_ 64 AB_Rollover_Crash "WirdimB6/B7CabrioundNewBeetleCabriobedient.";
 CM_ SG_ 64 AB_Crash_Int "Crash_Intensität_1=fahrzeugabhängigeReaktionenimCrash
 Crash_Intensität_2 = fahrzeugabhängige Reaktionen im Crash
 Crash_Intensität_3 = fahrzeugabhängige Reaktionen im Crash
@@ -3143,6 +3144,7 @@ CM_ SG_ 1633 AAG_AVS_Fehler_02_inv "FehlerAVS(inversesSignal)";
 CM_ SG_ 1633 AAG_Bremsl_durch_ECD "BremslichtdurchECDaktiv";
 CM_ SG_ 1633 AAG_Anhaenger_abgesteckt "AnhaengerwurdebeiKl.15ausabgesteckt";
 CM_ SG_ 1633 AAG_NSL_aktiv "AnhaengerNebelschlusslichtaktiv";
+CM_ SG_ 1633 AAG_Anhaenger_erkannt "ErkennungAnhaenger";
 CM_ SG_ 1633 AAG_Blinker_H_aktiv "Status:AnhaengerBlinkeraktiv";
 CM_ SG_ 1633 AAG_Blinker_HL_def "AnhaengerBlinkerlinksdefekt";
 CM_ SG_ 1633 AAG_Blinker_HR_def "AnhaengerBlinkerrechtsdefekt";
@@ -3893,6 +3895,7 @@ CM_ SG_ 258 ESP_QBit_Gierrate "QBitderGierrate.GesetztbeiErsatzwert,InitoderFehl
 ";
 CM_ SG_ 258 ESP_QBit_Laengsbeschl "QBitderLängsbeschleunigung.GesetztbeiErsatzwert,InitoderFehler.
 ";
+CM_ SG_ 258 ESP_QBit_Querb "QBitderQuerbeschleunigung.GesetztbeiErsatzwert,InitoderFehler.";
 CM_ SG_ 258 ESP_Querbeschleunigung "Beschleunigungswertiny-Achse
 
 MLB: Gemessener Wert
@@ -4153,6 +4156,7 @@ CM_ SG_ 2463978647 ESP_OBD_Status "DiesesBitsteuertdieMIL-Lampean(Motorsteuerger
 CM_ SG_ 2463978647 ESP_Rollenmodus_Deaktivieren "ZwangzumAbbruchdesRollenmodusmitanschließenderESP-Vollfunktion.
 MQB: Zwang zum Abbruch des Rollenmodus in allen Funktionsteilnehmern (Empfänger) mit anschließender ESP-Vollfunktion (Sender).
 Signal wird vom ESP dauerhaft mit gültigen Werten bedat";
+CM_ SG_ 2463978647 ESP_nachtr_Stopp_Anf "DiesesSignaldientdemMotoralsTrigger,dasseinnachträglicherMotorstoppeingeleitetwerdenkann,wennesdieBedingungendesStStKoordinatorsdieszulassen.";
 CM_ SG_ 2527679683 ESC_ASM_Ereignis "DiesesSignaldefiniert,welcheFunktionundwelcheArtvonAktivitätdasSendenderBotschaftandenAssistenzsystemmonitorASMveranlassthat.";
 CM_ SG_ 2527679683 ESC_ASM_Zeitstempel "DiesesSignalermöglichtdiezeitlicheZuordnungdervonmehrerenFunktionenaufdemESC-SGandenAssistenzsystemmonitorASMgesendetenStatusbotschaften";
 CM_ SG_ 2527679683 ESC_ASM_Data_1 "DieseSignalwirdvonmehrerenFunktionenaufdemESC-SGgemäßderASM-DatendefinitionbefülltundandenAssistenzsystemmonitorASMgesendet";
@@ -4248,6 +4252,9 @@ MQB: Istwert der Kennlinie (siehe Systemlastenheft MQB FPA)";
 CM_ SG_ 1629 ESP_Charisma_Status "SystemstatusdesCharismateilnehmers
 
 Wert 0x3 ist nur für Fahrzeuge ab MQB relevant";
+CM_ SG_ 1629 ESP_Wiederstart_Anz_01 "DiesesSignalgibtdiedetaillierteBegründungfüreinenWiederstartvomBremsensteuergerätan.";
+CM_ SG_ 1629 ESP_Wiederstart_Anz_02 "DiesesSignalgibtdiedetaillierteBegründungfüreinenWiederstartvomBremsensteuergerätan.";
+CM_ SG_ 1629 ESP_Wiederstart_Anz_03 "DiesesSignalgibtdiedetaillierteBegründungfüreinenWiederstartvomBremsensteuergerätan.";
 CM_ SG_ 1629 ESP_Wiederstart_Anz_04 "DiesesSignalgibtdiedetaillierteBegründungfüreinenWiederstartvomBremsensteuergerätan.";
 CM_ SG_ 1629 ESP_Stoppverbot_Anz_01 "DiesesSignalgibtdiedetaillierteBegründungfüreinStoppverbotvomBremsensteuergerätan.";
 CM_ SG_ 1629 ESP_Stoppverbot_Anz_02 "DiesesSignalgibtdiedetaillierteBegründungfüreinStoppverbotvomBremsensteuergerätan.";
@@ -4283,8 +4290,10 @@ MQB: Weiterführende Informationen im Lastenheft sp";
 CM_ SG_ 253 ESC_Reku_Freigabe "MitdiesemBitwirddieRekuperationimMotorsteuergeräterlaubt.BeiAusfallESCwirdRekuperationnichtfreigegeben.
 
 MQB/MQB2020: Wird nur von einem blendfähigen ESC unterstützt, wie es in mHEV und pHEV Fahrzeugen eingesetzt wird.";
+CM_ SG_ 253 ESC_v_Signal_Qualifier_High_Low "DasQualifizerungssignalESC_v_Signal_Qualifier_High_LowgibteineInformationüberdieGütedervomBremsregelsystemausgegebenenGeschwindigkeitsinformation'mittlereGeschwindigkeit',wobeiVertrauensbereichefürdasausgegebeneGeschwindigkeitssignal";
 CM_ SG_ 253 ESP_Vorsteuerung "zurUnterscheidungzwischenESP-VorsteuermaßnahmenundESP-Regeleingriffen";
 CM_ SG_ 253 ESP_AWV3_Brems_aktiv "Teil-,Ziel-oderNotbremsungwirdimESPfürAWV3umgesetzt(dasMSGnutztdieseInfofürdenAbwurfderGRA-Regelung).";
+CM_ SG_ 253 OBD_Schlechtweg "FürAusblendungderZündaussetzererkennungimMotorsteuergerät(Otto).Bitwirdgesetzt,wennRad-DrehbeschleunigungimESP>Grenzwertist.VorteilgegenüberRadgeschwindigkeiten,dassESPalle2msdynamischdieRad-Drehbeschleunigungerrechnetunddem";
 CM_ SG_ 253 ESP_v_Signal "GeschwindigkeitssignalvomABS/ASRoderESP.MittelwertderangetriebenenRäder.
 Bei MSR oder ABS Eingriffen wird die ABS-Referenzgeschwindigkeit für >= 200ms eingespiegelt (Zeit wird mit Aktiv-Flanke der Funktionsbits getriggert)
 
@@ -4435,6 +4444,7 @@ CM_ SG_ 2527679740 KBI_Anzeigestatus_LIM "AnzeigestatusderSpeedlimiterWunschgesc
 2 = reserviert
 3 = Fehler (Botschaftsüberwachung, Timeout, Akustik";
 CM_ SG_ 2527679740 KBI_Anzeigestatus_ACC "StatusderACC-AnzeigeimnichtpermanentenDisplaybereich";
+CM_ SG_ 2527679740 KBI_Konsistenz_ACC "RückmeldunganACC,dassdieBotschaftenzurAnsteuerungvonAnzeigennichtbzw.nichtkonsistentempfangenwurden(Timeout-,BZ-,CHK-undDLC-Fehler)";
 CM_ SG_ 2527679740 KBI_Fehler_Anzeige_ACC "RückmeldunganACC,dassmindestenseinederACC-relevantenAnzeigen-roteFahrerübernahme,Mitteldisplay,Gong-fehlerhaftsind.";
 CM_ SG_ 2589283684 GRA_FoD_Status "VerortungdesFOD-SlavesfürdieFunktionGRAerfolgtimGateway.SignalübermitteltdenFOD-StatusandasMSG.";
 CM_ SG_ 2589283684 FoD_Transmission_Info "MitdemSignalzeigtderFoD-MasterallenFoD-SlavesdenBeginnunddasEndeeinesFreischaltuebertragungszykluses(FS-ID-Zyklus)an.";
@@ -4472,6 +4482,8 @@ CM_ SG_ 987 ZV_BT_offen "gespiegeltesBitBT_Tuer_geoeffnetTSG_BT_1Botschaft";
 CM_ SG_ 987 BCM1_Rueckfahrlicht_Schalter "Rückfahrlichtschalter
 ab MQB/ MLBevo: Die Ganginformation wird unentprellt übertragen, im AT-Getriebe wird evtl. kurzzeitig der R-Gang angezeigt. Eine Entprellung muß im Empfänger erfolgen (typisch 400ms).";
 CM_ SG_ 987 ZV_FT_offen "gespiegeltesBitFT_Tuer_geoeffnetTSG_FT_1Botschaft";
+CM_ SG_ 987 Wischer_vorne_aktiv "Status:Wischervorne";
+CM_ SG_ 987 AAG_Anhaenger_erkannt "ErkennungAnhaenger";
 CM_ SG_ 987 BCM1_MH_Schalter "Motorhaubenkontakt";
 CM_ SG_ 987 ZV_HD_offen "StatusHeckdeckel
 ";
@@ -4490,6 +4502,7 @@ Wischer_vorne_aktiv";
 CM_ SG_ 987 BCM_Tankklappensteller_Fehler "Fehler:nichtFunktionalitätdesTankklappenstellers";
 CM_ SG_ 987 AAG_LED_aktiv "DiesesSignalsendetderBeleuchtungsartdesAnhängers(LEDoderLampe)
 Bei LED aktiv erfolgt kein Kaltüberwachung";
+CM_ SG_ 987 ZV_verriegelt_soll "FahrzeugGesamtverriegelungsstatusSollzustandfürLadestecker-undLadeklappenverriegelung.";
 CM_ SG_ 987 ZV_Schluessel_Zugang "aktuelleFunkschlüsselnummer";
 CM_ SG_ 987 WFS_ID_Geb_autorisiert_in_Kl15 "AuthorisierungdesSchlüsselsimaktivenKlemme-15-Zyklus";
 CM_ SG_ 987 BH_Fernlicht "BetaetigungFernlicht
@@ -4569,6 +4582,7 @@ CM_ SG_ 324 GE_Testparameter_2 "Testparameter2(Frage)zurÜberwachungdesWählhebel-
 CM_ SG_ 324 GE_Test_Freigabe "DasBitwirdauf1gesetzt,wenngültigeTestparametergesendetwerden.";
 CM_ SG_ 324 GE_N_Haltephase "DasGetriebesignalisiertdemWaehlhebel,dassdieN-Haltephaseaktivist.
 Danach kann der Waehlhebel ein Abschalten des I-CAN ermöglichen";
+CM_ SG_ 324 GE_WH_Abschalten "MitdiesemBitkanndasGetriebedasWählhebel-SGresetenbzw.dauerhaftdeaktivieren.DerWählhebelgehtdannineinenStandby-Modus.";
 CM_ SG_ 324 GE_Soll_Haltemagnet "SollpositiondesParksperren-HaltemagnetenfürdieAnsteuerungdurchdenWaehlhebel";
 CM_ SG_ 324 GE_WH_Shiftlock "Bitwirdauf1gesetzt,wenngetriebeseitigenBedingungenerfülltsind,umWählhebelzubewegen.";
 CM_ SG_ 324 GE_WH_Mute "AnforderungandieSchaltbetätigung,denSendebetriebeinzustellen.";
@@ -4761,8 +4775,10 @@ CM_ SG_ 2527679583 Parken_aktives_System_02 "zeigtanwelchesparkendesSystemaktivi
 CM_ SG_ 2527679583 Parken_ZR_Sondermodus_Anf "AnforderungSondermodus,umbeim„pilotiertenParken“spezielleFunktionsanpassungenimInfotainment-Bereichzuermöglichen(u.a.schnellererStartup,AbschaltungBT)";
 CM_ SG_ 2527679583 Parken_Schluesselsuche_Anf "AnsteuerungderSchlüsselsuchefürdaspilotierteParken.";
 CM_ SG_ 2527679583 Parken_FFB_LED_Anf "StatusinformationdesPilotiertenParkensfürdieAnsteuerungderLEDaufderFunkfernbedienung.";
+CM_ SG_ 2527679583 Parken_Wegfahrsperren_Anf "AnsteuerungderWegfahrsperrenKomponentenfürdaspilotierteParken.";
 CM_ SG_ 2527679583 Parken_Aktivierungslicht_Anf "AnforderungdesAktivierungslichtsnacherfolgreicherAktivierungshandlungseitensPilotiertemParken.";
 CM_ SG_ 2527679583 Parken_Fahrtrichtungslicht_Anf "AnforderungseitensPilotiertemParkenfürdieAnzeigederinitialenFahrtrichtungnachSystemaktivierung.";
+CM_ SG_ 2527679583 Parken_Lichtnachlauf_Anf "AnforderungdesLichtnachlaufsbeimBCM1(analogVerlassenskonzept)fürdasPilotierteParken.";
 CM_ SG_ 2527679583 Parken_Fahrerhinweise_Anf "AnforderungzurerneutenLampenaufprüfungundAnzeigevonWarnhinweisennacheinempilotiertenAusparkvorgang.";
 CM_ SG_ 2527679583 Parken_Bestaetigungsblinken_Anf "AnforderungseitensPilotiertemParkenfüreinErfolgsblinkennachdemErreichenderZielpositionbzw.füreinAbbruchsblinkenbeiEintreteneinerAbbruchsbedingung.";
 CM_ SG_ 2527679583 Parken_Fahrbereitschaftlicht_Anf "AnforderungdesFahrbereitschaftslichts";
@@ -4876,6 +4892,7 @@ MQB: Istwert der Kennlinie (siehe Systemlastenheft MQB FPA)";
 CM_ SG_ 949 KL_Charisma_Status "CharismaSystemstatusdesCharisma-Teilnehmers
 
 Wert 0x3 ist nur für Fahrzeuge ab MQB relevant";
+CM_ SG_ 949 KL_nachtr_Stopp_Anf "DiesesSignaldientdemMotoralsTrigger,dasseinnachträglicherMotorstoppeingeleitetwerdenkann,wennesdieBedingungendesStStKoordinatorsdieszulassen.";
 CM_ SG_ 949 KL_T_Charge "SignalfürTastenbetätigungCharge-Taste(SOCIncreasing)";
 CM_ SG_ 949 KL_Last_Kompr "AktuellesVerlustmomentderKlimaanlagebezogenaufdieKurbelwelle.WirdderKlimakompressornichtangesteuert,istdasSchleppmomentbezogenaufdieKurbelwellezusenden.";
 CM_ SG_ 949 KL_Spannungs_Anf "ForderungdesKlima-SG'szurSpannungsanhebung.";
@@ -5045,6 +5062,7 @@ CM_ SG_ 982 LH_SL_BRL_BLK_li_def "KonfigurationSL+BRL+BLKlinksoderSL+BRL+BLK+PLl
 ";
 CM_ SG_ 982 LH_Brems_Blk_li_def "KonfigurationBRL+BLKlinks
 ";
+CM_ SG_ 982 LH_Diag_Status_re_def "AußenlichtDiagnoseSystemstörungrechts";
 CM_ SG_ 982 LH_Diag_Status_li_def "AußenlichtDiagnose
 Systemstörung links";
 CM_ SG_ 982 LH_Diag_LED_li_def "Heckleuchtelinksdefekt";
@@ -5333,9 +5351,11 @@ CM_ SG_ 958 MO_QBit_Gangposition "QualitätsbitzumSignalMO_Gangposition";
 CM_ SG_ 958 MO_Signalquelle_Gangposition "SignalquelledesSignalsMO_Gangposition
 0: Signalquelle Gangpositionssensor
 1: Signalquelle Modellwert (v/n)";
+CM_ SG_ 958 MO_Remotestart_Betrieb "DasMSGistfürdenRemotestart-Betriebbereit.NachEmpfangderMotorstartanforderungfürRSt-BetriebdurchBCMwirdderFahrzeugmotorgestartetundsolangederMotorläuft,bleibtdiesesBitaktiv.DiesesSignalistnurzurVerwendungdurchdasBCMzur";
 CM_ SG_ 958 MO_Remotestart_moeglich "WennBitgesetzt,würdedasMSGbeientsprechenderAnforderungdurchdasBCMdenRemotestartbetriebeinleiten,d.h.dasMSGistremotestartfähigundesliegenaktuellkeinerelevantenFehleroderandereAbbruchgründevor.";
 CM_ SG_ 958 MO_FMAus_aktiv "DasSignalgibtRückmeldungobFreilaufMotorausaktivist.Beleibtauch0km/h(unterhalbderStartStoppSchwelle)weiterhinaktiv.";
 CM_ SG_ 958 MO_FMAus_Startvariante "StartvariantebeimMotorstartausderFreilauf-Motor-AUSPhase";
+CM_ SG_ 958 MO_BMS_NV_Anf_stuetzen "GarantierteUnterstützungdesZusatzspeichersisterforderlich.ZusatzspeichermussandasVersorgungsneztangebundenwerden.";
 CM_ SG_ 958 MO_Zylinderabschaltung "StatusZylinderabschaltungMotor";
 CM_ SG_ 958 MO_HYB_VM_aktiv "0=VMotorwirdnichtaktivgehalten(nVM<n_minundkeineLL-Regelungaktiv)
 1 = VMotor aktiv (ab der ersten Einspritzung; gilt auch für Schubbetrieb, wenn VMotor spätestens durch LLRegelung befeuert würde)
@@ -5392,6 +5412,7 @@ CM_ SG_ 1648 MO_Abstellzeit_Status "StatusinformationzurAbstellzeit
 CM_ SG_ 1648 MO1_Freigabe_Verfallsinfo_WFS "WFS-Freigabeverfallsinformation";
 CM_ SG_ 1648 MO_Hybrid_StartStopp_LED "AnsteuerungderFunktions-LEDderHybridTastebzw.Start/StopDeaktivierungstaste.
 Der Start/Stopp-Master (derzeit im MSG) (oder ein künftiger Hybrid-Master) soll die Ansteuerung senden.";
+CM_ SG_ 1648 MO_Fehler_Zylabsch "FehlerstatusderFunktionZylinderabschaltung";
 CM_ SG_ 1648 MO_Anzahl_Abgesch_Zyl "GibtdieAnzahlderabgeschaltetenZylinderan.InÜbergangszuständenwirdderZielbetriebszustandangezeigt.";
 CM_ SG_ 1648 MO_Zylabsch_Texte "ZylinderabschaltungmodeinKombi,fuerZylinderabschaltung";
 CM_ SG_ 1648 MO_Ethanol_BS_Texte "EthanolBrennstoff-TexteimKombi
@@ -5413,6 +5434,7 @@ Heizung aus -> Lampe aus
 Heizung ein -> Lampe ein
 Heizung ein und Startversuch -> Lampe blinkend
 Heizung nicht möglich -> Lampe";
+CM_ SG_ 967 MO_KJS_nicht_bereit "DiesesSignalzeigeneinenFehlerderKühlerjalousiemitunbekannterStellungderLamellen.";
 CM_ SG_ 967 MO_ITM_Warnung_Pumpe "Textanzeige:'Motorsofortabstellen,geschalteteWasserpumpedefekt/klemmt'";
 CM_ SG_ 967 WIV_Anzeige_aktiv "Peilstabsanzeigefunktionaktiv";
 CM_ SG_ 967 WIV_Oelmin_Warn "SignalgibtanwennderÖlstanddieMin-Schwelleunterschrittenhat";
@@ -5487,6 +5509,7 @@ Achtung:
 Reduktion der Zykluszeit Motor_03 auf 10ms geplant.
 Projektabh";
 CM_ SG_ 267 MO_Fahrpedalgradient "DasMotorsteuergerätbesitzt2analogeFahrpedalsignale.DasSignaldeserstenKanalswirdalle4msabgetastet.UmBitschwankungendesA/D-WandlerherauszufilternwirddasSignalentjittert.AnschließendwirdderGradientberechnet.EntsprechendderZyklu";
+CM_ SG_ 267 MO_Sig_Fahrpedalgradient "KennzeichnetdasVorzeichendesSignal'Fahrpedalgradient'.DieAusgabeerfolgtnurparallelstatischmitgesendetemSignal:'SteuerungsbitFahrpedalgradient'";
 CM_ SG_ 267 MO_rel_Saugrohrdruck "DerWertgibtan,umwievielmbarderSaugrohrdruckunterhalbdesUmgebungsdrucksliegt.ÜberdruckimSaugrohrwirdnichtausgegeben.
 0: Saugrohrdruck=Umgebungsdruck";
 CM_ SG_ 267 MO_rel_Saugrohrdruck_gem_err "0:mind.eineModellrechnungwirdzurBerechnungdesrelativenSaugdrucksherangezogen
@@ -5506,6 +5529,7 @@ CM_ SG_ 267 MO_Entkopplung_Sollschlupf "MSGfordertvonGSGan,dasAnfahrelement(Fahr
 CM_ SG_ 267 MO_temporaere_Fahrerabwesenheit "DasSignaldientzurSignalisierungeinertemporärenAbwesenheitdesFahrers.IndieserZeitistesihmmöglich,sichdurchgewisse¿imVerlassenskonzeptdefinierte¿FahreraktionenimaktuellenFahrzykluszurückzumelden.
 Das Signal wird gesetzt, sobald";
 CM_ SG_ 267 TSK_a_Soll_gradientenbegrenzt "TSKSollbeschleunigungfürFahrerassistenzsystememitaktiverLängsführung(GRA,ACC,IPA...).DerWertstelltdenruckbegrenztenSollwertderTSK-RegelungdarundistBasisderTSK-Antriebs-undBremsmomentenvorsteuerung.";
+CM_ SG_ 267 TSK_Radbremsmom "BeiderSchnittstellevomTSKzumESPsollinFolgeprojektendesB8undinsbesonderebeiVW-ProjektendieAnsteuerungderBremsenichtüberSollbeschleunigungsondernBremsmomenterfolgen.EshandeltsichgenauerumdasSummenradbremsmoment,welchesdie";
 CM_ SG_ 267 TSK_Status "BetriebszustanddesTSK-Reglers";
 CM_ SG_ 267 TSK_v_Begrenzung_aktiv "LimiteroderHGBbegrenzendieBeschleunigung/dasMoment";
 CM_ SG_ 267 TSK_Standby_Anf_ESP "MitdiesemBitwirddasaktiveBremssystemaufeineanstehendeTSK-Verzögerungsanforderungvorbereitet(ÜberfahrenLeerweg,AnlegenBremsbeläge)";
@@ -5520,6 +5544,7 @@ CM_ SG_ 267 TSK_SRBM_Anf_ASIL "ASIL-LeveldesTSK-Anforderers,deraktuelleineBremsm
 CM_ SG_ 267 TSK_ax_Getriebe_02 "BeschleunigungsanforderungdesBeschleunigungsreglers(u.a.fürACC,GRA,SpeedLimiter).DasSignalwirdvomGetriebebenutzt,umdievonGRA/ACCgeforderteSollbeschleunigungindemverbrauchsgünstigstenGangeinzustellen.
 MQB: Im MQB wird die Sollbes";
 CM_ SG_ 267 TSK_Zwangszusch_ESP "MitdiesemBitwirddasESP/ASRzwangsweiseaktiviert.BeigesetztemBitisteinausgetastetesESP(oderASR)wiederaktiviertbzw.wirddieAustastungverhindert.";
+CM_ SG_ 267 TSK_zul_Regelabw "AnforderungderzulässigenRegelabweichungvomTriebstrangkoordinator.ZulässigerBetragderAbweichungzwischenangeforderter'TSK_Sollbeschleunigung_Getriebe'undumzusetzenderSollbeschleunigungimGetriebe.ImTSKwird,abhängigvomArbeitspunktdie";
 CM_ SG_ 267 MO_Status_MinDrzEingriff "AktuelldrehzahlführenderAnfordererderMinimaldrehzahl(Begrenzungsregelung)desPulswechselrichtersderPrimärachse";
 CM_ SG_ 267 MO_Status_MaxDrzEingriff "AktuelldrehzahlführenderAnfordererderMaximaldrehzahl(Begrenzungsregelung)desPulswechselrichtersderPrimärachse";
 CM_ SG_ 267 MO_Status_MinDrzEingriff_sek "AktuelldrehzahlführenderAnfordererderMinimaldrehzahl(Begrenzungsregelung)desPulswechselrichtersderSekundärachse";
@@ -5774,6 +5799,7 @@ CM_ SG_ 190 MO_EM1_MaxDrehzahl "MaximaleE-Maschinen-Drehzahl";
 CM_ SG_ 190 MO_EM1_DynLimit_AR "AuslöseschwellefürdynamischeRuckeldämpfung
 
 Der Momentenwert ergibt sich aus der Multiplikation mit dem Faktor MO_EM1_Faktor_AR_Momente (Skalierung Wertebereich und Auflösung).";
+CM_ SG_ 190 MO_EM1_Periode_AR "Zeitkonstante(Periodendauer)derRuckelschwingung(abhängigvomGangundggf.elektrischem/hybridischemFahren)";
 CM_ SG_ 190 MO_EM1_SollMoment "E-MaschinenSoll-MomentvomHybridcontroller";
 CM_ SG_ 190 MO_EM1_Sollmodus "Werte:
 Anforderung der Betriebsart der E-Maschine
@@ -5801,6 +5827,7 @@ CM_ SG_ 190 MO_EM2_MaxDrehzahl "MaximaleE-Maschinen-Drehzahl";
 CM_ SG_ 190 MO_EM2_DynLimit_AR "AuslöseschwellefürdynamischeRuckeldämpfung
 
 Der Momentenwert ergibt sich aus der Multiplikation mit dem Faktor MO_EM2_Faktor_AR_Momente (Skalierung Wertebereich und Auflösung).";
+CM_ SG_ 190 MO_EM2_Periode_AR "Zeitkonstante(Periodendauer)derRuckelschwingung(abhängigvomGangundggf.elektrischem/hybridischemFahren)";
 CM_ SG_ 190 MO_EM2_SollMoment "E-MaschinenSoll-MomentvomHybridcontroller";
 CM_ SG_ 190 MO_EM2_Sollmodus "Werte:
 Anforderung der Betriebsart der E-Maschine
@@ -6235,6 +6262,7 @@ CM_ SG_ 1122 PSD_Endkruemmung "'EndkrümmungderKlotoidedesübermitteltenStreckense
 ";
 CM_ SG_ 1122 PSD_Idenditaets_ID "IdentifieraufeinStreckensegment,dassmitdemaktuellübertragenengeometrischidentischist.";
 CM_ SG_ 1122 PSD_ADAS_Qualitaet "ADASQualtitätdesStreckensegments.";
+CM_ SG_ 1122 PSD_wahrscheinlichster_Pfad "IdentifiziertdenvomNavigationssystemberechnetenwahrscheinlichstenPfaddesFahrzeuges.";
 CM_ SG_ 1122 PSD_Geradester_Pfad "SegmentistTeildesgeradestenPfades";
 CM_ SG_ 1122 PSD_Fahrspuren_Anzahl "AnzahlderFahrspureninFahrtrichtung
 ";
@@ -6718,6 +6746,7 @@ Wertebereich lt. Hashtabelle";
 CM_ SG_ 2463978663 VZE_Zusatzschild_3 "Zusatzsschild,daszuVerkehrszeichen3angezeigtwerdensoll.
 
 Wertebereich lt. Hashtabelle";
+CM_ SG_ 2463978663 VZE_Anzeigeunterdrueck_Zeichen_1 "SteuerungssignalzurSteuerungderSichtbarkeitvonVerkehrszeichen";
 CM_ SG_ 2463978663 VZE_Zeichen_01_KameraWied "DasVZE-TempolimitinVerkehrszeichen1wurdealsWiederholungsschildvonderKameraerkannt.";
 CM_ SG_ 2463978663 VZE_Zeichen_02_KameraWied "DasVZE-TempolimitinVerkehrszeichen2wurdealsWiederholungsschildvonderKameraerkannt.";
 CM_ SG_ 2463978663 VZE_Zeichen_03_KameraWied "DasVZE-TempolimitinVerkehrszeichen3wurdealsWiederholungsschildvonderKameraerkannt.";
@@ -6765,6 +6794,7 @@ Wertebereich lt. Hashtabelle";
 CM_ SG_ 2463978663 VZE_Baustelle "DasSignalgibtan,obaktuelleinBaustellenschildvonderVZEerkanntwurde.";
 CM_ SG_ 2463978663 VZE_Zeichen_05_Karte "DasVZE-TempolimitstammtausdenNavigationskartendaten.";
 CM_ SG_ 2463978663 VZE_Zeichen_05_Entfernung "IndemSignalwirddieEntfernungzumVerkehrszeichen5übertragen";
+CM_ SG_ 2463978663 VZE_Zeichen_05_Entfernung_StdA "IndemSignalwirddieStandardabweichungbzgl.derEntfernungzumVerkehrszeichen5übertragen";
 CM_ SG_ 2463978663 VZE_Anzeigeunterdrueck_Zeichen_4 "AnzeigerelevanzdesZeichensinVZE_Anzeigerelevanz_Zeichen_4";
 CM_ SG_ 2463978663 VZE_Verkehrszeichen_6 "DasSignalspiegelteinesderVerkehrszeichen:Geschwindigkeitsgebot,Überholverbot,Aufhebungszeichenwider.
 
@@ -6773,6 +6803,7 @@ CM_ SG_ 2463978663 VZE_Zusatzschild_6 "Zusatzsschild,daszuVerkehrszeichen6angeze
 
 Wertebereich lt. Hashtabelle";
 CM_ SG_ 2463978663 VZE_Zeichen_06_Entfernung "IndemSignalwirddieEntfernungzumVerkehrszeichen6übertragen";
+CM_ SG_ 2463978663 VZE_Zeichen_06_Entfernung_StdA "IndemSignalwirddieStandardabweichungbzgl.derEntfernungzumVerkehrszeichen6übertragen";
 CM_ SG_ 2463978663 VZE_Umweltinfo_Naesse "IndemSignalwerdenfürdieVerkehrszeichenerkennungrelevanteUmweltinformationenübertragen.
 
 Info: Nässe";
@@ -6933,6 +6964,7 @@ Anmerkung: Signal ist nur von Kombis auszuwerten, die die Shiftlock-Info über So
 CM_ SG_ 916 WBA_Anforderung_Akustik "AnforderungeinesSignaltonsbeiAnwahlderFahrstufeR";
 CM_ SG_ 916 WBA_Blinken "DiesesBitsteuertdieFehlerlampeanoderwirdzumBlinkenderWBA-Anzeigegenutzt-nurfallsWBA_Senderkennung=00(GSG)
 ";
+CM_ SG_ 916 GE_Wiederstart_Anz_Std "DiesesSignalgibtdiedetaillierteBegründungfüreinenWiederstartvomGetriebesteuergerätan.";
 CM_ SG_ 916 GE_Stoppverbot_Anz_01 "DiesesSignalgibtdiedetaillierteBegründungfüreinStoppverbotvomGetriebesteuergerätan.";
 CM_ SG_ 916 GE_Stoppverbot_Anz_02 "DiesesSignalgibtdiedetaillierteBegründungfüreinStoppverbotvomGetriebesteuergerätan.";
 CM_ SG_ 916 GE_Stoppverbot_Anz_03 "DiesesSignalgibtdiedetaillierteBegründungfüreinStoppverbotvomGetriebesteuergerätan.";
@@ -7017,6 +7049,7 @@ CM_ SG_ 1411 FFB_Komfortschliessen "KomfortschliessenFunk
 ";
 CM_ SG_ 1411 FBS_IDG_in_Reichweite "FürelektrischbetätigteTürenundKlappenmussfüreineBetätigungüberFunkeineReichweitenbegrenzungeingeführtwerden.DieseBitzeigtan,dasssichderFunkschlüsselinnerhalbdergefordertenReichweitebefindet";
 CM_ SG_ 1411 ZV_Schluessel_Zugang "aktuelleFunkschlüsselnummer";
+CM_ SG_ 1411 ZV_SafeFunktion_aktiv "StatusübermittlungobdieSafeFunktionimFzg.aktivist.DasKombibenötigtdasSignal,umdenTextSafelockaktivanzuzeigen.";
 CM_ SG_ 1411 FBS_Warn_Schluessel_Batt "KombiPrioWarnungSchluesselBatterie
 'Bitte Schlüsselbatterie wechseln!'";
 CM_ SG_ 1411 ZV_Oeffnungsmodus "KonfigurierterOeffnungsmodusfuerZV:
@@ -7033,6 +7066,7 @@ CM_ SG_ 1411 ZV_Rollo_auf "KomfortöffnendesDachrollos";
 CM_ SG_ 1411 ZV_Rollo_zu "KomfortschließendesDachrollos";
 CM_ SG_ 1411 ZV_SAD_auf "KomfortöffnendesSchiebeausstelldaches";
 CM_ SG_ 1411 ZV_SAD_zu "KomfortschließendesSchiebeausstelldaches";
+CM_ SG_ 1411 ZV_verriegelt_soll "FahrzeugGesamtverriegelungsstatusSollzustandfürLadestecker-undLadeklappenverriegelung.";
 BA_DEF_  "DBName" STRING;
 BA_DEF_  "GenNWMApBusSleep" STRING;
 BA_DEF_  "GenNWMApCanNormal" STRING;

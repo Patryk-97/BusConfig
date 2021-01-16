@@ -1245,7 +1245,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(CanNetwork* network, LineData_t
 
             if (rV && ranges::distance(tokens) == elementsMinCount)
             {
-               for (size_t pos{}; const auto & token : tokens)
+               for (size_t pos{}; const auto& token : tokens)
                {
                   if (pos == ATTRIBUTE_VALUE_OBJECT_TYPE_POS && objectType == ICanAttribute::IObjectType_e::NETWORK)
                   {
@@ -1325,7 +1325,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(CanNetwork* network, LineData_t
                         }
                         else if (objectType == ICanAttribute::IObjectType_e::NODE)
                         {
-                           if (auto node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node != nullptr)
+                           if (auto node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node)
                            {
                               attributeOwner = node;
                               ++pos;
@@ -1338,7 +1338,7 @@ bool CanBusConfig::ParseAttributeValueDefinition(CanNetwork* network, LineData_t
                         }
                         else if (objectType == ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE)
                         {
-                           if (auto envVar = dynamic_cast<CanEnvVar*>(network->GetEnvVarByName(token.c_str())); envVar != nullptr)
+                           if (auto envVar = dynamic_cast<CanEnvVar*>(network->GetEnvVarByName(token.c_str())); envVar)
                            {
                               attributeOwner = envVar;
                               ++pos;
@@ -1355,9 +1355,9 @@ bool CanBusConfig::ParseAttributeValueDefinition(CanNetwork* network, LineData_t
                      {
                         if (objectType == ICanAttribute::IObjectType_e::SIGNAL)
                         {
-                           if (auto message = dynamic_cast<CanMessage*>(network->GetMessageById(messageId)); message != nullptr)
+                           if (auto message = dynamic_cast<CanMessage*>(network->GetMessageById(messageId)); message)
                            {
-                              if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal != nullptr)
+                              if (auto signal = dynamic_cast<CanSignal*>(message->GetSignalByName(token.c_str())); signal)
                               {
                                  attributeOwner = signal;
                               }

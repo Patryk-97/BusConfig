@@ -54,7 +54,7 @@ void CanAttributeOwner::AddAttribute(CanAttribute* attribute)
    {
       if (this->objectType != ICanAttribute::IObjectType_e::NETWORK)
       {
-         if (this->objectType != attribute->GetObjectType())
+         if (this->objectType == attribute->GetObjectType())
          {
             this->attributes.push_back(attribute);
          }
