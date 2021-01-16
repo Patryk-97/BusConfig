@@ -44,20 +44,20 @@ private:
    void AttachValueTableToTree(QTreeWidgetItem* parent);
 
    // Table widget properties
-   void BuildCanMessageProperties(const QString& messageName);
-   void BuildCanMessagesProperties(void);
-   void BuildCanTxMessagesProperties(const QString& networkNodeName);
-   void BuildCanRxMessagesProperties(const QString& networkNodeName);
-   void BuildCanSignalProperties(const QString& signalName);
-   void BuildCanSignalsProperties(void);
-   void BuildCanMessageSignalsProperties(const QString& messageName);
-   void BuildCanMappedTxSignalsProperties(const QString& networkNodeName);
-   void BuildCanMappedTxMessageSignalsProperties(const QString& messageName);
-   void BuildCanMappedRxSignalsProperties(const QString& networkNodeName);
-   void BuildCanMappedRxMessageSignalsProperties(const QString& messageName, const QString& networkNodeName);
-   void BuildCanEnvironmentVariableProperties(const QString& envVarName);
-   void BuildCanEnvironmentVariablesProperties(void);
-   void BuildCanValueTableProperties(const QString& canValueTableOwnerType, const QString& canValueTableOwnerName);
+   void BuildCanMessageProperties(const ICanNetwork* canNetwork, const QString& messageName);
+   void BuildCanMessagesProperties(const ICanNetwork* canNetwork);
+   void BuildCanTxMessagesProperties(const ICanNetwork* canNetwork, const QString& networkNodeName);
+   void BuildCanRxMessagesProperties(const ICanNetwork* canNetwork, const QString& networkNodeName);
+   void BuildCanSignalProperties(const ICanNetwork* canNetwork, const QString& signalName);
+   void BuildCanSignalsProperties(const ICanNetwork* canNetwork);
+   void BuildCanMessageSignalsProperties(const ICanNetwork* canNetwork, const QString& messageName);
+   void BuildCanMappedTxSignalsProperties(const ICanNetwork* canNetwork, const QString& networkNodeName);
+   void BuildCanMappedTxMessageSignalsProperties(const ICanNetwork* canNetwork, const QString& messageName);
+   void BuildCanMappedRxSignalsProperties(const ICanNetwork* canNetwork, const QString& networkNodeName);
+   void BuildCanMappedRxMessageSignalsProperties(const ICanNetwork* canNetwork, const QString& messageName, const QString& networkNodeName);
+   void BuildCanEnvironmentVariableProperties(const ICanNetwork* canNetwork, const QString& envVarName);
+   void BuildCanEnvironmentVariablesProperties(const ICanNetwork* canNetwork);
+   void BuildCanValueTableProperties(const ICanNetwork* canNetwork, const QString& canValueTableOwnerType, const QString& canValueTableOwnerName);
    void BuildAttributesProperties(const ICanAttributeOwner* attributeOwner);
 
    void BuildCanSignalRow(const ICanSignal* signal, int row);
@@ -66,44 +66,63 @@ private:
 
    auto Find(const QString& itemName);
    void RemoveFromTreeWidget(const QString& itemName);
-   void RemoveCanMessageFromTreeWidget(const QString& messageName);
+   void RemoveCanMessageFromTreeWidget(ICanNetwork* canNetwork, const QString& messageName);
    void ChangeTreeWidgetItemName(const QString& itemName, const QString& newItemName);
 
    void SetComboDelegateForCanSignal(void);
    void SetComboDelegateForCanMessage(void);
    void SetComboDelegateForCanEnvVar(void);
+   QTreeWidgetItem* GetTreeItem(const QString& ancestorItemWhatsThis, QTreeWidgetItem* descendantItem);
 
    template <std::integral Integral>
-   inline void RemoveCanMessage(const Integral& integral)
+   inline void RemoveCanMessage(ICanNetwork* canNetwork, const Integral& integral)
    {
-      canNetwork->RemoveMessageByIndex(integral);
+      if (canNetwork)
+      {
+         canNetwork->RemoveMessageByIndex(integral);
+      }
    }
 
-   inline void RemoveCanMessage(const QString& name)
+   inline void RemoveCanMessage(ICanNetwork* canNetwork, const QString& name)
    {
-      canNetwork->RemoveMessageByName(name.toUtf8());
-   }
-
-   template <std::integral Integral>
-   inline void RemoveCanSignal(const Integral& integral)
-   {
-      canNetwork->RemoveSignalByIndex(integral);
-   }
-
-   inline void RemoveCanSignal(const QString& name)
-   {
-      canNetwork->RemoveSignalByName(name.toUtf8());
+      if (canNetwork)
+      {
+         canNetwork->RemoveMessageByName(name.toUtf8());
+      }
    }
 
    template <std::integral Integral>
-   inline void RemoveCanEnvVar(const Integral& integral)
+   inline void RemoveCanSignal(ICanNetwork* canNetwork, const Integral& integral)
    {
-      canNetwork->RemoveEnvVarByIndex(integral);
+      if (canNetwork)
+      {
+         canNetwork->RemoveSignalByIndex(integral);
+      }
    }
 
-   inline void RemoveCanEnvVar(const QString& name)
+   inline void RemoveCanSignal(ICanNetwork* canNetwork, const QString& name)
    {
-      canNetwork->RemoveEnvVarByName(name.toUtf8());
+      if (canNetwork)
+      {
+         canNetwork->RemoveSignalByName(name.toUtf8());
+      }
+   }
+
+   template <std::integral Integral>
+   inline void RemoveCanEnvVar(ICanNetwork* canNetwork, const Integral& integral)
+   {
+      if (canNetwork)
+      {
+         canNetwork->RemoveEnvVarByIndex(integral);
+      }
+   }
+
+   inline void RemoveCanEnvVar(ICanNetwork* canNetwork, const QString& name)
+   {
+      if (canNetwork)
+      {
+         canNetwork->RemoveEnvVarByName(name.toUtf8());
+      }
    }
 
    // member variables

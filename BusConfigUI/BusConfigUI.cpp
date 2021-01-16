@@ -181,19 +181,19 @@ void BusConfigUI::on_actionBase_triggered()
 
 void BusConfigUI::on_actionAttribute_definitions_triggered()
 {
-   this->attributeDefinitions->Create(this->canBusConfig);
+   this->attributeDefinitions->Create(this->canBusConfig->GetNetworkFront());
    this->attributeDefinitions->show();
 }
 
 void BusConfigUI::on_actionCommunication_matrix_triggered()
 {
-   this->communicationMatrix->Create(this->canBusConfig);
+   this->communicationMatrix->Create(this->canBusConfig->GetNetworkFront());
    this->communicationMatrix->show();
 }
 
 void BusConfigUI::on_actionCan_message_simulator_triggered()
 {
-   this->canMessageSimulator->Create(this->canBusConfig);
+   this->canMessageSimulator->Create(this->canBusConfig->GetNetworkFront());
    this->canMessageSimulator->show();
 }
 
@@ -224,64 +224,70 @@ void BusConfigUI::on_tableWidget_Properties_itemChanged(QTableWidgetItem* item)
       const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
       const auto itemName = this->ui.tableWidget_Properties->item(row, 0)->text();
+      const auto canNetworkTreeItem = this->GetTreeItem(ItemId::NETWORK.data(), currentTreeWidgetItem);
+      const auto canNetworkName = canNetworkTreeItem ? canNetworkTreeItem->text(0) : "";
+      const auto canNetwork = this->canBusConfig->GetNetworkByName(canNetworkName.toUtf8());
 
-      if (itemType == ItemId::CAN_MESSAGE.data() || itemType == ItemId::CAN_MESSAGES.data() ||
-         itemType == ItemId::CAN_TX_MESSAGES.data() || itemType == ItemId::CAN_RX_MESSAGES.data())
+      if (canNetwork)
       {
-         QString newData;
-         if (CanMessageManager::Validate(this->canBusConfig, itemName, data, column, newData))
+         if (itemType == ItemId::CAN_MESSAGE.data() || itemType == ItemId::CAN_MESSAGES.data() ||
+            itemType == ItemId::CAN_TX_MESSAGES.data() || itemType == ItemId::CAN_RX_MESSAGES.data())
          {
-            if (column == 0)
+            QString newData;
+            if (CanMessageManager::Validate(canNetwork, itemName, data, column, newData))
             {
-               const QString name = CanMessageManager::GetData(this->canBusConfig, itemName, column);
-               this->ChangeTreeWidgetItemName(name, data);
+               if (column == 0)
+               {
+                  const QString name = CanMessageManager::GetData(canNetwork, itemName, column);
+                  this->ChangeTreeWidgetItemName(name, data);
+               }
+               CanMessageManager::Modify(canNetwork, itemName, data, column);
             }
-            CanMessageManager::Modify(this->canBusConfig, itemName, data, column);
-         }
-         else
-         {
-            newData = CanMessageManager::GetData(this->canBusConfig, itemName, column);
-         }
-         this->ui.tableWidget_Properties->item(row, column)->setText(newData);
-      }
-      else if (itemType == ItemId::CAN_SIGNAL.data() || itemType == ItemId::CAN_SIGNALS.data() ||
-         itemType == ItemId::CAN_MESSAGE_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data() ||
-         itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data() ||
-         itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
-      {
-         QString newData;
-         if (CanSignalManager::Validate(this->canBusConfig, itemName, data, column, newData))
-         {
-            if (column == 0)
+            else
             {
-               const QString name = CanSignalManager::GetData(this->canBusConfig, itemName, column);
-               this->ChangeTreeWidgetItemName(name, data);
+               newData = CanMessageManager::GetData(canNetwork, itemName, column);
             }
-            CanSignalManager::Modify(this->canBusConfig, itemName, data, column);
+            this->ui.tableWidget_Properties->item(row, column)->setText(newData);
          }
-         else
+         else if (itemType == ItemId::CAN_SIGNAL.data() || itemType == ItemId::CAN_SIGNALS.data() ||
+            itemType == ItemId::CAN_MESSAGE_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data() ||
+            itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data() ||
+            itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
          {
-            newData = CanSignalManager::GetData(this->canBusConfig, itemName, column);
-         }
-         this->ui.tableWidget_Properties->item(row, column)->setText(newData);
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data() || itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-      {
-         QString newData;
-         if (CanEnvVarManager::Validate(this->canBusConfig, itemName, data, column, newData))
-         {
-            if (column == 0)
+            QString newData;
+            if (CanSignalManager::Validate(canNetwork, itemName, data, column, newData))
             {
-               const QString name = CanEnvVarManager::GetData(this->canBusConfig, itemName, column);
-               this->ChangeTreeWidgetItemName(name, data);
+               if (column == 0)
+               {
+                  const QString name = CanSignalManager::GetData(canNetwork, itemName, column);
+                  this->ChangeTreeWidgetItemName(name, data);
+               }
+               CanSignalManager::Modify(canNetwork, itemName, data, column);
             }
-            CanEnvVarManager::Modify(this->canBusConfig, itemName, data, column);
+            else
+            {
+               newData = CanSignalManager::GetData(canNetwork, itemName, column);
+            }
+            this->ui.tableWidget_Properties->item(row, column)->setText(newData);
          }
-         else
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data() || itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
          {
-            newData = CanEnvVarManager::GetData(this->canBusConfig, itemName, column);
+            QString newData;
+            if (CanEnvVarManager::Validate(canNetwork, itemName, data, column, newData))
+            {
+               if (column == 0)
+               {
+                  const QString name = CanEnvVarManager::GetData(canNetwork, itemName, column);
+                  this->ChangeTreeWidgetItemName(name, data);
+               }
+               CanEnvVarManager::Modify(canNetwork, itemName, data, column);
+            }
+            else
+            {
+               newData = CanEnvVarManager::GetData(canNetwork, itemName, column);
+            }
+            this->ui.tableWidget_Properties->item(row, column)->setText(newData);
          }
-         this->ui.tableWidget_Properties->item(row, column)->setText(newData);
       }
    }
 
@@ -294,22 +300,28 @@ void BusConfigUI::on_tableWidget_Properties_cellChanged(int row, int column)
       const auto data = this->ui.tableWidget_Properties->item(row, column)->text();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
       const auto itemName = this->ui.tableWidget_Properties->item(row, 0)->text();
+      const auto canNetworkTreeItem = this->GetTreeItem(ItemId::NETWORK.data(), currentTreeWidgetItem);
+      const auto canNetworkName = canNetworkTreeItem ? canNetworkTreeItem->text(0) : "";
+      const auto canNetwork = this->canBusConfig->GetNetworkByName(canNetworkName.toUtf8());
 
-      if (itemType == ItemId::CAN_MESSAGE.data() || itemType == ItemId::CAN_MESSAGES.data() ||
-         itemType == ItemId::CAN_TX_MESSAGES.data() || itemType == ItemId::CAN_RX_MESSAGES.data())
+      if (canNetwork)
       {
-         CanMessageManager::Modify(this->canBusConfig, itemName, data, column);
-      }
-      else if (itemType == ItemId::CAN_SIGNAL.data() || itemType == ItemId::CAN_SIGNALS.data() ||
-         itemType == ItemId::CAN_MESSAGE_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data() ||
-         itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data() ||
-         itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
-      {
-         CanSignalManager::Modify(this->canBusConfig, itemName, data, column);
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data() || itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-      {
-         CanEnvVarManager::Modify(this->canBusConfig, itemName, data, column);
+         if (itemType == ItemId::CAN_MESSAGE.data() || itemType == ItemId::CAN_MESSAGES.data() ||
+            itemType == ItemId::CAN_TX_MESSAGES.data() || itemType == ItemId::CAN_RX_MESSAGES.data())
+         {
+            CanMessageManager::Modify(canNetwork, itemName, data, column);
+         }
+         else if (itemType == ItemId::CAN_SIGNAL.data() || itemType == ItemId::CAN_SIGNALS.data() ||
+            itemType == ItemId::CAN_MESSAGE_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data() ||
+            itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data() || itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data() ||
+            itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
+         {
+            CanSignalManager::Modify(canNetwork, itemName, data, column);
+         }
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data() || itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
+         {
+            CanEnvVarManager::Modify(canNetwork, itemName, data, column);
+         }
       }
    }
 }
@@ -332,87 +344,132 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
       connect(removeMenuEntry, &QAction::triggered, this, [this, &itemType, row]
       {
          QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
-         if (itemType == ItemId::CAN_MESSAGE.data())
-         {
-            this->RemoveCanMessageFromTreeWidget(name);
-            this->RemoveCanMessage(name);
-         }
-         else if (itemType == ItemId::CAN_MESSAGES.data())
-         {
-            this->RemoveCanMessageFromTreeWidget(name);
-            this->RemoveCanMessage(row);
-         }
-         else if (itemType == ItemId::CAN_TX_MESSAGES.data())
-         {
-            this->RemoveCanMessageFromTreeWidget(name);
-            this->RemoveCanMessage(name);
-         }
-         else if (itemType == ItemId::CAN_RX_MESSAGES.data())
-         {
-            this->RemoveCanMessageFromTreeWidget(name);
-            this->RemoveCanMessage(name);
-         }
-         else if (itemType == ItemId::CAN_SIGNAL.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(name);
-         }
-         else if (itemType == ItemId::CAN_SIGNALS.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(row);
-         }
-         else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(name);
-         }
-         else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(name);
-         }
-         else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(name);
-         }
-         else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(name);
-         }
-         else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(name);
-         }
-         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanEnvVar(name);
-         }
-         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-         {
-            this->RemoveFromTreeWidget(name);
-            this->RemoveCanEnvVar(row);
-         }
+         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
 
-         this->ui.tableWidget_Properties->removeRow(row);
+         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+         {
+            if (itemType == ItemId::CAN_MESSAGE.data())
+            {
+               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+               this->RemoveCanMessage(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_MESSAGES.data())
+            {
+               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+               this->RemoveCanMessage(canNetwork, row);
+            }
+            else if (itemType == ItemId::CAN_TX_MESSAGES.data())
+            {
+               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+               this->RemoveCanMessage(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_RX_MESSAGES.data())
+            {
+               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+               this->RemoveCanMessage(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_SIGNAL.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_SIGNALS.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, row);
+            }
+            else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanSignal(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanEnvVar(canNetwork, name);
+            }
+            else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
+            {
+               this->RemoveFromTreeWidget(name);
+               this->RemoveCanEnvVar(canNetwork, row);
+            }
+
+            this->ui.tableWidget_Properties->removeRow(row);
+         }
       });
 
       itemMenu->addSeparator();
 
       if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
       {
-         const auto canMessageName = this->ui.tableWidget_Properties->item(row, 1)->text();
-         if (const auto canMessage = this->canBusConfig->GetMessageByName(canMessageName.toUtf8()); canMessage)
+         const auto canMessageName = this->ui.tableWidget_Properties->item(row, 2)->text();
+         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
+
+         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
          {
-            auto caseSensitiveMenuEntry = new QAction { "Case sensitive", itemMenu };
+            if (const auto canMessage = canNetwork->GetMessageByName(canMessageName.toUtf8()); canMessage)
+            {
+               auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", itemMenu };
+               caseSensitiveMenuEntry->setCheckable(true);
+               caseSensitiveMenuEntry->setChecked(this->caseSensitive);
+               itemMenu->addAction(caseSensitiveMenuEntry);
+               connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
+               {
+                  this->caseSensitive = caseSensitiveMenuEntry->isChecked();
+               });
+
+               auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
+               itemMenu->addAction(sortByNameMenuEntry);
+
+               connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
+               {
+                  canMessage->SortSignalsByName(this->caseSensitive);
+                  this->BuildTable();
+               });
+
+               auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", itemMenu };
+               itemMenu->addAction(sortByStartBitMenuEntry);
+
+               connect(sortByStartBitMenuEntry, &QAction::triggered, this, [this, &canMessage]
+               {
+                  canMessage->SortSignalsByStartBit();
+                  this->BuildTable();
+               });
+            }
+         }
+      }
+
+      if (itemType == ItemId::CAN_SIGNALS.data())
+      {
+         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
+
+         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+         {
+            auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", itemMenu };
             caseSensitiveMenuEntry->setCheckable(true);
             caseSensitiveMenuEntry->setChecked(this->caseSensitive);
             itemMenu->addAction(caseSensitiveMenuEntry);
-            connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this] ()
+            connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
             {
                this->caseSensitive = caseSensitiveMenuEntry->isChecked();
             });
@@ -420,51 +477,21 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
             auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
             itemMenu->addAction(sortByNameMenuEntry);
 
-            connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
+            connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canNetwork]
             {
-               canMessage->SortSignalsByName(this->caseSensitive);
+               canNetwork->SortSignalsByName(this->caseSensitive);
                this->BuildTable();
             });
 
-            auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", itemMenu };
-            itemMenu->addAction(sortByStartBitMenuEntry);
+            auto sortByMessageMenuEntry = new QAction{ "Sort signals by message", itemMenu };
+            itemMenu->addAction(sortByMessageMenuEntry);
 
-            connect(sortByStartBitMenuEntry, &QAction::triggered, this, [this, &canMessage]
+            connect(sortByMessageMenuEntry, &QAction::triggered, this, [this, &canNetwork]
             {
-               canMessage->SortSignalsByStartBit();
+               canNetwork->SortSignalsByMessageName(this->caseSensitive);
                this->BuildTable();
             });
          }
-      }
-
-      if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", itemMenu };
-         caseSensitiveMenuEntry->setCheckable(true);
-         caseSensitiveMenuEntry->setChecked(this->caseSensitive);
-         itemMenu->addAction(caseSensitiveMenuEntry);
-         connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
-         {
-            this->caseSensitive = caseSensitiveMenuEntry->isChecked();
-         });
-
-         auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
-         itemMenu->addAction(sortByNameMenuEntry);
-
-         connect(sortByNameMenuEntry, &QAction::triggered, this, [this]
-         {
-            this->canBusConfig->SortSignalsByName(this->caseSensitive);
-            this->BuildTable();
-         });
-
-         auto sortByMessageMenuEntry = new QAction{ "Sort signals by message", itemMenu };
-         itemMenu->addAction(sortByMessageMenuEntry);
-
-         connect(sortByMessageMenuEntry, &QAction::triggered, this, [this]
-         {
-            this->canBusConfig->SortSignalsByMessageName(this->caseSensitive);
-            this->BuildTable();
-         });
       }
 
       QAction* input = itemMenu->exec(globalPos);
@@ -788,109 +815,95 @@ void BusConfigUI::BuildTable(void)
       const auto parent = currentTreeWidgetItem->parent();
       const auto parentText = (parent ? parent->text(0) : "");
       const auto parentItemType = (parent ? parent->whatsThis(0) : "");
+      const auto canNetworkTreeItem = this->GetTreeItem(ItemId::NETWORK.data(), currentTreeWidgetItem);
+      const auto canNetworkName = canNetworkTreeItem ? canNetworkTreeItem->text(0) : "";
+      const auto canNetwork = this->canBusConfig->GetNetworkByName(canNetworkName.toUtf8());
 
-      const auto GetParentOf = [] (const QString& subName, QTreeWidgetItem* item)
+      if (canNetwork)
       {
-         const auto GetParentOfImpl = [] (const auto GetParentOfImpl, const QString& subName, QTreeWidgetItem* item) -> QTreeWidgetItem*
+         this->ui.tableWidget_Properties->setWhatsThis(itemType);
+
+         if (itemType == ItemId::CAN_MESSAGE.data())
          {
-            if (item)
-            {
-               if (item->whatsThis(0) == subName)
-               {
-                  return item->parent();
-               }
-               else
-               {
-                  return GetParentOfImpl(GetParentOfImpl, subName, item->parent());
-               }
-            }
-            return nullptr;
-         };
-         return GetParentOfImpl(GetParentOfImpl, subName, item);
-      };
-
-      this->ui.tableWidget_Properties->setWhatsThis(itemType);
-
-      if (itemType == ItemId::CAN_MESSAGE.data())
-      {
-         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-         this->BuildCanMessageProperties(text);
-      }
-      else if (itemType == ItemId::CAN_MESSAGES.data())
-      {
-         this->BuildCanMessagesProperties();
-      }
-      else if (itemType == ItemId::CAN_TX_MESSAGES.data())
-      {
-         this->BuildCanTxMessagesProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_RX_MESSAGES.data())
-      {
-         this->BuildCanRxMessagesProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_SIGNAL.data())
-      {
-         this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-         this->BuildCanSignalProperties(text);
-      }
-      else if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         this->BuildCanSignalsProperties();
-      }
-      else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
-      {
-         this->BuildCanMessageSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
-      {
-         this->BuildCanMappedTxSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
-      {
-         this->BuildCanMappedTxMessageSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
-      {
-         this->BuildCanMappedRxSignalsProperties(parentText);
-      }
-      else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
-      {
-         const auto canNetworkNodeTreeItem = GetParentOf(ItemId::CAN_RX_MESSAGES.data(), currentTreeWidgetItem);
-         if (canNetworkNodeTreeItem)
-         {
-            this->BuildCanMappedRxMessageSignalsProperties(parentText, canNetworkNodeTreeItem->text(0));
+            this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+            this->BuildCanMessageProperties(canNetwork, text);
          }
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
-      {
-         this->BuildCanEnvironmentVariableProperties(text);
-      }
-      else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-      {
-         this->BuildCanEnvironmentVariablesProperties();
-      }
-      else if (itemType == ItemId::VALUE_TABLE.data())
-      {
-         this->BuildCanValueTableProperties(parentItemType, parentText);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_SIGNAL.data())
-      {
-         const auto canSignal = this->canBusConfig->GetSignalByName(parentText.toUtf8());
-         this->BuildAttributesProperties(canSignal);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_MESSAGE.data())
-      {
-         const auto canMessage = this->canBusConfig->GetMessageByName(parentText.toUtf8());
-         this->BuildAttributesProperties(canMessage);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_NETWORK_NODE.data())
-      {
-         const auto canNetworkNode = this->canBusConfig->GetNodeByName(parentText.toUtf8());
-         this->BuildAttributesProperties(canNetworkNode);
-      }
-      else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::NETWORK.data())
-      {
-         this->BuildAttributesProperties(this->canBusConfig);
+         else if (itemType == ItemId::CAN_MESSAGES.data())
+         {
+            this->BuildCanMessagesProperties(canNetwork);
+         }
+         else if (itemType == ItemId::CAN_TX_MESSAGES.data())
+         {
+            this->BuildCanTxMessagesProperties(canNetwork, parentText);
+         }
+         else if (itemType == ItemId::CAN_RX_MESSAGES.data())
+         {
+            this->BuildCanRxMessagesProperties(canNetwork, parentText);
+         }
+         else if (itemType == ItemId::CAN_SIGNAL.data())
+         {
+            this->ui.tableWidget_Properties->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+            this->BuildCanSignalProperties(canNetwork, text);
+         }
+         else if (itemType == ItemId::CAN_SIGNALS.data())
+         {
+            this->BuildCanSignalsProperties(canNetwork);
+         }
+         else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
+         {
+            this->BuildCanMessageSignalsProperties(canNetwork, parentText);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
+         {
+            this->BuildCanMappedTxSignalsProperties(canNetwork, parentText);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
+         {
+            this->BuildCanMappedTxMessageSignalsProperties(canNetwork, parentText);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
+         {
+            this->BuildCanMappedRxSignalsProperties(canNetwork, parentText);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
+         {
+            const auto canNetworkNodeTreeItem = GetTreeItem(ItemId::CAN_NETWORK_NODE.data(), currentTreeWidgetItem);
+            if (canNetworkNodeTreeItem)
+            {
+               this->BuildCanMappedRxMessageSignalsProperties(canNetwork,parentText, canNetworkNodeTreeItem->text(0));
+            }
+         }
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
+         {
+            this->BuildCanEnvironmentVariableProperties(canNetwork, text);
+         }
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
+         {
+            this->BuildCanEnvironmentVariablesProperties(canNetwork);
+         }
+         else if (itemType == ItemId::VALUE_TABLE.data())
+         {
+            this->BuildCanValueTableProperties(canNetwork, parentItemType, parentText);
+         }
+         else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_SIGNAL.data())
+         {
+            const auto canSignal = canNetwork->GetSignalByName(parentText.toUtf8());
+            this->BuildAttributesProperties(canSignal);
+         }
+         else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_MESSAGE.data())
+         {
+            const auto canMessage = canNetwork->GetMessageByName(parentText.toUtf8());
+            this->BuildAttributesProperties(canMessage);
+         }
+         else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::CAN_NETWORK_NODE.data())
+         {
+            const auto canNetworkNode = canNetwork->GetNodeByName(parentText.toUtf8());
+            this->BuildAttributesProperties(canNetworkNode);
+         }
+         else if (itemType == ItemId::ATTRIBUTES.data() && parentItemType == ItemId::NETWORK.data())
+         {
+            this->BuildAttributesProperties(canNetwork);
+         }
       }
    }
 
@@ -933,256 +946,168 @@ void BusConfigUI::AttachValueTableToTree(QTreeWidgetItem* parent)
    valueTableItem->setToolTip(0, "Value table");
 }
 
-void BusConfigUI::BuildCanMessageProperties(const QString& messageName)
+void BusConfigUI::BuildCanMessageProperties(const ICanNetwork* canNetwork, const QString& messageName)
 {
-   QStringList headerLabels;
-   ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels](const std::string_view property)
-      { headerLabels << property.data(); });
-
-   this->ui.tableWidget_Properties->setRowCount(1);
-   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-   this->BuildCanMessageRow(this->canBusConfig->GetMessageByName(messageName.toUtf8()), 0);
-
-   this->SetComboDelegateForCanMessage();
-}
-
-void BusConfigUI::BuildCanMessagesProperties(void)
-{
-   size_t canMessagesCount = this->canBusConfig->GetMessagesCount();
-   QStringList headerLabels;
-   ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels] (const std::string_view property)
-      { headerLabels << property.data(); });
-
-   this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
-   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-   for (size_t i = 0; i < canMessagesCount; i++)
+   if (canNetwork)
    {
-      this->BuildCanMessageRow(this->canBusConfig->GetMessageByIndex(i), i);
-   }
-
-   this->SetComboDelegateForCanMessage();
-}
-
-void BusConfigUI::BuildCanTxMessagesProperties(const QString& networkNodeName)
-{
-   if (const auto canNetworkNode = this->canBusConfig->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
-   {
-      size_t canTxMessagesCount = canNetworkNode->GetTxMessagesCount();
       QStringList headerLabels;
       ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels](const std::string_view property)
-         { headerLabels << property.data(); });
+      {
+         headerLabels << property.data();
+      });
 
-      this->ui.tableWidget_Properties->setRowCount(canTxMessagesCount);
+      this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
 
-      for (size_t i = 0; i < canTxMessagesCount; i++)
-      {
-         this->BuildCanMessageRow(canNetworkNode->GetTxMessageByIndex(i), i);
-      }
+      this->BuildCanMessageRow(canNetwork->GetMessageByName(messageName.toUtf8()), 0);
 
-      ComboDelegate* idFormatsDelegate = new ComboDelegate{ CanMessageManager::ID_FORMATS, 25, 150 };
-      this->ui.tableWidget_Properties->setItemDelegateForColumn(2, idFormatsDelegate);
-      ComboDelegate* txMethodsDelegate = new ComboDelegate{ CanMessageManager::TX_METHODS, 25, 150 };
-      this->ui.tableWidget_Properties->setItemDelegateForColumn(4, txMethodsDelegate);
+      this->SetComboDelegateForCanMessage();
    }
 }
 
-void BusConfigUI::BuildCanRxMessagesProperties(const QString& networkNodeName)
+void BusConfigUI::BuildCanMessagesProperties(const ICanNetwork* canNetwork)
 {
-   if (const auto canNetworkNode = this->canBusConfig->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
+   if (canNetwork)
    {
-      size_t canRxMessagesCount = canNetworkNode->GetRxMessagesCount();
+      size_t canMessagesCount = canNetwork->GetMessagesCount();
       QStringList headerLabels;
       ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels](const std::string_view property)
-         { headerLabels << property.data(); });
+      {
+         headerLabels << property.data();
+      });
 
-      this->ui.tableWidget_Properties->setRowCount(canRxMessagesCount);
+      this->ui.tableWidget_Properties->setRowCount(canMessagesCount);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
       this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
 
-      for (size_t i = 0; i < canRxMessagesCount; i++)
+      for (size_t i = 0; i < canMessagesCount; i++)
       {
-         this->BuildCanMessageRow(canNetworkNode->GetRxMessageByIndex(i), i);
+         this->BuildCanMessageRow(canNetwork->GetMessageByIndex(i), i);
       }
 
-      ComboDelegate* idFormatsDelegate = new ComboDelegate{ CanMessageManager::ID_FORMATS, 25, 150 };
-      this->ui.tableWidget_Properties->setItemDelegateForColumn(2, idFormatsDelegate);
-      ComboDelegate* txMethodsDelegate = new ComboDelegate{ CanMessageManager::TX_METHODS, 25, 150 };
-      this->ui.tableWidget_Properties->setItemDelegateForColumn(4, txMethodsDelegate);
+      this->SetComboDelegateForCanMessage();
    }
 }
 
-void BusConfigUI::BuildCanSignalProperties(const QString& signalName)
+void BusConfigUI::BuildCanTxMessagesProperties(const ICanNetwork* canNetwork, const QString& networkNodeName)
 {
-   QStringList headerLabels;
-   ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels] (const std::string_view property)
-      { headerLabels << property.data(); });
-
-   this->ui.tableWidget_Properties->setRowCount(1);
-   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-   this->BuildCanSignalRow(this->canBusConfig->GetSignalByName(signalName.toUtf8()), 0);
-
-   this->SetComboDelegateForCanSignal();
-}
-
-void BusConfigUI::BuildCanSignalsProperties(void)
-{
-   size_t canSignalsCount = this->canBusConfig->GetSignalsCount();
-   QStringList headerLabels;
-   ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels] (std::string_view property)
-      { headerLabels << property.data(); });
-
-   this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
-   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-   for (size_t i = 0; i < canSignalsCount; i++)
+   if (canNetwork)
    {
-      this->BuildCanSignalRow(this->canBusConfig->GetSignalByIndex(i), i);
-   }
-
-   this->SetComboDelegateForCanSignal();
-}
-
-void BusConfigUI::BuildCanMessageSignalsProperties(const QString& messageName)
-{
-   if (const auto message = this->canBusConfig->GetMessageByName(messageName.toUtf8()); message)
-   {
-      size_t canMessageSignalsCount = message->GetSignalsCount();
-      QStringList headerLabels;
-      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-         { headerLabels << property.data(); });
-
-      this->ui.tableWidget_Properties->setRowCount(canMessageSignalsCount);
-      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-      for (size_t i = 0; i < canMessageSignalsCount; i++)
+      if (const auto canNetworkNode = canNetwork->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
       {
-         this->BuildCanSignalRow(message->GetSignalByIndex(i), i);
-      }
-
-      this->SetComboDelegateForCanSignal();
-   }
-}
-
-void BusConfigUI::BuildCanMappedTxSignalsProperties(const QString& networkNodeName)
-{
-   if (const auto canNetworkNode = this->canBusConfig->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
-   {
-      size_t canMappedTxSignalsCount = canNetworkNode->GetMappedTxSignalsCount();
-      QStringList headerLabels;
-      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-         { headerLabels << property.data(); });
-
-      this->ui.tableWidget_Properties->setRowCount(canMappedTxSignalsCount);
-      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-      for (size_t i = 0; i < canMappedTxSignalsCount; i++)
-      {
-         this->BuildCanSignalRow(canNetworkNode->GetMappedTxSignalByIndex(i), i);
-      }
-
-      this->SetComboDelegateForCanSignal();
-   }
-}
-
-void BusConfigUI::BuildCanMappedTxMessageSignalsProperties(const QString& messageName)
-{
-   if (const auto canMessage = this->canBusConfig->GetMessageByName(messageName.toUtf8()); canMessage)
-   {
-      size_t canMappedTxSignalsCount = canMessage->GetSignalsCount();
-      QStringList headerLabels;
-      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-         { headerLabels << property.data(); });
-
-      this->ui.tableWidget_Properties->setRowCount(canMappedTxSignalsCount);
-      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-      for (size_t i = 0; i < canMappedTxSignalsCount; i++)
-      {
-         this->BuildCanSignalRow(canMessage->GetSignalByIndex(i), i);
-      }
-
-      this->SetComboDelegateForCanSignal();
-   }
-}
-
-void BusConfigUI::BuildCanMappedRxSignalsProperties(const QString& networkNodeName)
-{
-   if (const auto canNetworkNode = this->canBusConfig->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
-   {
-      size_t canMappedRxSignalsCount = canNetworkNode->GetMappedRxSignalsCount();
-      QStringList headerLabels;
-      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-         { headerLabels << property.data(); });
-
-      this->ui.tableWidget_Properties->setRowCount(canMappedRxSignalsCount);
-      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-      for (size_t i = 0; i < canMappedRxSignalsCount; i++)
-      {
-         this->BuildCanSignalRow(canNetworkNode->GetMappedRxSignalByIndex(i), i);
-      }
-
-      this->SetComboDelegateForCanSignal();
-   }
-}
-
-void BusConfigUI::BuildCanMappedRxMessageSignalsProperties(const QString& messageName, const QString& networkNodeName)
-{
-   if (const auto canMessage = this->canBusConfig->GetMessageByName(messageName.toUtf8()); canMessage)
-   {
-      if (const auto canReceiver = this->canBusConfig->GetNodeByName(networkNodeName.toUtf8()); canReceiver)
-      {
-         size_t canMappedRxSignalsCount = canReceiver->GetMappedRxSignalsCount();
-
-         size_t mappedRxMessageSignalsCounter {};
-         for (size_t i = 0; i < canMappedRxSignalsCount; i++)
-         {
-            if (const auto mappedRxSignal = canReceiver->GetMappedRxSignalByIndex(i); mappedRxSignal)
-            {
-               if (const auto rxMessage = mappedRxSignal->GetMessage(); rxMessage)
-               {
-                  if (!std::strcmp(rxMessage->GetName(), canMessage->GetName()))
-                  {
-                     ++mappedRxMessageSignalsCounter;
-                  }
-               }
-            }
-         }
-
+         size_t canTxMessagesCount = canNetworkNode->GetTxMessagesCount();
          QStringList headerLabels;
-         ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-            { headerLabels << property.data(); });
+         ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels] (const std::string_view property)
+         {
+            headerLabels << property.data();
+         });
 
-         this->ui.tableWidget_Properties->setRowCount(mappedRxMessageSignalsCounter);
+         this->ui.tableWidget_Properties->setRowCount(canTxMessagesCount);
          this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
          this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
 
-         mappedRxMessageSignalsCounter = 0;
-         for (size_t i = 0; i < canMappedRxSignalsCount; i++)
+         for (size_t i = 0; i < canTxMessagesCount; i++)
          {
-            if (const auto mappedRxSignal = canReceiver->GetMappedRxSignalByIndex(i); mappedRxSignal)
-            {
-               if (const auto rxMessage = mappedRxSignal->GetMessage(); rxMessage)
-               {
-                  if (!std::strcmp(rxMessage->GetName(), canMessage->GetName()))
-                  {
-                     this->BuildCanSignalRow(canReceiver->GetMappedRxSignalByIndex(i), mappedRxMessageSignalsCounter++);
-                  }
-               }
-            }
+            this->BuildCanMessageRow(canNetworkNode->GetTxMessageByIndex(i), i);
+         }
+
+         this->SetComboDelegateForCanMessage();
+      }
+   }
+}
+
+void BusConfigUI::BuildCanRxMessagesProperties(const ICanNetwork* canNetwork, const QString& networkNodeName)
+{
+   if (canNetwork)
+   {
+      if (const auto canNetworkNode = canNetwork->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
+      {
+         size_t canRxMessagesCount = canNetworkNode->GetRxMessagesCount();
+         QStringList headerLabels;
+         ranges::for_each(CanMessageManager::PROPERTIES, [&headerLabels](const std::string_view property)
+         {
+            headerLabels << property.data();
+         });
+
+         this->ui.tableWidget_Properties->setRowCount(canRxMessagesCount);
+         this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+         for (size_t i = 0; i < canRxMessagesCount; i++)
+         {
+            this->BuildCanMessageRow(canNetworkNode->GetRxMessageByIndex(i), i);
+         }
+
+         this->SetComboDelegateForCanMessage();
+      }
+   }
+}
+
+void BusConfigUI::BuildCanSignalProperties(const ICanNetwork* canNetwork, const QString& signalName)
+{
+   if (canNetwork)
+   {
+      QStringList headerLabels;
+      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels] (const std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(1);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      this->BuildCanSignalRow(canNetwork->GetSignalByName(signalName.toUtf8()), 0);
+
+      this->SetComboDelegateForCanSignal();
+   }
+}
+
+void BusConfigUI::BuildCanSignalsProperties(const ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      size_t canSignalsCount = canNetwork->GetSignalsCount();
+      QStringList headerLabels;
+      ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      for (size_t i = 0; i < canSignalsCount; i++)
+      {
+         this->BuildCanSignalRow(canNetwork->GetSignalByIndex(i), i);
+      }
+
+      this->SetComboDelegateForCanSignal();
+   }
+}
+
+void BusConfigUI::BuildCanMessageSignalsProperties(const ICanNetwork* canNetwork, const QString& messageName)
+{
+   if (canNetwork)
+   {
+      if (const auto message = canNetwork->GetMessageByName(messageName.toUtf8()); message)
+      {
+         size_t canMessageSignalsCount = message->GetSignalsCount();
+         QStringList headerLabels;
+         ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
+         {
+            headerLabels << property.data();
+         });
+
+         this->ui.tableWidget_Properties->setRowCount(canMessageSignalsCount);
+         this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+         for (size_t i = 0; i < canMessageSignalsCount; i++)
+         {
+            this->BuildCanSignalRow(message->GetSignalByIndex(i), i);
          }
 
          this->SetComboDelegateForCanSignal();
@@ -1190,43 +1115,188 @@ void BusConfigUI::BuildCanMappedRxMessageSignalsProperties(const QString& messag
    }
 }
 
-void BusConfigUI::BuildCanEnvironmentVariableProperties(const QString& envVarName)
+void BusConfigUI::BuildCanMappedTxSignalsProperties(const ICanNetwork* canNetwork, const QString& networkNodeName)
 {
-   QStringList headerLabels;
-   ranges::for_each(CanEnvVarManager::PROPERTIES, [&headerLabels](std::string_view property)
-      { headerLabels << property.data(); });
-
-   this->ui.tableWidget_Properties->setRowCount(1);
-   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-      
-   this->BuildCanEnvVarRow(this->canBusConfig->GetEnvVarByName(envVarName.toUtf8()), 0);
-
-   //this->ui.tableWidget_Properties->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-   this->SetComboDelegateForCanEnvVar();
-}
-
-void BusConfigUI::BuildCanEnvironmentVariablesProperties(void)
-{
-   size_t canEnvVarsCount = this->canBusConfig->GetEnvVarsCount();
-   QStringList headerLabels;
-   ranges::for_each(CanEnvVarManager::PROPERTIES, [&headerLabels](std::string_view property)
-      { headerLabels << property.data(); });
-
-   this->ui.tableWidget_Properties->setRowCount(canEnvVarsCount);
-   this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
-   this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
-
-   for (size_t i = 0; i < canEnvVarsCount; i++)
+   if (canNetwork)
    {
-      this->BuildCanEnvVarRow(this->canBusConfig->GetEnvVarByIndex(i), i);
-   }
+      if (const auto canNetworkNode = canNetwork->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
+      {
+         size_t canMappedTxSignalsCount = canNetworkNode->GetMappedTxSignalsCount();
+         QStringList headerLabels;
+         ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
+         {
+            headerLabels << property.data();
+         });
 
-   this->SetComboDelegateForCanEnvVar();
+         this->ui.tableWidget_Properties->setRowCount(canMappedTxSignalsCount);
+         this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+         for (size_t i = 0; i < canMappedTxSignalsCount; i++)
+         {
+            this->BuildCanSignalRow(canNetworkNode->GetMappedTxSignalByIndex(i), i);
+         }
+
+         this->SetComboDelegateForCanSignal();
+      }
+   }
 }
 
-void BusConfigUI::BuildCanValueTableProperties(const QString& canValueTableOwnerType, const QString& canValueTableOwnerName)
+void BusConfigUI::BuildCanMappedTxMessageSignalsProperties(const ICanNetwork* canNetwork, const QString& messageName)
+{
+   if (canNetwork)
+   {
+      if (const auto canMessage = canNetwork->GetMessageByName(messageName.toUtf8()); canMessage)
+      {
+         size_t canMappedTxSignalsCount = canMessage->GetSignalsCount();
+         QStringList headerLabels;
+         ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
+         {
+            headerLabels << property.data();
+         });
+
+         this->ui.tableWidget_Properties->setRowCount(canMappedTxSignalsCount);
+         this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+         for (size_t i = 0; i < canMappedTxSignalsCount; i++)
+         {
+            this->BuildCanSignalRow(canMessage->GetSignalByIndex(i), i);
+         }
+
+         this->SetComboDelegateForCanSignal();
+      }
+   }
+}
+
+void BusConfigUI::BuildCanMappedRxSignalsProperties(const ICanNetwork* canNetwork, const QString& networkNodeName)
+{
+   if (canNetwork)
+   {
+      if (const auto canNetworkNode = canNetwork->GetNodeByName(networkNodeName.toUtf8()); canNetworkNode)
+      {
+         size_t canMappedRxSignalsCount = canNetworkNode->GetMappedRxSignalsCount();
+         QStringList headerLabels;
+         ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
+         {
+            headerLabels << property.data();
+         });
+
+         this->ui.tableWidget_Properties->setRowCount(canMappedRxSignalsCount);
+         this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+         this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+         for (size_t i = 0; i < canMappedRxSignalsCount; i++)
+         {
+            this->BuildCanSignalRow(canNetworkNode->GetMappedRxSignalByIndex(i), i);
+         }
+
+         this->SetComboDelegateForCanSignal();
+      }
+   }
+}
+
+void BusConfigUI::BuildCanMappedRxMessageSignalsProperties(const ICanNetwork* canNetwork, const QString& messageName, const QString& networkNodeName)
+{
+   if (canNetwork)
+   {
+      if (const auto canMessage = canNetwork->GetMessageByName(messageName.toUtf8()); canMessage)
+      {
+         if (const auto canReceiver = canNetwork->GetNodeByName(networkNodeName.toUtf8()); canReceiver)
+         {
+            size_t canMappedRxSignalsCount = canReceiver->GetMappedRxSignalsCount();
+
+            size_t mappedRxMessageSignalsCounter{};
+            for (size_t i = 0; i < canMappedRxSignalsCount; i++)
+            {
+               if (const auto mappedRxSignal = canReceiver->GetMappedRxSignalByIndex(i); mappedRxSignal)
+               {
+                  if (const auto rxMessage = mappedRxSignal->GetMessage(); rxMessage)
+                  {
+                     if (!std::strcmp(rxMessage->GetName(), canMessage->GetName()))
+                     {
+                        ++mappedRxMessageSignalsCounter;
+                     }
+                  }
+               }
+            }
+
+            QStringList headerLabels;
+            ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels] (std::string_view property)
+            {
+               headerLabels << property.data();
+            });
+
+            this->ui.tableWidget_Properties->setRowCount(mappedRxMessageSignalsCounter);
+            this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+            this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+            mappedRxMessageSignalsCounter = 0;
+            for (size_t i = 0; i < canMappedRxSignalsCount; i++)
+            {
+               if (const auto mappedRxSignal = canReceiver->GetMappedRxSignalByIndex(i); mappedRxSignal)
+               {
+                  if (const auto rxMessage = mappedRxSignal->GetMessage(); rxMessage)
+                  {
+                     if (!std::strcmp(rxMessage->GetName(), canMessage->GetName()))
+                     {
+                        this->BuildCanSignalRow(canReceiver->GetMappedRxSignalByIndex(i), mappedRxMessageSignalsCounter++);
+                     }
+                  }
+               }
+            }
+
+            this->SetComboDelegateForCanSignal();
+         }
+      }
+   }
+}
+
+void BusConfigUI::BuildCanEnvironmentVariableProperties(const ICanNetwork* canNetwork, const QString& envVarName)
+{
+   if (canNetwork)
+   {
+      QStringList headerLabels;
+      ranges::for_each(CanEnvVarManager::PROPERTIES, [&headerLabels](std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(1);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      this->BuildCanEnvVarRow(canNetwork->GetEnvVarByName(envVarName.toUtf8()), 0);
+
+      this->SetComboDelegateForCanEnvVar();
+   }
+}
+
+void BusConfigUI::BuildCanEnvironmentVariablesProperties(const ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      size_t canEnvVarsCount = canNetwork->GetEnvVarsCount();
+      QStringList headerLabels;
+      ranges::for_each(CanEnvVarManager::PROPERTIES, [&headerLabels] (std::string_view property)
+      {
+         headerLabels << property.data();
+      });
+
+      this->ui.tableWidget_Properties->setRowCount(canEnvVarsCount);
+      this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
+      this->ui.tableWidget_Properties->setHorizontalHeaderLabels(headerLabels);
+
+      for (size_t i = 0; i < canEnvVarsCount; i++)
+      {
+         this->BuildCanEnvVarRow(canNetwork->GetEnvVarByIndex(i), i);
+      }
+
+      this->SetComboDelegateForCanEnvVar();
+   }
+}
+
+void BusConfigUI::BuildCanValueTableProperties(const ICanNetwork* canNetwork, const QString& canValueTableOwnerType, const QString& canValueTableOwnerName)
 {
    auto FillValueTable = [this] (const ICanValueTable* canValueTable)
    {
@@ -1250,14 +1320,14 @@ void BusConfigUI::BuildCanValueTableProperties(const QString& canValueTableOwner
    };
    if (canValueTableOwnerType == ItemId::CAN_SIGNAL.data())
    {
-      if (const auto canSignal = this->canBusConfig->GetSignalByName(canValueTableOwnerName.toUtf8()); canSignal)
+      if (const auto canSignal = canNetwork->GetSignalByName(canValueTableOwnerName.toUtf8()); canSignal)
       {
          FillValueTable(canSignal->GetValueTable());
       }
    }
    else if (canValueTableOwnerType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
    {
-      if (const auto canEnvVar = this->canBusConfig->GetEnvVarByName(canValueTableOwnerName.toUtf8()); canEnvVar)
+      if (const auto canEnvVar = canNetwork->GetEnvVarByName(canValueTableOwnerName.toUtf8()); canEnvVar)
       {
          FillValueTable(canEnvVar->GetValueTable());
       }
@@ -1473,9 +1543,9 @@ void BusConfigUI::RemoveFromTreeWidget(const QString& itemName)
    }
 }
 
-void BusConfigUI::RemoveCanMessageFromTreeWidget(const QString& messageName)
+void BusConfigUI::RemoveCanMessageFromTreeWidget(ICanNetwork* canNetwork, const QString& messageName)
 {
-   if (const auto canMessage = this->canBusConfig->GetMessageByName(messageName.toUtf8()); canMessage)
+   if (const auto canMessage = canNetwork->GetMessageByName(messageName.toUtf8()); canMessage)
    {
       for (size_t i = 0; i < canMessage->GetSignalsCount(); i++)
       {
@@ -1520,3 +1590,19 @@ void BusConfigUI::SetComboDelegateForCanEnvVar(void)
    ComboDelegate* accessTypeDelegate = new ComboDelegate{ CanEnvVarManager::ACCESS_TYPES };
    this->ui.tableWidget_Properties->setItemDelegateForColumn(8, accessTypeDelegate);
 }
+
+QTreeWidgetItem* BusConfigUI::GetTreeItem(const QString& ancestorItemWhatsThis, QTreeWidgetItem* descendantItem)
+{
+   if (descendantItem)
+   {
+      if (descendantItem->whatsThis(0) == ancestorItemWhatsThis)
+      {
+         return descendantItem;
+      }
+      else
+      {
+         return GetTreeItem(ancestorItemWhatsThis, descendantItem->parent());
+      }
+   }
+   return nullptr;
+};
