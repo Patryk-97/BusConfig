@@ -14,8 +14,14 @@ public:
    ~CanNode();
 
    void Clear(void) override;
+
    const char* GetName(void) const override;
+   void ModifyName(const char* name) override;
    void SetName(const char* name);
+
+   int32_t GetAddress(void) const override;
+   void ModifyAddress(int32_t address) override;
+   void SetAddress(int32_t address);
 
    size_t GetTxMessagesCount(void) const override;
    ICanMessage* GetTxMessageByIndex(size_t index) const override;
@@ -57,14 +63,18 @@ public:
    ICanAttributeValue* GetAttributeValue(const char* attributeName) const override;
 
    const char* GetComment(void) const override;
+   void ModifyComment(const char* comment) override;
    void SetComment(const char* comment);
 
    ICanNetwork* GetNetwork(void) const override;
    void SetNetwork(CanNetwork* network);
 
+   void SetMainAttributes(void);
+
 private:
 
    std::string name;
+   int32_t address {};
    std::vector<CanMessage*> txMessages;
    std::vector<CanMessage*> rxMessages;
    std::vector<CanSignal*> mappedTxSignals;

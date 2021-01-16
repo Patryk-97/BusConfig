@@ -12,7 +12,13 @@ protected:
    virtual ~ICanNode() {};
 public:
    virtual void Clear(void) = 0;
+
    virtual const char* GetName(void) const = 0;
+   virtual void ModifyName(const char* name) = 0;
+
+   virtual int32_t GetAddress(void) const = 0;
+   virtual void ModifyAddress(int32_t address) = 0;
+
    virtual size_t GetTxMessagesCount(void) const = 0;
    virtual ICanMessage* GetTxMessageByIndex(size_t index) const = 0;
    virtual bool RemoveTxMessageByIndex(size_t index) = 0;
@@ -48,9 +54,12 @@ public:
    virtual ICanAttributeValue* GetAttributeValue(const char* attributeName) const = 0;
 
    virtual const char* GetComment(void) const = 0;
+   virtual void ModifyComment(const char* comment) = 0;
 
    virtual ICanNetwork* GetNetwork(void) const = 0;
 
    // static variables
    constexpr static const char * PSEUDO_NODE_NAME = "Vector__XXX";
+
+   constexpr static const char * ADDRESS = "NmStationAddress";
 };

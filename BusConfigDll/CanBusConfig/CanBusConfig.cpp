@@ -1964,6 +1964,13 @@ void CanBusConfig::SetMainAttributes(void)
       {
          network->SetMainAttributes();
 
+         for (auto& node : network->GetNodes())
+         {
+            if (node)
+            {
+               node->SetMainAttributes();
+            }
+         }
          for (auto& message : network->GetMessages())
          {
             if (message)

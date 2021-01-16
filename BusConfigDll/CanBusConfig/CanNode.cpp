@@ -1,6 +1,7 @@
 #include "CanNode.h"
-#include <algorithm>
 #include "CanNetwork.h" // circular dependency
+#include "ICanAttributeManager.h"
+#include <algorithm>
 
 namespace ranges = std::ranges;
 
@@ -13,6 +14,7 @@ void CanNode::Clear(void)
 {
    CanAttributeOwner::Clear();
    this->name.clear();
+   this->address = 0;
    this->txMessages.clear();
    this->rxMessages.clear();
    this->mappedRxSignals.clear();
@@ -26,9 +28,29 @@ const char* CanNode::GetName(void) const
    return this->name.c_str();
 }
 
+void CanNode::ModifyName(const char* name)
+{
+   this->name = name;
+}
+
 void CanNode::SetName(const char* name)
 {
    this->name = name;
+}
+
+int32_t CanNode::GetAddress(void) const
+{
+   return this->address;
+}
+
+void CanNode::ModifyAddress(int32_t address)
+{
+   this->address = address;
+}
+
+void CanNode::SetAddress(int32_t address)
+{
+   this->address = address;
 }
 
 size_t CanNode::GetTxMessagesCount(void) const
@@ -505,6 +527,11 @@ const char* CanNode::GetComment(void) const
    return this->comment.c_str();
 }
 
+void CanNode::ModifyComment(const char* comment)
+{
+   this->comment = comment;
+}
+
 void CanNode::SetComment(const char* comment)
 {
    this->comment = comment;
@@ -518,4 +545,23 @@ ICanNetwork* CanNode::GetNetwork(void) const
 void CanNode::SetNetwork(CanNetwork* network)
 {
    this->network = network;
+}
+
+void CanNode::SetMainAttributes(void)
+{
+   for (auto& attribute : this->GetAttributes())
+   {
+      if (attribute)
+      {
+         if (std::string_view attributeName = attribute->GetName(); attributeName == ICanNode::ADDRESS)
+         {
+            if (auto attributeValue = this->GetAttributeValue(attributeName.data()); attributeValue)
+            {
+               auto value = ICanAttributeManager::GetAttributeValue<ICanAttribute::IValueType_e::HEX>
+                  (attributeValue);
+               this->SetAddress(value);
+            }
+         }
+      }
+   }
 }
