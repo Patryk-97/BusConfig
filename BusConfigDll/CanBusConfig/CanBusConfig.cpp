@@ -2437,100 +2437,96 @@ bool CanBusConfig::WriteAttributeValueDefinition(std::string& lineStr) const
    auto network = this->networks.back();
    if (!network) { return false; }
 
-   auto WriteAttributeValue = [&lineStr, this] (const CanAttributeOwner* attributeOwner)
+   auto WriteAttributeValue = [&lineStr] (const CanAttributeOwner* attributeOwner)
    {
       for (const auto& attribute : attributeOwner->GetAttributes())
       {
          if (attribute)
          {
-            lineStr += ATTRIBUTE_VALUE_DEFINITION_HEADER.data();
-
-            lineStr += "\""s + attribute->GetName() + "\" ";
-
-            switch (attribute->GetObjectType())
+            if (const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName()); attributeValue)
             {
-               case ICanAttribute::IObjectType_e::NODE:
-               {
-                  lineStr += DBC_KEYWORD_NETWORK_NODE.data() + " "s;
-                  break;
-               }
-               case ICanAttribute::IObjectType_e::MESSAGE:
-               {
-                  lineStr += DBC_KEYWORD_MESSAGE.data() + " "s;
-                  break;
-               }
-               case ICanAttribute::IObjectType_e::SIGNAL:
-               {
-                  lineStr += DBC_KEYWORD_SIGNAL.data() + " "s;
-                  break;
-               }
-               case ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE:
-               {
-                  lineStr += DBC_KEYWORD_ENVIRONMENT_VARIABLE.data() + " "s;
-                  break;
-               }
-               default:
-               {
-                  break;
-               }
-            }
+               lineStr += ATTRIBUTE_VALUE_DEFINITION_HEADER.data();
 
-            helpers::typecase(attributeOwner,
-               [&lineStr] (const CanBusConfig* canBusConfig)
+               lineStr += "\""s + attribute->GetName() + "\" ";
+
+               switch (attribute->GetObjectType())
                {
-                  ;
-               },
-               [&lineStr] (const CanNode* node)
-               {
-                  lineStr += node->GetName() + " "s;
-               },
-               [&lineStr] (const CanMessage* message)
-               {
-                  lineStr += std::to_string(message->GetId()) + " "s;
-               },
-               [&lineStr] (const CanSignal* signal)
-               {
-                  if (const auto message = signal->GetMessage(); message)
+                  case ICanAttribute::IObjectType_e::NODE:
                   {
-                     lineStr += std::to_string(message->GetId()) + " ";
+                     lineStr += DBC_KEYWORD_NETWORK_NODE.data() + " "s;
+                     break;
                   }
-                  lineStr += signal->GetName() + " "s;
-               },
-               [&lineStr] (const CanEnvVar* envVar)
-               {
-                  lineStr += envVar->GetName() + " "s;
-               });
+                  case ICanAttribute::IObjectType_e::MESSAGE:
+                  {
+                     lineStr += DBC_KEYWORD_MESSAGE.data() + " "s;
+                     break;
+                  }
+                  case ICanAttribute::IObjectType_e::SIGNAL:
+                  {
+                     lineStr += DBC_KEYWORD_SIGNAL.data() + " "s;
+                     break;
+                  }
+                  case ICanAttribute::IObjectType_e::ENVIRONMENT_VARIABLE:
+                  {
+                     lineStr += DBC_KEYWORD_ENVIRONMENT_VARIABLE.data() + " "s;
+                     break;
+                  }
+                  default:
+                  {
+                     break;
+                  }
+               }
 
-            const auto attributeValue = attributeOwner->GetAttributeValue(attribute->GetName());
-            if (attributeValue == nullptr)
-            {
-               lineStr = "";
-               continue;
+               helpers::typecase(attributeOwner,
+                  [&lineStr](const CanNetwork* canNetwork)
+                  {
+                     ;
+                  },
+                  [&lineStr](const CanNode* node)
+                  {
+                     lineStr += node->GetName() + " "s;
+                  },
+                  [&lineStr](const CanMessage* message)
+                  {
+                     lineStr += std::to_string(message->GetId()) + " "s;
+                  },
+                  [&lineStr](const CanSignal* signal)
+                  {
+                     if (const auto message = signal->GetMessage(); message)
+                     {
+                        lineStr += std::to_string(message->GetId()) + " ";
+                     }
+                     lineStr += signal->GetName() + " "s;
+                  },
+                  [&lineStr](const CanEnvVar* envVar)
+                  {
+                     lineStr += envVar->GetName() + " "s;
+                  });
+
+               helpers::typecase(attributeValue,
+                  [&lineStr](const CanIntAttributeValue* intAttributeValue)
+                  {
+                     lineStr += std::to_string(intAttributeValue->GetValue());
+                  },
+                  [&lineStr](const CanHexAttributeValue* hexAttributeValue)
+                  {
+                     lineStr += std::to_string(hexAttributeValue->GetValue());
+                  },
+                  [&lineStr](const CanFloatAttributeValue* floatAttributeValue)
+                  {
+                     lineStr += std::to_string(floatAttributeValue->GetValue());
+                  },
+                  [&lineStr](const CanStringAttributeValue* stringAttributeValue)
+                  {
+                     lineStr += "\""s + stringAttributeValue->GetValue() + "\"";
+                  },
+                  [&lineStr](const CanEnumAttributeValue* enumAttributeValue)
+                  {
+                     lineStr += "\""s + enumAttributeValue->GetValue() + "\"";
+                  });
+
+               lineStr += ";\n";
             }
-
-            helpers::typecase(attributeValue,
-               [&lineStr] (const CanIntAttributeValue* intAttributeValue)
-               {
-                  lineStr += std::to_string(intAttributeValue->GetValue());
-               },
-               [&lineStr] (const CanHexAttributeValue* hexAttributeValue)
-               {
-                  lineStr += std::to_string(hexAttributeValue->GetValue());
-               },
-               [&lineStr] (const CanFloatAttributeValue* floatAttributeValue)
-               {
-                  lineStr += std::to_string(floatAttributeValue->GetValue());
-               },
-               [&lineStr] (const CanStringAttributeValue* stringAttributeValue)
-               {
-                  lineStr += "\""s + stringAttributeValue->GetValue() + "\"";
-               },
-               [&lineStr] (const CanEnumAttributeValue* enumAttributeValue)
-               {
-                  lineStr += "\""s + enumAttributeValue->GetValue() + "\"";
-               });
-
-            lineStr += ";\n";
          }
       }
    };
