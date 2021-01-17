@@ -154,6 +154,11 @@ void BusConfigUI::on_actionOpen_triggered()
    }
 }
 
+void BusConfigUI::on_actionSave_triggered()
+{
+   bool rV = this->canBusConfig->Save();
+}
+
 void BusConfigUI::on_actionExport_triggered()
 {
    QString path = QFileDialog::getSaveFileName(0, tr("Save file (dbc)"), "", tr("dbc files (*.dbc)"));
