@@ -2,7 +2,6 @@
 
 #include <qstyleditemdelegate.h>
 #include <qstringlist.h>
-#include <vector>
 
 class CellComboDelegate : public QStyledItemDelegate
 {

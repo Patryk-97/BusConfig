@@ -12,7 +12,7 @@ QWidget* CellComboDelegate::createEditor(QWidget* parent, const QStyleOptionView
    editor->setMinimumHeight(minimumHeight);
    editor->setMinimumWidth(minimumWidth);
 
-   QObject::connect(editor, &QComboBox::currentTextChanged, this, [this, &editor] (const QString& text) mutable
+   QObject::connect(editor, &QComboBox::currentTextChanged, this, [this, editor] (const QString& text) mutable
    {
       const_cast<CellComboDelegate*>(this)->commitData(editor);
       const_cast<CellComboDelegate*>(this)->closeEditor(editor);
