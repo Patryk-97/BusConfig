@@ -6,8 +6,22 @@ template <typename T = QString, bool editable = true>
 class TableWidgetItem : public QTableWidgetItem
 {
 public:
-   TableWidgetItem(const QString& text, Qt::AlignmentFlag textAlignment = Qt::AlignmentFlag::AlignLeft) :
+   TableWidgetItem(const QString& text, Qt::AlignmentFlag textAlignment = Qt::AlignmentFlag::AlignCenter) :
       QTableWidgetItem(text, 0)
+   {
+      this->setTextAlignment(textAlignment);
+      if constexpr (editable)
+      {
+         this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+      }
+      else
+      {
+         this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      }
+   }
+
+   TableWidgetItem(const QIcon& icon, const QString& text, Qt::AlignmentFlag textAlignment = Qt::AlignmentFlag::AlignLeft) :
+      QTableWidgetItem(icon, text, 0)
    {
       this->setTextAlignment(textAlignment);
       if constexpr (editable)

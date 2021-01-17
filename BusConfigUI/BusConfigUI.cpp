@@ -125,8 +125,11 @@ BusConfigUI::BusConfigUI(QWidget *parent)
 
 BusConfigUI::~BusConfigUI()
 {
+   this->communicationMatrix->reject();
    delete this->communicationMatrix;
+   this->attributeDefinitions->reject();
    delete this->attributeDefinitions;
+   this->canMessageSimulator->reject();
    delete this->canMessageSimulator;
 }
 

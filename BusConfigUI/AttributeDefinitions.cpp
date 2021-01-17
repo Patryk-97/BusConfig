@@ -4,6 +4,8 @@
 #include "ICanEnumAttribute.h"
 #include "ICanAttributeManager.h"
 #include "Conversions.h"
+#include "CellComboDelegate.h"
+#include "TableWidgetItem.h"
 
 AttributeDefinitions::AttributeDefinitions(QWidget* parent) : 
    QDialog(parent),
@@ -20,7 +22,7 @@ AttributeDefinitions::AttributeDefinitions(QWidget* parent) :
       "QHeaderView::section { padding: 0 10px; border: 0; }");
    this->ui->tableWidget->setFocusPolicy(Qt::FocusPolicy::NoFocus);
    // because without it is some border after clicking on item in table widget
-   this->ui->tableWidget->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
+   //this->ui->tableWidget->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 }
 
 AttributeDefinitions::~AttributeDefinitions()
@@ -38,12 +40,14 @@ bool AttributeDefinitions::Create(ICanNetwork* canNetwork)
       this->ui->tableWidget->clear();
 
       QStringList headerLabels;
-      headerLabels << "Object type" << "Name" << "Value type" << "Minimum" << "Maximum" << "Default";
+      headerLabels << "Object type" << "Name" << "Value type" << "Minimum" << "Maximum" << "Enumarators" << "Default";
        
       size_t attributesCount = canNetwork->GetAttributesCount();
       this->ui->tableWidget->setRowCount(attributesCount);
       this->ui->tableWidget->setColumnCount(headerLabels.size());
       this->ui->tableWidget->setHorizontalHeaderLabels(headerLabels);
+
+      CellComboDelegate* enumaratorsDelegate = new CellComboDelegate { 25, 150 };
 
       for (size_t i = 0; i < attributesCount; i++)
       {
@@ -77,43 +81,73 @@ bool AttributeDefinitions::Create(ICanNetwork* canNetwork)
                return QIcon {};
             });
 
-            this->ui->tableWidget->setItem(i, 0, new QTableWidgetItem { icon, OBJECT_TYPES[static_cast<int>(attribute->GetObjectType())] });
-            this->ui->tableWidget->setItem(i, 1, new QTableWidgetItem { attribute->GetName() });
-            this->ui->tableWidget->setItem(i, 2, new QTableWidgetItem { VALUE_TYPES[static_cast<int>(attribute->GetValueType())] });
+            this->ui->tableWidget->setItem(i, 0, new TableWidgetItem<QString, false> { icon, OBJECT_TYPES[static_cast<int>(attribute->GetObjectType())] });
+            this->ui->tableWidget->setItem(i, 1, new TableWidgetItem<QString, false> { attribute->GetName() });
+            this->ui->tableWidget->setItem(i, 2, new TableWidgetItem<QString, false> { VALUE_TYPES[static_cast<int>(attribute->GetValueType())] });
 
             helpers::typecase(attribute,
-               [&tableWidget = this->ui->tableWidget, &i] (const ICanIntAttribute* intAttribute)
+               [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanIntAttribute* intAttribute)
                {
-                  tableWidget->setItem(i, 3, new QTableWidgetItem{ toQString(intAttribute->GetMinimum()) });
-                  tableWidget->setItem(i, 4, new QTableWidgetItem{ toQString(intAttribute->GetMaximum()) });
-                  tableWidget->setItem(i, 5, new QTableWidgetItem{ toQString(intAttribute->GetDefaultValue()) });
+                  tableWidget->setItem(i, 3, new TableWidgetItem<int32_t, false> { toQString(intAttribute->GetMinimum()) });
+                  tableWidget->setItem(i, 4, new TableWidgetItem<int32_t, false> { toQString(intAttribute->GetMaximum()) });
+
+                  enumaratorsDelegate->addItems(QStringList {});
+
+                  tableWidget->setItem(i, 5, new TableWidgetItem<QString, false> { "-" });
+                  tableWidget->setItem(i, 6, new TableWidgetItem<int32_t, false> { toQString(intAttribute->GetDefaultValue()) });
                },
-               [&tableWidget = this->ui->tableWidget, &i] (const ICanHexAttribute* hexAttribute)
+               [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanHexAttribute* hexAttribute)
                {
-                  tableWidget->setItem(i, 3, new QTableWidgetItem{ toHexQString(hexAttribute->GetMinimum()) });
-                  tableWidget->setItem(i, 4, new QTableWidgetItem{ toHexQString(hexAttribute->GetMaximum()) });
-                  tableWidget->setItem(i, 5, new QTableWidgetItem{ toHexQString(hexAttribute->GetDefaultValue()) });
+                  tableWidget->setItem(i, 3, new TableWidgetItem<int32_t, false> { toHexQString(hexAttribute->GetMinimum()) });
+                  tableWidget->setItem(i, 4, new TableWidgetItem<int32_t, false> { toHexQString(hexAttribute->GetMaximum()) });
+
+                  enumaratorsDelegate->addItems(QStringList{});
+
+                  tableWidget->setItem(i, 5, new TableWidgetItem<QString, false> { "-" });
+                  tableWidget->setItem(i, 6, new TableWidgetItem<int32_t, false> { toHexQString(hexAttribute->GetDefaultValue()) });
                },
-               [&tableWidget = this->ui->tableWidget, &i] (const ICanFloatAttribute* floatAttribute)
+               [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanFloatAttribute* floatAttribute)
                {
-                  tableWidget->setItem(i, 3, new QTableWidgetItem{ toQString(floatAttribute->GetMinimum()) });
-                  tableWidget->setItem(i, 4, new QTableWidgetItem{ toQString(floatAttribute->GetMaximum()) });
-                  tableWidget->setItem(i, 5, new QTableWidgetItem{ toQString(floatAttribute->GetDefaultValue()) });
+                  tableWidget->setItem(i, 3, new TableWidgetItem<double, false> { toQString(floatAttribute->GetMinimum()) });
+                  tableWidget->setItem(i, 4, new TableWidgetItem<double, false> { toQString(floatAttribute->GetMaximum()) });
+
+                  enumaratorsDelegate->addItems(QStringList{});
+
+                  tableWidget->setItem(i, 5, new TableWidgetItem<QString, false> { "-" });
+                  tableWidget->setItem(i, 6, new TableWidgetItem<double, false> { toQString(floatAttribute->GetDefaultValue()) });
                },
-               [&tableWidget = this->ui->tableWidget, &i] (const ICanStringAttribute* stringAttribute)
+               [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanStringAttribute* stringAttribute)
                {
-                  tableWidget->setItem(i, 3, new QTableWidgetItem{ "-" });
-                  tableWidget->setItem(i, 4, new QTableWidgetItem{ "-" });
-                  tableWidget->setItem(i, 5, new QTableWidgetItem{ stringAttribute->GetDefaultValue() });
+                  tableWidget->setItem(i, 3, new TableWidgetItem<QString, false> { "-" });
+                  tableWidget->setItem(i, 4, new TableWidgetItem<QString, false> { "-" });
+
+                  enumaratorsDelegate->addItems(QStringList{});
+
+                  tableWidget->setItem(i, 5, new TableWidgetItem<QString, false> { "-" });
+                  tableWidget->setItem(i, 6, new TableWidgetItem<QString, false> { stringAttribute->GetDefaultValue() });
                },
-               [&tableWidget = this->ui->tableWidget, &i] (const ICanEnumAttribute* enumAttribute)
+               [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanEnumAttribute* enumAttribute)
                {
-                  tableWidget->setItem(i, 3, new QTableWidgetItem{ "-" });
-                  tableWidget->setItem(i, 4, new QTableWidgetItem{ "-" });
-                  tableWidget->setItem(i, 5, new QTableWidgetItem{ enumAttribute->GetDefaultValue() });
+                  tableWidget->setItem(i, 3, new TableWidgetItem<QString, false> { "-" });
+                  tableWidget->setItem(i, 4, new TableWidgetItem<QString, false> { "-" });
+                  
+                  QStringList enumaratorsList;
+                  for (size_t j = 0; j < enumAttribute->GetEnumaratorsCount(); j++)
+                  {
+                     if (const auto enumarator = enumAttribute->GetEnumarator(j); enumarator)
+                     {
+                        enumaratorsList.append(enumarator);
+                     }
+                  }
+                  enumaratorsDelegate->addItems(enumaratorsList);
+
+                  tableWidget->setItem(i, 5, new QTableWidgetItem { enumaratorsList[0] });
+                  tableWidget->setItem(i, 6, new TableWidgetItem<QString, false> { enumAttribute->GetDefaultValue() });
                });
          }
       }
+
+      this->ui->tableWidget->setItemDelegateForColumn(5, enumaratorsDelegate);
    }
 
    return rV;
