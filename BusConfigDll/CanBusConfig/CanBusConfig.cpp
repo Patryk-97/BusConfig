@@ -1963,6 +1963,14 @@ void CanBusConfig::SetMainAttributes(void)
       if (network)
       {
          network->SetMainAttributes();
+         if (std::string_view{ network->GetName() }.empty())
+         {
+            std::string networkName = helpers::RemovePhrases(this->fileName, ".dbc");
+            if (size_t lastSlashPos = networkName.rfind('/'); lastSlashPos != std::string::npos)
+            {
+               network->SetName(networkName.substr(lastSlashPos + 1, networkName.size() - lastSlashPos - 1).c_str());
+            }
+         }
 
          for (auto& node : network->GetNodes())
          {

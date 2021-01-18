@@ -44,7 +44,8 @@ public:
       NO_MSG_SEND_TYPE = 0, // default
       CYCLIC = 1,
       IF_ACTIVE = 2,
-      NOT_USED = 3
+      CYCLIC_AND_SPONTAN_WITH_DELAY = 3,
+      NOT_USED = 4
    };
 
    class TxMethod
@@ -55,6 +56,7 @@ public:
       static constexpr const char * NO_MSG_SEND_TYPE = "NoMsgSendType";
       static constexpr const char * CYCLIC = "Cyclic";
       static constexpr const char * IF_ACTIVE = "IfActive";
+      static constexpr const char * CYCLIC_AND_SPONTAN_WITH_DELAY = "cyclicAndSpontanWithDelay";
       static constexpr const char * NOT_USED = "not_used";
 
       static constexpr const char * DEFAULT = NO_MSG_SEND_TYPE;

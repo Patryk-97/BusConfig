@@ -66,6 +66,7 @@ public:
          { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod_e::NO_MSG_SEND_TYPE },
          { ICanMessage::TxMethod::CYCLIC, ICanMessage::TxMethod_e::CYCLIC },
          { ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod_e::IF_ACTIVE },
+         { ICanMessage::TxMethod::CYCLIC_AND_SPONTAN_WITH_DELAY, ICanMessage::TxMethod_e::CYCLIC_AND_SPONTAN_WITH_DELAY },
          { ICanMessage::TxMethod::NOT_USED, ICanMessage::TxMethod_e::NOT_USED },
       };
    };
@@ -74,7 +75,7 @@ public:
       IdFormat::STANDARD_CAN_FD.data(), IdFormat::EXTENDED_CAN_FD.data() };
 
    const static inline QStringList TX_METHODS { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod::CYCLIC,
-      ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod::NOT_USED };
+      ICanMessage::TxMethod::IF_ACTIVE, ICanMessage::TxMethod::CYCLIC_AND_SPONTAN_WITH_DELAY, ICanMessage::TxMethod::NOT_USED };
 
    static bool Validate(ICanNetwork* canNetwork, const QString& name, const QString& data, uint8_t column, QString& newData);
    static QString GetData(ICanNetwork* canNetwork, const QString& name, uint8_t column);

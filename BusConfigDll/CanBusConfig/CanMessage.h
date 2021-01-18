@@ -96,6 +96,7 @@ public:
       { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, TxMethod_e::NO_MSG_SEND_TYPE },
       { ICanMessage::TxMethod::CYCLIC,           TxMethod_e::CYCLIC },
       { ICanMessage::TxMethod::IF_ACTIVE,        TxMethod_e::IF_ACTIVE },
+      { ICanMessage::TxMethod::CYCLIC_AND_SPONTAN_WITH_DELAY,        TxMethod_e::CYCLIC_AND_SPONTAN_WITH_DELAY },
       { ICanMessage::TxMethod::NOT_USED,         TxMethod_e::NOT_USED },
    };
 

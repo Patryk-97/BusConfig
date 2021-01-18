@@ -319,7 +319,7 @@
          </item>
          <item row="4" column="0">
           <property name="text">
-           <string>Scale</string>
+           <string>Factor</string>
           </property>
           <property name="font">
            <font>
