@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>BusConfigUI</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="BusConfigUI.qrc">
+    <normaloff>:/BusConfigUI/Icons/database.png</normaloff>:/BusConfigUI/Icons/database.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
