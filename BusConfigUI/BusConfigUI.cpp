@@ -133,6 +133,16 @@ BusConfigUI::~BusConfigUI()
    delete this->canMessageSimulator;
 }
 
+void BusConfigUI::closeEvent(QCloseEvent* event)
+{
+   const auto buttonResult = QMessageBox::question(this, "BusConfigUI", tr("Are you sure to close application?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+   if (buttonResult == QMessageBox::Yes)
+   {
+      this->Clear();
+      QApplication::quit();
+   }
+}
+
 void BusConfigUI::on_actionClear_triggered()
 {
    this->Clear();

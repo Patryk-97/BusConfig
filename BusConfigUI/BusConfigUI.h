@@ -18,6 +18,7 @@ public:
     friend CommunicationMatrix;
 
 private slots:
+   void closeEvent(QCloseEvent* event) override;
    void on_actionClear_triggered();
    void on_actionOpen_triggered();
    void on_actionSave_triggered();
@@ -31,6 +32,7 @@ private slots:
    void on_tableWidget_Properties_itemChanged(QTableWidgetItem* item);
    void on_tableWidget_Properties_cellChanged(int row, int column);
    void ShowMenuForTableWidgetItem(const QPoint& pos);
+
 private:
 
    bool LoadFile(const QString& fileName);
