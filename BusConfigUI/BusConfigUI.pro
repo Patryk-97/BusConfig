@@ -13,3 +13,4 @@ OBJECTS_DIR += release
 UI_DIR += .
 RCC_DIR += .
 include(x64/Release/BusConfigUI.pri)
+win32:RC_FILE = BusConfigUI.rc

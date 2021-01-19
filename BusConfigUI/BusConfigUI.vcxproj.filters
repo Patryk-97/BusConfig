@@ -144,4 +144,9 @@
       <Filter>Resource Files</Filter>
     </QtUic>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BusConfigUI.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
 </Project>
