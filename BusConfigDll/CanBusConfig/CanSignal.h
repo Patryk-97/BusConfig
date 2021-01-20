@@ -46,11 +46,13 @@ public:
 
    IByteOrder_e GetByteOrder(void) const override;
    void ModifyByteOrder(IByteOrder_e byteOrder) override;
+   void SetByteOrder(IByteOrder_e byteOrder);
    uint8_t GetByteOrderSymbol(void) const override;
    void SetByteOrderSymbol(uint8_t byteOrderSymbol);
 
    IValueType_e GetValueType(void) const override;
    void ModifyValueType(IValueType_e valueType) override;
+   void SetValueType(IValueType_e valueType);
    uint8_t GetValueTypeSymbol(void) const override;
    void SetValueTypeSymbol(uint8_t valueTypeSymbol);
 
