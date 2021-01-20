@@ -100,6 +100,9 @@ public:
    static constexpr uint8_t UNDEFINED_BYTE_ORDER_SYMBOL = 0xFF;
    static constexpr uint8_t UNDEFINED_VALUE_TYPE_SYMBOL = 0x00;
    static constexpr uint32_t DEFAULT_RAW_INITIAL_VALUE = 0;
+   static constexpr uint32_t INVALID_START_BIT = (uint32_t)-1;
+   static constexpr uint32_t INVALID_SIZE = (uint32_t)-1;
+   static constexpr double INVALID_FACTOR = 0.0;
 
    static constexpr const char * RAW_INITIAL_VALUE = "GenSigStartValue";
 };

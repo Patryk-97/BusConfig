@@ -37,6 +37,15 @@
     <Filter Include="Pliki źródłowe\CanEnvironmentVariables">
       <UniqueIdentifier>{88635922-ef41-4af8-8ae5-5e7ec3a0a3cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\Builders">
+      <UniqueIdentifier>{55fbc0c8-d8d4-43eb-9c66-48c183a3bccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\Builders">
+      <UniqueIdentifier>{028e06ca-f2c2-487b-b5f5-324977a1af70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Builders">
+      <UniqueIdentifier>{91ae318e-75bb-4712-bbb9-0df392fae2a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -213,6 +222,12 @@
     <ClInclude Include="CanBusConfig\CanNetwork.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanSignalBuilder.h">
+      <Filter>Interfaces\Builders</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanSignalBuilder.h">
+      <Filter>Pliki nagłówkowe\Builders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -304,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanNetwork.cpp">
       <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanSignalBuilder.cpp">
+      <Filter>Pliki źródłowe\Builders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

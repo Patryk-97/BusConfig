@@ -5,6 +5,7 @@
 #include "ICanMessage.h"
 #include "ICanSignal.h"
 #include "ICanEnvVar.h"
+#include "ICanSignalBuilder.h"
 
 class ICanNetwork : public ICanAttributeOwner
 {

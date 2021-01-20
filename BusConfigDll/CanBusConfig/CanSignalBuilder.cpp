@@ -1,76 +1,131 @@
 #include "CanSignalBuilder.h"
 #include "CanMessage.h"
+#include "CanNetwork.h"
 
 CanSignalBuilder::~CanSignalBuilder()
 {
-   this->signal = nullptr;
+   this->Clear();
 }
 
-void CanSignalBuilder::WithName(const char* name)
+void CanSignalBuilder::Clear(void)
 {
-   this->signal->SetName(name);
+   this->network = nullptr;
+   this->name.clear();
+   this->startBit = ICanSignal::INVALID_START_BIT;
+   this->size = ICanSignal::INVALID_SIZE;
+   this->byteOrder = ICanSignal::IByteOrder_e::UNDEFINED;
+   this->valueType = ICanSignal::IValueType_e::UNDEFINED_TYPE;
+   this->factor = ICanSignal::INVALID_FACTOR;
+   this->offset = 0.0;
+   this->minimum = 0.0;
+   this->maximum = 0.0;
+   this->unit.clear();
+   this->comment.clear();
+   this->message = nullptr;
 }
 
-void CanSignalBuilder::WithStartBit(uint32_t startBit)
+ICanSignalBuilder* CanSignalBuilder::WithName(const char* name)
 {
-   this->signal->SetStartBit(startBit);
+   this->name = name;
+   return this;
 }
 
-void CanSignalBuilder::WithSize(uint32_t size)
+ICanSignalBuilder* CanSignalBuilder::WithStartBit(uint32_t startBit)
 {
-   this->signal->SetSize(size);
+   this->startBit = startBit;
+   return this;
 }
 
-void CanSignalBuilder::WithByteOrder(ICanSignal::IByteOrder_e byteOrder)
+ICanSignalBuilder* CanSignalBuilder::WithSize(uint32_t size)
 {
-   this->signal->SetByteOrder(byteOrder);
+   this->size = size;
+   return this;
 }
 
-void CanSignalBuilder::WithValueType(ICanSignal::IValueType_e valueType)
+ICanSignalBuilder* CanSignalBuilder::WithByteOrder(ICanSignal::IByteOrder_e byteOrder)
 {
-   this->signal->SetValueType(valueType);
+   this->byteOrder = byteOrder;
+   return this;
 }
 
-void CanSignalBuilder::WithFactor(double factor)
+ICanSignalBuilder* CanSignalBuilder::WithValueType(ICanSignal::IValueType_e valueType)
 {
-   this->signal->SetFactor(factor);
+   this->valueType = valueType;
+   return this;
 }
 
-void CanSignalBuilder::WithOffset(double offset)
+ICanSignalBuilder* CanSignalBuilder::WithFactor(double factor)
 {
-   this->signal->SetOffset(offset);
+   this->factor = factor;
+   return this;
 }
 
-void CanSignalBuilder::WithMinimum(double minimum)
+ICanSignalBuilder* CanSignalBuilder::WithOffset(double offset)
 {
-   this->signal->SetMinimum(minimum);
+   this->offset = offset;
+   return this;
 }
 
-void CanSignalBuilder::WithMaximum(double maximum)
+ICanSignalBuilder* CanSignalBuilder::WithMinimum(double minimum)
 {
-   this->signal->SetMaximum(maximum);
+   this->minimum = minimum;
+   return this;
 }
 
-void CanSignalBuilder::WithUnit(const char* unit)
+ICanSignalBuilder* CanSignalBuilder::WithMaximum(double maximum)
 {
-   this->signal->SetUnit(unit);
+   this->maximum = maximum;
+   return this;
 }
 
-void CanSignalBuilder::WithComment(const char* comment)
+ICanSignalBuilder* CanSignalBuilder::WithUnit(const char* unit)
 {
-   this->signal->SetComment(comment);
+   this->unit = unit;
+   return this;
 }
 
-void CanSignalBuilder::AddToMessage(ICanMessage* canMessage)
+ICanSignalBuilder* CanSignalBuilder::WithComment(const char* comment)
 {
-   if (auto message = dynamic_cast<CanMessage*>(canMessage); message)
-   {
-      this->signal->SetMessage(message);
-      message->AddSignal(this->signal);
-   }
+   this->comment = comment;
+   return this;
+}
+
+ICanSignalBuilder* CanSignalBuilder::AddToMessage(ICanMessage* canMessage)
+{
+   this->message = dynamic_cast<CanMessage*>(canMessage);
+   return this;
 }
 
 ICanSignal* CanSignalBuilder::Build(void)
 {
-   return std::exchange(this->signal, new CanSignal {});
+   auto ifInvalidData = [this] { this->Clear(); return nullptr; };
+   if (this->name.empty()) return ifInvalidData();
+   if (this->startBit == ICanSignal::INVALID_START_BIT) return ifInvalidData();
+   if (this->size == ICanSignal::INVALID_SIZE) return ifInvalidData();
+   if (this->byteOrder == ICanSignal::IByteOrder_e::UNDEFINED) return ifInvalidData();
+   if (this->valueType == ICanSignal::IValueType_e::UNDEFINED_TYPE) return ifInvalidData();
+   if (this->factor == ICanSignal::INVALID_FACTOR) return ifInvalidData();
+   if (this->message == nullptr) return ifInvalidData();
+   if (this->network == nullptr) return ifInvalidData();
+
+   auto signal = new CanSignal {};
+   signal->SetName(this->name.c_str());
+   signal->SetStartBit(this->startBit);
+   signal->SetSize(this->size);
+   signal->SetByteOrder(this->byteOrder);
+   signal->SetValueType(this->valueType);
+   signal->SetFactor(this->factor);
+   signal->SetOffset(this->offset);
+   signal->SetMinimum(this->minimum);
+   signal->SetMaximum(this->maximum);
+   signal->SetUnit(this->unit.c_str());
+   signal->SetComment(this->comment.c_str());
+
+   signal->SetMessage(message);
+   message->AddSignal(signal);
+
+   signal->SetNetwork(this->network);
+   this->network->AddSignal(signal);
+
+   return signal;
 }

@@ -6,23 +6,37 @@
 class CanSignalBuilder : public ICanSignalBuilder
 {
 public:
-   CanSignalBuilder() = default;
+   CanSignalBuilder(CanNetwork* network) : network { network } {}
    ~CanSignalBuilder();
 
-   void WithName(const char* name) override;
-   void WithStartBit(uint32_t startBit) override;
-   void WithSize(uint32_t size) override;
-   void WithByteOrder(ICanSignal::IByteOrder_e byteOrder) override;
-   void WithValueType(ICanSignal::IValueType_e valueType) override;
-   void WithFactor(double factor) override;
-   void WithOffset(double offset) override;
-   void WithMinimum(double minimum) override;
-   void WithMaximum(double maximum) override;
-   void WithUnit(const char* unit) override;
-   void WithComment(const char* comment) override;
-   void AddToMessage(ICanMessage* canMessage) override;
+   void Clear(void);
+
+   ICanSignalBuilder* WithName(const char* name) override;
+   ICanSignalBuilder* WithStartBit(uint32_t startBit) override;
+   ICanSignalBuilder* WithSize(uint32_t size) override;
+   ICanSignalBuilder* WithByteOrder(ICanSignal::IByteOrder_e byteOrder) override;
+   ICanSignalBuilder* WithValueType(ICanSignal::IValueType_e valueType) override;
+   ICanSignalBuilder* WithFactor(double factor) override;
+   ICanSignalBuilder* WithOffset(double offset) override;
+   ICanSignalBuilder* WithMinimum(double minimum) override;
+   ICanSignalBuilder* WithMaximum(double maximum) override;
+   ICanSignalBuilder* WithUnit(const char* unit) override;
+   ICanSignalBuilder* WithComment(const char* comment) override;
+   ICanSignalBuilder* AddToMessage(ICanMessage* canMessage) override;
    ICanSignal* Build(void) override;
 
 private:
-   CanSignal* signal { new CanSignal {} };
+   CanNetwork* network { nullptr };
+   std::string name;
+   uint32_t startBit { ICanSignal::INVALID_START_BIT };
+   uint32_t size { ICanSignal::INVALID_SIZE };
+   ICanSignal::IByteOrder_e byteOrder { ICanSignal::IByteOrder_e::UNDEFINED };
+   ICanSignal::IValueType_e valueType { ICanSignal::IValueType_e::UNDEFINED_TYPE };
+   double factor { ICanSignal::INVALID_FACTOR };
+   double offset {};
+   double minimum {};
+   double maximum {};
+   std::string unit;
+   std::string comment;
+   CanMessage* message { nullptr };
 };
