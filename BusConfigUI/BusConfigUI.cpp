@@ -131,16 +131,8 @@ BusConfigUI::~BusConfigUI()
    delete this->attributeDefinitions;
    this->canMessageSimulator->reject();
    delete this->canMessageSimulator;
-}
-
-void BusConfigUI::closeEvent(QCloseEvent* event)
-{
-   const auto buttonResult = QMessageBox::question(this, "BusConfigUI", tr("Are you sure to close application?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
-   if (buttonResult == QMessageBox::Yes)
-   {
-      this->Clear();
-      QApplication::quit();
-   }
+   this->canSignalCreator->reject();
+   delete this->canSignalCreator;
 }
 
 void BusConfigUI::on_actionClear_triggered()
@@ -514,7 +506,41 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
          }
       }
 
+      if (itemType == ItemId::CAN_SIGNALS.data())
+      {
+         itemMenu->addSeparator();
+
+         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
+
+         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+         {
+            auto newSignaMenuEntry = new QAction{ "New signal", itemMenu };
+            itemMenu->addAction(newSignaMenuEntry);
+
+            connect(newSignaMenuEntry, &QAction::triggered, this, [this, &canNetwork]
+            {
+               this->canSignalCreator->Create(canNetwork);
+               this->canSignalCreator->setModal(true);
+               this->canSignalCreator->show();
+            });
+         }
+      }
+
       QAction* input = itemMenu->exec(globalPos);
+   }
+}
+
+void BusConfigUI::closeEvent(QCloseEvent* closeEvent)
+{
+   const auto buttonResult = QMessageBox::question(this, "BusConfigUI", tr("Are you sure to close application?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
+   if (buttonResult == QMessageBox::Yes)
+   {
+      this->Clear();
+      QApplication::quit();
+   }
+   else
+   {
+      closeEvent->ignore();
    }
 }
 

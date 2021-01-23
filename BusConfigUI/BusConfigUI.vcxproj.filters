@@ -77,6 +77,9 @@
     <ClCompile Include="CellComboDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CanSignalCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h">
@@ -132,6 +135,9 @@
     <QtMoc Include="CanMessageSimulator.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="CanSignalCreator.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="CommunicationMatrix.ui">
@@ -141,6 +147,9 @@
       <Filter>Resource Files</Filter>
     </QtUic>
     <QtUic Include="CanMessageSimulator.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
+    <QtUic Include="CanSignalCreator.ui">
       <Filter>Resource Files</Filter>
     </QtUic>
   </ItemGroup>
