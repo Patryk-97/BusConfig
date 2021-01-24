@@ -26,6 +26,7 @@ bool CanSignalCreator::Create(ICanNetwork* canNetwork)
 
    if (canNetwork)
    {
+      this->Reset();
       this->canNetwork = canNetwork;
       for (size_t i = 0; i < canNetwork->GetMessagesCount(); i++)
       {
@@ -37,6 +38,23 @@ bool CanSignalCreator::Create(ICanNetwork* canNetwork)
    }
 
    return rV;
+}
+
+void CanSignalCreator::Reset(void)
+{
+   this->ui->lineEdit_Name->setText("");
+   this->ui->comboBox_Message->setCurrentIndex(0);
+   this->ui->lineEdit_StartBit->setText("0");
+   this->ui->lineEdit_Size->setText("1");
+   this->ui->comboBox_ByteOrder->setCurrentIndex(0);
+   this->ui->comboBox_ValueType->setCurrentIndex(0);
+   this->ui->lineEdit_Factor->setText("1");
+   this->ui->lineEdit_Offset->setText("0");
+   this->ui->lineEdit_Minimum->setText("0");
+   this->ui->lineEdit_Maximum->setText("0");
+   this->ui->lineEdit_Unit->setText("");
+   this->ui->lineEdit_Comment->setText("");
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
 }
 
 void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
@@ -141,6 +159,70 @@ void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
          auto canSignal = canSignalBuilder->WithName(name.toUtf8())->AddToMessage(canMessage)->WithStartBit(startBit)
             ->WithSize(size)->WithByteOrder(byteOrder)->WithValueType(valueType)->WithFactor(factor)->WithOffset(offset)
             ->WithMinimum(minimum)->WithMaximum(maximum)->WithUnit(unit.toUtf8())->Build();
+         if (canSignal)
+         {
+            QMessageBox::information(this, "CanSignalCreator", "Successfully created signal");
+         }
       }
    }
+}
+
+void CanSignalCreator::on_lineEdit_Name_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_comboBox_Message_currentTextChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_StartBit_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Size_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_comboBox_ByteOrder_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_comboBox_ValueType_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Factor_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Offset_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Minimum_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Maximum_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Unit_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_lineEdit_Comment_textChanged(const QString& text)
+{
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
 }
