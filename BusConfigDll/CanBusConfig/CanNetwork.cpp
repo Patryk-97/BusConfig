@@ -376,6 +376,11 @@ ICanSignalBuilder* CanNetwork::SignalBuilder(void) const
    return this->signalBuilder.get();
 }
 
+ICanValueTableBuilder* CanNetwork::ValueTableBuilder(void) const
+{
+   return this->valueTableBuilder.get();
+}
+
 void CanNetwork::AddMessage(CanMessage* message)
 {
    if (message)

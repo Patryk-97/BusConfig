@@ -193,6 +193,7 @@
     <ClInclude Include="..\Interfaces\ICanStringAttributeValue.h" />
     <ClInclude Include="..\Interfaces\ICanStringEnvVar.h" />
     <ClInclude Include="..\Interfaces\ICanValueTable.h" />
+    <ClInclude Include="..\Interfaces\ICanValueTableBuilder.h" />
     <ClInclude Include="..\Utils\helpers.h" />
     <ClInclude Include="CanBusConfig\CanAttribute.h" />
     <ClInclude Include="CanBusConfig\CanAttributeManager.h" />
@@ -221,6 +222,7 @@
     <ClInclude Include="CanBusConfig\CanStringEnvVar.h" />
     <ClInclude Include="CanBusConfig\CanValueTable.h" />
     <ClInclude Include="CanBusConfig\CanEnvVarFactory.h" />
+    <ClInclude Include="CanBusConfig\CanValueTableBuilder.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -254,6 +256,7 @@
     <ClCompile Include="CanBusConfig\CanStringEnvVar.cpp" />
     <ClCompile Include="CanBusConfig\CanValueTable.cpp" />
     <ClCompile Include="CanBusConfig\CanEnvVarFactory.cpp" />
+    <ClCompile Include="CanBusConfig\CanValueTableBuilder.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

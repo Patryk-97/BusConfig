@@ -7,6 +7,7 @@
 #include "CanSignal.h"
 #include "CanEnvVar.h"
 #include "CanSignalBuilder.h"
+#include "CanValueTableBuilder.h"
 #include <memory>
 
 class CanNetwork : public CanAttributeOwner, public ICanNetwork
@@ -61,6 +62,7 @@ public:
    void AddSignal(CanSignal* signal);
    CanSignal* CreateAndAddSignal(void);
    ICanSignalBuilder* SignalBuilder(void) const override;
+   ICanValueTableBuilder* ValueTableBuilder(void) const override;
 
    size_t GetEnvVarsCount(void) const override;
    ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
@@ -92,4 +94,5 @@ private:
    std::vector<CanEnvVar*> envVars;
    std::string comment;
    std::unique_ptr<CanSignalBuilder> signalBuilder = std::make_unique<CanSignalBuilder>(this);
+   std::unique_ptr<CanValueTableBuilder> valueTableBuilder = std::make_unique<CanValueTableBuilder>();
 };

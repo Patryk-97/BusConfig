@@ -21,8 +21,10 @@ public:
    ICanSignalBuilder* WithMinimum(double minimum) override;
    ICanSignalBuilder* WithMaximum(double maximum) override;
    ICanSignalBuilder* WithUnit(const char* unit) override;
+   ICanSignalBuilder* WithReceiver(ICanNode* receiver) override;
+   ICanSignalBuilder* WithValueTable(ICanValueTable* valueTable) override;
    ICanSignalBuilder* WithComment(const char* comment) override;
-   ICanSignalBuilder* AddToMessage(ICanMessage* canMessage) override;
+   ICanSignalBuilder* AddToMessage(ICanMessage* message) override;
    ICanSignal* Build(void) override;
 
 private:
@@ -37,6 +39,8 @@ private:
    double minimum {};
    double maximum {};
    std::string unit;
+   CanNode* receiver { nullptr };
+   CanValueTable* valueTable { nullptr };
    std::string comment;
    CanMessage* message { nullptr };
 };

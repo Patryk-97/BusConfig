@@ -20,6 +20,7 @@ void CanSignalBuilder::Clear(void)
    this->minimum = 0.0;
    this->maximum = 0.0;
    this->unit.clear();
+   this->receiver = nullptr;
    this->comment.clear();
    this->message = nullptr;
 }
@@ -84,15 +85,38 @@ ICanSignalBuilder* CanSignalBuilder::WithUnit(const char* unit)
    return this;
 }
 
+ICanSignalBuilder* CanSignalBuilder::WithReceiver(ICanNode* receiver)
+{
+   if (receiver)
+   {
+      this->receiver = dynamic_cast<CanNode*>(receiver);
+   }
+   return this;
+}
+
+ICanSignalBuilder* CanSignalBuilder::WithValueTable(ICanValueTable* valueTable)
+{
+   if (valueTable)
+   {
+      this->valueTable = dynamic_cast<CanValueTable*>(valueTable);
+      std::string valueTableName = ICanValueTable::SIGNAL_PREFIX + this->name;
+      this->valueTable->SetName(valueTableName.c_str());
+   }
+   return this;
+}
+
 ICanSignalBuilder* CanSignalBuilder::WithComment(const char* comment)
 {
    this->comment = comment;
    return this;
 }
 
-ICanSignalBuilder* CanSignalBuilder::AddToMessage(ICanMessage* canMessage)
+ICanSignalBuilder* CanSignalBuilder::AddToMessage(ICanMessage* message)
 {
-   this->message = dynamic_cast<CanMessage*>(canMessage);
+   if (message)
+   {
+      this->message = dynamic_cast<CanMessage*>(message);
+   }
    return this;
 }
 

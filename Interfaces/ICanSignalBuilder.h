@@ -18,7 +18,9 @@ public:
    virtual ICanSignalBuilder* WithMinimum(double minimum) = 0;
    virtual ICanSignalBuilder* WithMaximum(double maximum) = 0;
    virtual ICanSignalBuilder* WithUnit(const char* unit) = 0;
+   virtual ICanSignalBuilder* WithReceiver(ICanNode* receiver) = 0;
+   virtual ICanSignalBuilder* WithValueTable(ICanValueTable* valueTable) = 0;
    virtual ICanSignalBuilder* WithComment(const char* comment) = 0;
-   virtual ICanSignalBuilder* AddToMessage(ICanMessage* canMessage) = 0;
+   virtual ICanSignalBuilder* AddToMessage(ICanMessage* message) = 0;
    virtual ICanSignal* Build(void) = 0;
 };

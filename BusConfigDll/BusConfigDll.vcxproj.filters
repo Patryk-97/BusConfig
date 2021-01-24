@@ -228,6 +228,12 @@
     <ClInclude Include="CanBusConfig\CanSignalBuilder.h">
       <Filter>Pliki nagłówkowe\Builders</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanValueTableBuilder.h">
+      <Filter>Interfaces\Builders</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanValueTableBuilder.h">
+      <Filter>Pliki nagłówkowe\Builders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -321,6 +327,9 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanSignalBuilder.cpp">
+      <Filter>Pliki źródłowe\Builders</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanValueTableBuilder.cpp">
       <Filter>Pliki źródłowe\Builders</Filter>
     </ClCompile>
   </ItemGroup>

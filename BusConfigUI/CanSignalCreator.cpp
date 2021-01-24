@@ -180,13 +180,31 @@ void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
          }
 
          QString unit = this->ui->lineEdit_Unit->text();
+         QString comment = this->ui->lineEdit_Comment->text();
 
          this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 
+         auto canValueTableBuilder = this->canNetwork->ValueTableBuilder();
+         for (size_t i = 0; i < this->ui->tableWidget_ValueTable->rowCount(); i++)
+         {
+            auto value = this->ui->tableWidget_ValueTable->item(i, 0)->text().toUInt(nullptr, 16);
+            auto description = this->ui->tableWidget_ValueTable->item(i, 1)->text();
+            canValueTableBuilder->WithValue(value, description.toUtf8());
+         }
+         auto canValueTable = canValueTableBuilder->Build();
+
          auto canSignalBuilder = this->canNetwork->SignalBuilder();
+
+         for (size_t i = 0; i < this->ui->tableWidget_Receivers->rowCount(); i++)
+         {
+            auto receiver = this->ui->tableWidget_Receivers->item(i, 0)->text();
+            canSignalBuilder->WithReceiver(this->canNetwork->GetNodeByName(receiver.toUtf8()));
+         }
+
          auto canSignal = canSignalBuilder->WithName(name.toUtf8())->AddToMessage(canMessage)->WithStartBit(startBit)
             ->WithSize(size)->WithByteOrder(byteOrder)->WithValueType(valueType)->WithFactor(factor)->WithOffset(offset)
-            ->WithMinimum(minimum)->WithMaximum(maximum)->WithUnit(unit.toUtf8())->Build();
+            ->WithMinimum(minimum)->WithMaximum(maximum)->WithValueTable(canValueTable)->WithUnit(unit.toUtf8())
+            ->WithComment(comment.toUtf8())->Build();
          if (canSignal)
          {
             QMessageBox::information(this, "CanSignalCreator", "Successfully created signal");

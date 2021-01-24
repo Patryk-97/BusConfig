@@ -6,6 +6,7 @@
 #include "ICanSignal.h"
 #include "ICanEnvVar.h"
 #include "ICanSignalBuilder.h"
+#include "ICanValueTableBuilder.h"
 
 class ICanNetwork : public ICanAttributeOwner
 {
@@ -47,6 +48,7 @@ public:
    virtual void SortSignalsByName(bool caseSensitive = false) = 0;
    virtual void SortSignalsByMessageName(bool caseSensitive = false) = 0;
    virtual ICanSignalBuilder* SignalBuilder(void) const = 0;
+   virtual ICanValueTableBuilder* ValueTableBuilder(void) const = 0;
 
    virtual size_t GetEnvVarsCount(void) const = 0;
    virtual ICanEnvVar* GetEnvVarByIndex(size_t index) const = 0;
