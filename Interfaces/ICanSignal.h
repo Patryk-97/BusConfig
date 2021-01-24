@@ -6,6 +6,7 @@
 
 class ICanMessage; // circular dependency
 class ICanNetwork; // circular dependency
+class ICanNode; // circular dependency
 
 class ICanSignal : public ICanAttributeOwner
 {
@@ -84,7 +85,10 @@ public:
    virtual void ModifyUnit(const char * unit) = 0;
 
    virtual size_t GetReceiversCount(void) const = 0;
-   virtual const char* GetReceiver(size_t index) const = 0;
+   virtual ICanNode* GetReceiverByIndex(size_t index) const = 0;
+   virtual ICanNode* GetReceiverByName(const char* name) const = 0;
+   virtual const char* GetReceiverName(size_t index) const = 0;
+
    virtual ICanMessage* GetMessage(void) const = 0;
    virtual ICanValueTable* GetValueTable(void) const = 0;
 

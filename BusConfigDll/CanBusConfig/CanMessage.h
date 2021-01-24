@@ -7,6 +7,7 @@
 #include <map>
 
 class CanNetwork; // circular dependency
+class CanNode; // circular dependency
 
 class CanMessage : public CanAttributeOwner, public ICanMessage
 {
@@ -28,8 +29,9 @@ public:
    void ModifySize(uint32_t) override;
    void SetSize(uint32_t size);
 
-   const char* GetMainTransmitter(void) const;
-   void SetMainTransmitter(const char* mainTransmitter);
+   ICanNode* GetMainTransmitter(void) const override;
+   const char* GetMainTransmitterName(void) const override;
+   void SetMainTransmitter(CanNode* mainTransmitter);
 
    size_t GetSignalsCount(void) const override;
    ICanSignal* GetSignalByName(const char* name) const override;
@@ -120,7 +122,7 @@ private:
    uint32_t id {};
    std::string name;
    uint32_t size {};
-   std::string mainTransmitter;
+   CanNode* mainTransmitter { nullptr };
    std::vector<CanSignal*> signals;
    std::string comment;
    CanNetwork* network { nullptr };

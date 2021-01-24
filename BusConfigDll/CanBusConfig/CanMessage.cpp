@@ -18,7 +18,7 @@ void CanMessage::Clear(void)
    this->id = 0;
    this->name.clear();
    this->size = 0;
-   this->mainTransmitter.clear();
+   this->mainTransmitter = nullptr;
    this->signals.clear();
    this->idFormat = ICanMessage::DEFAULT_ID_FORMAT;
    this->txMethod = ICanMessage::DEFAULT_TX_METHOD;
@@ -73,12 +73,17 @@ void CanMessage::SetSize(uint32_t size)
    this->size = size;
 }
 
-const char* CanMessage::GetMainTransmitter(void) const
+ICanNode* CanMessage::GetMainTransmitter(void) const
 {
-   return this->mainTransmitter.c_str();
+   return this->mainTransmitter;
 }
 
-void CanMessage::SetMainTransmitter(const char* mainTransmitter)
+const char* CanMessage::GetMainTransmitterName(void) const
+{
+   return (this->mainTransmitter ? this->mainTransmitter->GetName() : nullptr);
+}
+
+void CanMessage::SetMainTransmitter(CanNode* mainTransmitter)
 {
    this->mainTransmitter = mainTransmitter;
 }
@@ -272,7 +277,7 @@ bool CanMessage::IsExtended(void) const
 const char* CanMessage::ToString(void)
 {
    this->stringRepresentation += "Message { id: " + std::to_string(this->id) + ", name: " + this->name;
-   this->stringRepresentation += ", size: " + std::to_string(this->size) + ", transmitter: " + this->mainTransmitter + " }";
+   this->stringRepresentation += ", size: " + std::to_string(this->size) + ", transmitter: " + this->mainTransmitter->GetName() + " }";
    return this->stringRepresentation.c_str();
 }
 

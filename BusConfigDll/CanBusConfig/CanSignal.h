@@ -9,6 +9,7 @@
 
 class CanMessage; // circular dependency
 class CanNetwork; // circular dependency
+class CanNode; // circular dependency
 
 class CanSignal : public CanAttributeOwner, public ICanSignal
 {
@@ -84,8 +85,10 @@ public:
    void SetUnit(const char* unit);
 
    size_t GetReceiversCount(void) const override;
-   const char* GetReceiver(size_t index) const override;
-   void AddReceiver(const char* receiver);
+   ICanNode* GetReceiverByIndex(size_t index) const override;
+   ICanNode* GetReceiverByName(const char* name) const override;
+   const char* GetReceiverName(size_t index) const override;
+   void AddReceiver(CanNode* receiver);
 
    ICanMessage* GetMessage(void) const override;
    void SetMessage(CanMessage* message);
@@ -138,7 +141,7 @@ private:
 
    std::string unit;
 
-   std::vector<std::string> receivers; //  nodes_names | 'Vector__XXX'
+   std::vector<CanNode*> receivers; //  nodes | 'Vector__XXX'
    CanMessage* message { nullptr };
    CanValueTable* valueTable { nullptr };
    std::vector<CanAttribute*> attributes;

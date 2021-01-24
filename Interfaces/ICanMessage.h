@@ -3,9 +3,9 @@
 #include "ICanSignal.h"
 
 #include <stdint.h>
-#include <iostream>
 
-class ICanNetwork;
+class ICanNetwork; // circular dependency
+class ICanNode; // circular dependency
 
 class ICanMessage : public ICanAttributeOwner
 {
@@ -89,7 +89,8 @@ public:
    virtual uint32_t GetSize(void) const = 0;
    virtual void ModifySize(uint32_t) = 0;
 
-   virtual const char* GetMainTransmitter(void) const = 0;
+   virtual ICanNode* GetMainTransmitter(void) const = 0;
+   virtual const char* GetMainTransmitterName(void) const = 0;
 
    virtual size_t GetSignalsCount(void) const = 0;
    virtual ICanSignal* GetSignalByName(const char* name) const = 0;

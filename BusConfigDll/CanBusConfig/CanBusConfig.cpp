@@ -258,9 +258,9 @@ bool CanBusConfig::ParseMessageDefinition(CanNetwork* network, LineData_t& lineD
                }
                case MESSAGE_TRANSMITTER_POS:
                {
-                  message->SetMainTransmitter(token.c_str());
-                  if (CanNode* node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node != nullptr)
+                  if (CanNode* node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node)
                   {
+                     message->SetMainTransmitter(node);
                      node->AddTxMessage(message);
                   }
                   break;
@@ -348,7 +348,7 @@ bool CanBusConfig::ParseSignalDefinition(CanNetwork* network, LineData_t& lineDa
          message->AddSignal(signal);
          signal->SetMessage(message);
          signal->SetNetwork(network);
-         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(network->GetNodeByName(message->GetMainTransmitter())); transmitterNode)
+         if (CanNode* transmitterNode = dynamic_cast<CanNode*>(network->GetNodeByName(message->GetMainTransmitterName())); transmitterNode)
          {
             transmitterNode->AddMappedTxSignal(signal);
          }
@@ -470,9 +470,9 @@ bool CanBusConfig::ParseSignalDefinition(CanNetwork* network, LineData_t& lineDa
                }
                default:
                {
-                  signal->AddReceiver(token.c_str());
-                  if (CanNode* node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node != nullptr)
+                  if (CanNode* node = dynamic_cast<CanNode*>(network->GetNodeByName(token.c_str())); node)
                   {
+                     signal->AddReceiver(node);
                      node->AddMappedRxSignal(signal);
                      node->AddRxMessage(dynamic_cast<CanMessage*>(signal->GetMessage()));
                   }
@@ -2049,7 +2049,7 @@ bool CanBusConfig::WriteMessageDefinition(std::string& lineStr) const
          lineStr += std::to_string(message->GetId()) + " ";
          lineStr += message->GetName() + ": "s;
          lineStr += std::to_string(message->GetSize()) + " ";
-         lineStr += message->GetMainTransmitter() + "\n"s;
+         lineStr += message->GetMainTransmitterName() + "\n"s;
 
          WriteSignalDefinition(message, lineStr);
       }
@@ -2078,7 +2078,7 @@ bool CanBusConfig::WriteSignalDefinition(CanMessage* message, std::string& lineS
          lineStr += "\""s + signal->GetUnit() + "\" ";
          for (size_t i = 0; i < signal->GetReceiversCount(); i++)
          {
-            lineStr += signal->GetReceiver(i) + " "s;
+            lineStr += signal->GetReceiverName(i) + " "s;
          }
          lineStr += "\n";
       }

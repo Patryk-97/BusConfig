@@ -7,6 +7,7 @@
 #include "CanSignal.h"
 #include "CanEnvVar.h"
 #include "CanSignalBuilder.h"
+#include <memory>
 
 class CanNetwork : public CanAttributeOwner, public ICanNetwork
 {

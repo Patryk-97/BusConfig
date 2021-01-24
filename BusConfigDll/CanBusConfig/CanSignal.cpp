@@ -1,5 +1,4 @@
 #include "CanSignal.h"
-#include "CanMessage.h" // circular dependency
 #include "CanNetwork.h" // circular dependency
 #include "helpers.h"
 #include "CanAttributeManager.h"
@@ -343,14 +342,25 @@ size_t CanSignal::GetReceiversCount(void) const
    return this->receivers.size();
 }
 
-const char* CanSignal::GetReceiver(size_t index) const
+ICanNode* CanSignal::GetReceiverByIndex(size_t index) const
 {
-   return (index < this->receivers.size() ? this->receivers[index].c_str() : nullptr);
+   return (index < this->receivers.size() ? this->receivers[index] : nullptr);
 }
 
-void CanSignal::AddReceiver(const char* receiver)
+ICanNode* CanSignal::GetReceiverByName(const char* name) const
 {
-   if (receiver != nullptr)
+   auto it = ranges::find_if(this->receivers, [&name] (CanNode* receiver) { return !std::strcmp(receiver->GetName(), name); });
+   return (it != this->receivers.end() ? *it : nullptr);
+}
+
+const char* CanSignal::GetReceiverName(size_t index) const
+{
+   return (index < this->receivers.size() ? this->receivers[index]->GetName() : nullptr);
+}
+
+void CanSignal::AddReceiver(CanNode* receiver)
+{
+   if (receiver)
    {
       this->receivers.push_back(receiver);
    }
@@ -437,10 +447,7 @@ const char* CanSignal::ToString(void)
    this->stringRepresentation += ", factor: " + std::to_string(this->factor) + ", offset: " + std::to_string(this->offset);
    this->stringRepresentation += ", min: " + std::to_string(this->minimum) + ", max: " + std::to_string(this->maximum);
    this->stringRepresentation += " unit: " + this->unit + ", receivers: ";
-   for (const auto& receiver : this->receivers)
-   {
-      this->stringRepresentation += receiver + ", ";
-   }
+   ranges::for_each(this->receivers, [this] (CanNode* receiver) { this->stringRepresentation += receiver->GetName() + ", "s; });
    this->stringRepresentation += "}";
    return this->stringRepresentation.c_str();
 }
