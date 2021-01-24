@@ -39,7 +39,7 @@ private:
    double minimum {};
    double maximum {};
    std::string unit;
-   CanNode* receiver { nullptr };
+   std::vector<CanNode*> receivers;
    CanValueTable* valueTable { nullptr };
    std::string comment;
    CanMessage* message { nullptr };

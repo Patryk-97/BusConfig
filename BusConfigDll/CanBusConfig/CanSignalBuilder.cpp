@@ -20,7 +20,7 @@ void CanSignalBuilder::Clear(void)
    this->minimum = 0.0;
    this->maximum = 0.0;
    this->unit.clear();
-   this->receiver = nullptr;
+   this->receivers.clear();
    this->comment.clear();
    this->message = nullptr;
 }
@@ -89,7 +89,7 @@ ICanSignalBuilder* CanSignalBuilder::WithReceiver(ICanNode* receiver)
 {
    if (receiver)
    {
-      this->receiver = dynamic_cast<CanNode*>(receiver);
+      this->receivers.push_back(dynamic_cast<CanNode*>(receiver));
    }
    return this;
 }
@@ -151,14 +151,17 @@ ICanSignal* CanSignalBuilder::Build(void)
    signal->SetNetwork(this->network);
    this->network->AddSignal(signal);
 
-   this->receiver->AddMappedRxSignal(signal);
-   this->receiver->AddRxMessage(this->message);
-
-   if (auto mainTransmitter = this->message->GetMainTransmitter(); mainTransmitter)
+   for (auto& receiver : this->receivers)
    {
-      if (auto transmitter = dynamic_cast<CanNode*>(mainTransmitter); transmitter)
+      receiver->AddMappedRxSignal(signal);
+      receiver->AddRxMessage(this->message);
+
+      if (auto mainTransmitter = this->message->GetMainTransmitter(); mainTransmitter)
       {
-         transmitter->AddMappedTxSignal(signal);
+         if (auto transmitter = dynamic_cast<CanNode*>(mainTransmitter); transmitter)
+         {
+            transmitter->AddMappedTxSignal(signal);
+         }
       }
    }
 
