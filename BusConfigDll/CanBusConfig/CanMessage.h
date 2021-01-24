@@ -67,6 +67,10 @@ public:
    ICanNetwork* GetNetwork(void) const override;
    void SetNetwork(CanNetwork* network);
 
+   bool IsCanFdStandard(void) const override;
+   bool IsCanStandard(void) const override;
+   bool IsExtended(void) const override;
+
    const char* ToString(void) override;
    void SetMainAttributes(void);
 

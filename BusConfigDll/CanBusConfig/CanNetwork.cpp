@@ -251,6 +251,11 @@ ICanSignal* CanNetwork::GetSignalByName(const char* name) const
    return (it != this->signals.end() ? *it : nullptr);
 }
 
+bool CanNetwork::SignalExists(const char* name) const
+{
+   return this->GetSignalByName(name) != nullptr;
+}
+
 std::vector<CanSignal*> CanNetwork::GetSignals(void)
 {
    return this->signals;
@@ -302,26 +307,24 @@ void CanNetwork::SortSignalsByName(bool caseSensitive)
 void CanNetwork::SortSignalsByMessageName(bool caseSensitive)
 {
    auto comparator = [&caseSensitive](const std::string& name1, const std::string& name2)
-   {
-      return caseSensitive ? name1.compare(name2) : helpers::icompare(name1, name2);
-   };
+      { return caseSensitive ? name1.compare(name2) : helpers::icompare(name1, name2); };
    ranges::sort(this->signals, [&comparator](CanSignal* signal1, CanSignal* signal2)
+   {
+      const auto message1 = signal1->GetMessage();
+      const auto message2 = signal2->GetMessage();
+      if (message1 && message2)
       {
-         const auto message1 = signal1->GetMessage();
-         const auto message2 = signal2->GetMessage();
-         if (message1 && message2)
+         if (int cmp = comparator(message1->GetName(), message2->GetName()); !cmp)
          {
-            if (int cmp = comparator(message1->GetName(), message2->GetName()); !cmp)
-            {
-               return signal1->GetStartBit() < signal2->GetStartBit();
-            }
-            else
-            {
-               return cmp < 0;
-            }
+            return signal1->GetStartBit() < signal2->GetStartBit();
          }
-         return false;
-      });
+         else
+         {
+            return cmp < 0;
+         }
+      }
+      return false;
+   });
 }
 
 bool CanNetwork::RemoveSignalByName(const char* name)
@@ -366,6 +369,11 @@ CanSignal* CanNetwork::CreateAndAddSignal(void)
    CanSignal* signal = new CanSignal{};
    this->signals.push_back(signal);
    return signal;
+}
+
+ICanSignalBuilder* CanNetwork::SignalBuilder(void) const
+{
+   return this->signalBuilder.get();
 }
 
 void CanNetwork::AddMessage(CanMessage* message)

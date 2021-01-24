@@ -119,6 +119,10 @@ public:
 
    virtual ICanNetwork* GetNetwork(void) const = 0;
 
+   virtual bool IsCanFdStandard(void) const = 0;
+   virtual bool IsCanStandard(void) const = 0;
+   virtual bool IsExtended(void) const = 0;
+
    virtual const char* ToString(void) = 0;
 
    static constexpr const char * ID_FORMAT = "VFrameFormat";

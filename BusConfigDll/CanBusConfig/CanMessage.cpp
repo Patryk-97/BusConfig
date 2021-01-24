@@ -254,6 +254,21 @@ void CanMessage::SetNetwork(CanNetwork* network)
    this->network = network;
 }
 
+bool CanMessage::IsCanFdStandard(void) const
+{
+   return this->idFormat == ICanMessage::IdFormat_e::STANDARD_CAN_FD || this->idFormat == ICanMessage::IdFormat_e::EXTENDED_CAN_FD;
+}
+
+bool CanMessage::IsCanStandard(void) const
+{
+   return this->idFormat == ICanMessage::IdFormat_e::STANDARD_CAN || this->idFormat == ICanMessage::IdFormat_e::EXTENDED_CAN;
+}
+
+bool CanMessage::IsExtended(void) const
+{
+   return this->idFormat == ICanMessage::IdFormat_e::EXTENDED_CAN || this->idFormat == ICanMessage::IdFormat_e::EXTENDED_CAN_FD;
+}
+
 const char* CanMessage::ToString(void)
 {
    this->stringRepresentation += "Message { id: " + std::to_string(this->id) + ", name: " + this->name;

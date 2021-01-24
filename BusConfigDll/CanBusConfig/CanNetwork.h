@@ -6,6 +6,7 @@
 #include "CanMessage.h"
 #include "CanSignal.h"
 #include "CanEnvVar.h"
+#include "CanSignalBuilder.h"
 
 class CanNetwork : public CanAttributeOwner, public ICanNetwork
 {
@@ -49,6 +50,7 @@ public:
    size_t GetSignalsCount(void) const override;
    ICanSignal* GetSignalByIndex(size_t index) const override;
    ICanSignal* GetSignalByName(const char* name) const override;
+   bool SignalExists(const char* name) const override;
    std::vector<CanSignal*> GetSignals(void);
    size_t GetSignalIndex(const char* name) const override;
    bool RemoveSignalByIndex(size_t index) override;
@@ -57,6 +59,7 @@ public:
    void SortSignalsByMessageName(bool caseSensitive = false) override;
    void AddSignal(CanSignal* signal);
    CanSignal* CreateAndAddSignal(void);
+   ICanSignalBuilder* SignalBuilder(void) const override;
 
    size_t GetEnvVarsCount(void) const override;
    ICanEnvVar* GetEnvVarByIndex(size_t index) const override;
@@ -87,4 +90,5 @@ private:
    std::vector<CanSignal*> signals;
    std::vector<CanEnvVar*> envVars;
    std::string comment;
+   std::unique_ptr<CanSignalBuilder> signalBuilder = std::make_unique<CanSignalBuilder>(this);
 };

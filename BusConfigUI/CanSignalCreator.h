@@ -23,4 +23,5 @@ private slots:
 
 private:
    Ui::CanSignalCreator* ui;
+   ICanNetwork* canNetwork { nullptr };
 };
