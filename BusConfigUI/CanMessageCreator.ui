@@ -116,28 +116,75 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit"/>
+          <widget class="QLineEdit" name="lineEdit_Name"/>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_2"/>
+          <widget class="QLineEdit" name="lineEdit_Id"/>
          </item>
          <item row="2" column="1">
-          <widget class="QComboBox" name="comboBox"/>
+          <widget class="QComboBox" name="comboBox_IdFormat">
+           <item>
+            <property name="text">
+             <string>CAN Standard</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>CAN Extended</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>CAN FD Standard</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>CAN FD Extended</string>
+            </property>
+           </item>
+          </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QLineEdit" name="lineEdit_3"/>
+          <widget class="QLineEdit" name="lineEdit_Size"/>
          </item>
          <item row="4" column="1">
-          <widget class="QComboBox" name="comboBox_2"/>
+          <widget class="QComboBox" name="comboBox_TxMethod">
+           <item>
+            <property name="text">
+             <string>NoMsgSendType</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Cyclic</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IfActive</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cyclicAndSpontanWithDelay</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>not_used</string>
+            </property>
+           </item>
+          </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QLineEdit" name="lineEdit_4"/>
+          <widget class="QLineEdit" name="lineEdit_CycleTime"/>
          </item>
          <item row="6" column="1">
-          <widget class="QComboBox" name="comboBox_3"/>
+          <widget class="QComboBox" name="comboBox_MainTransmitter"/>
          </item>
          <item row="7" column="1">
-          <widget class="QLineEdit" name="lineEdit_5"/>
+          <widget class="QLineEdit" name="lineEdit_Comment"/>
          </item>
         </layout>
        </item>
