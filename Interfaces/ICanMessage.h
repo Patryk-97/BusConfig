@@ -126,6 +126,10 @@ public:
 
    virtual const char* ToString(void) = 0;
 
+   // static variables
+   static constexpr uint32_t INVALID_ID = 0xFFFFFFFF;
+   static constexpr uint32_t INVALID_SIZE = 0xFFFFFFFF;
+
    static constexpr const char * ID_FORMAT = "VFrameFormat";
    static constexpr const char * TX_METHOD = "GenMsgSendType";
    static constexpr const char * CYCLE_TIME = "GenMsgCycleTime";

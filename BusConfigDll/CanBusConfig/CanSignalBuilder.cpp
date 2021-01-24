@@ -145,14 +145,22 @@ ICanSignal* CanSignalBuilder::Build(void)
    signal->SetUnit(this->unit.c_str());
    signal->SetComment(this->comment.c_str());
 
-   signal->SetMessage(message);
-   message->AddSignal(signal);
+   signal->SetMessage(this->message);
+   this->message->AddSignal(signal);
 
    signal->SetNetwork(this->network);
    this->network->AddSignal(signal);
 
    this->receiver->AddMappedRxSignal(signal);
-   this->receiver->AddRxMessage(message);
+   this->receiver->AddRxMessage(this->message);
+
+   if (auto mainTransmitter = this->message->GetMainTransmitter(); mainTransmitter)
+   {
+      if (auto transmitter = dynamic_cast<CanNode*>(mainTransmitter); transmitter)
+      {
+         transmitter->AddMappedTxSignal(signal);
+      }
+   }
 
    return signal;
 }
