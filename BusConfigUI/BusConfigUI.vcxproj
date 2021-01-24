@@ -116,6 +116,7 @@
     <ClCompile Include="CommunicationMatrix.cpp" />
     <ClCompile Include="LineEditFactory.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="CanMessageCreator.ui" />
     <QtUic Include="CanMessageSimulator.ui" />
     <QtUic Include="CanSignalCreator.ui" />
     <QtUic Include="CommunicationMatrix.ui" />
