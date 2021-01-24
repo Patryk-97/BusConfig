@@ -151,5 +151,8 @@ ICanSignal* CanSignalBuilder::Build(void)
    signal->SetNetwork(this->network);
    this->network->AddSignal(signal);
 
+   this->receiver->AddMappedRxSignal(signal);
+   this->receiver->AddRxMessage(message);
+
    return signal;
 }
