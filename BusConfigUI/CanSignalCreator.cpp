@@ -2,6 +2,9 @@
 #include "ui_CanSignalCreator.h"
 #include "ICanSignalBuilder.h"
 #include "CanSignalManager.h"
+#include "Conversions.h"
+#include "TableWidgetItem.h"
+#include "ComboDelegate.h"
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 
@@ -12,6 +15,19 @@ CanSignalCreator::CanSignalCreator(QWidget* parent) :
    ui->setupUi(this);
    Qt::WindowFlags flags{ Qt::Window | Qt::WindowCloseButtonHint };
    this->setWindowFlags(flags);
+   this->ui->tableWidget_ValueTable->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
+
+   this->ui->tableWidget_ValueTable->setStyleSheet("QTableWidget::item { padding: 5 10px; border: 0; }");
+   this->ui->tableWidget_ValueTable->horizontalHeader()->setStyleSheet(
+      "QHeaderView::section { padding: 5 10px; border: 0; }");
+   this->ui->tableWidget_ValueTable->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
+   this->ui->tableWidget_Receivers->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Stretch);
+
+   this->ui->tableWidget_Receivers->setStyleSheet("QTableWidget::item { padding: 5 10px; border: 0; }");
+   this->ui->tableWidget_Receivers->horizontalHeader()->setStyleSheet(
+      "QHeaderView::section { padding: 5 10px; border: 0; }");
+   this->ui->tableWidget_Receivers->setFocusPolicy(Qt::FocusPolicy::NoFocus);
 }
 
 CanSignalCreator::~CanSignalCreator()
@@ -26,7 +42,7 @@ bool CanSignalCreator::Create(ICanNetwork* canNetwork)
 
    if (canNetwork)
    {
-      this->Reset();
+      this->Clear();
       this->canNetwork = canNetwork;
       for (size_t i = 0; i < canNetwork->GetMessagesCount(); i++)
       {
@@ -40,7 +56,7 @@ bool CanSignalCreator::Create(ICanNetwork* canNetwork)
    return rV;
 }
 
-void CanSignalCreator::Reset(void)
+void CanSignalCreator::Clear(void)
 {
    this->ui->lineEdit_Name->setText("");
    this->ui->comboBox_Message->setCurrentIndex(0);
@@ -55,6 +71,19 @@ void CanSignalCreator::Reset(void)
    this->ui->lineEdit_Unit->setText("");
    this->ui->lineEdit_Comment->setText("");
    this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+
+   this->ClearTableWidget();
+}
+
+void CanSignalCreator::ClearTableWidget(void)
+{
+   this->ui->tableWidget_ValueTable->setRowCount(0);
+
+   for (size_t i = 0; i < this->ui->tableWidget_Receivers->rowCount(); i++)
+   {
+      this->ui->tableWidget_Receivers->setItemDelegateForRow(i, nullptr);
+   }
+   this->ui->tableWidget_Receivers->setRowCount(0);
 }
 
 void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
@@ -82,7 +111,6 @@ void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
             QMessageBox::warning(this, "CanSignalCreator", "Signal already exists");
             return;
          }
-
 
          uint32_t startBit = this->ui->lineEdit_StartBit->text().toUInt(&ok);
          if (canMessage->IsCanStandard())
@@ -162,6 +190,7 @@ void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
          if (canSignal)
          {
             QMessageBox::information(this, "CanSignalCreator", "Successfully created signal");
+            /* todo update tree and table */
          }
       }
    }
@@ -225,4 +254,71 @@ void CanSignalCreator::on_lineEdit_Unit_textChanged(const QString& text)
 void CanSignalCreator::on_lineEdit_Comment_textChanged(const QString& text)
 {
    this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
+}
+
+void CanSignalCreator::on_tableWidget_Receivers_itemChanged(QTableWidgetItem* item)
+{
+   auto row = item->row();
+   auto receiver = item->text();
+   if (!receiver.isEmpty())
+   {
+      if (const auto canNode = this->canNetwork->GetNodeByName(receiver.toUtf8()); canNode)
+      {
+         this->ui->tableWidget_Receivers->item(row, 1)->setText(toHexQString(canNode->GetAddress()));
+      }
+   }
+}
+
+void CanSignalCreator::on_pushButton_ValueTable_Add_clicked()
+{
+   auto rowCount = this->ui->tableWidget_ValueTable->rowCount();
+   this->ui->tableWidget_ValueTable->insertRow(rowCount);
+   auto newValue = std::invoke([this, &rowCount]
+   {
+      if (rowCount > 0)
+      {
+         return this->ui->tableWidget_ValueTable->item(rowCount - 1, 0)->text().toUInt(nullptr, 16) + 1;
+      }
+      else
+      {
+         return static_cast<uint32_t>(0);
+      }
+   });
+   this->ui->tableWidget_ValueTable->setItem(rowCount, 0, new TableWidgetItem<uint32_t> { toHexQString(newValue) });
+   this->ui->tableWidget_ValueTable->setItem(rowCount, 1, new TableWidgetItem<QString> { "Description for value: " + toHexQString(newValue) });
+
+}
+
+void CanSignalCreator::on_pushButton_ValueTable_Remove_clicked()
+{
+   this->ui->tableWidget_ValueTable->removeRow(this->ui->tableWidget_ValueTable->currentRow());
+}
+
+void CanSignalCreator::on_pushButton_Receivers_Add_clicked()
+{
+   QStringList receivers { "" };
+   for (size_t i = 0; i < this->canNetwork->GetNodesCount(); i++)
+   {
+      if (const auto canNode = this->canNetwork->GetNodeByIndex(i); canNode)
+      {
+         receivers.push_back(canNode->GetName());
+      }
+   }
+   auto rowCount = this->ui->tableWidget_Receivers->rowCount();
+   for (size_t i = 0; i < rowCount; i++)
+   {
+      receivers.removeAll(this->ui->tableWidget_Receivers->item(i, 0)->text());
+   }
+   this->ui->tableWidget_Receivers->insertRow(rowCount);
+
+   this->ui->tableWidget_Receivers->setItem(rowCount, 0, new TableWidgetItem<QString>{ "" });
+   this->ui->tableWidget_Receivers->setItem(rowCount, 1, new TableWidgetItem<QString, false>{ "" });
+
+   ComboDelegate* receiversDelegate = new ComboDelegate{ receivers };
+   this->ui->tableWidget_Receivers->setItemDelegateForRow(rowCount, receiversDelegate);
+}
+
+void CanSignalCreator::on_pushButton_Receivers_Remove_clicked()
+{
+   this->ui->tableWidget_Receivers->removeRow(this->ui->tableWidget_Receivers->currentRow());
 }

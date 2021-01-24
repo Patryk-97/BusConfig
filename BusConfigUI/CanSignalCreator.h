@@ -3,6 +3,7 @@
 #include "ICanNetwork.h"
 #include <QDialog>
 #include <qabstractbutton.h>
+#include <qtablewidget.h>
 
 namespace Ui
 {
@@ -17,10 +18,12 @@ public:
    ~CanSignalCreator();
 
    bool Create(ICanNetwork* canNetwork);
-   void Reset(void);
+   void Clear(void);
+   void ClearTableWidget(void);
 
 private slots:
    void on_buttonBox_clicked(QAbstractButton* button);
+
    void on_lineEdit_Name_textChanged(const QString& text);
    void on_comboBox_Message_currentTextChanged(const QString& text);
    void on_lineEdit_StartBit_textChanged(const QString& text);
@@ -34,7 +37,17 @@ private slots:
    void on_lineEdit_Unit_textChanged(const QString& text);
    void on_lineEdit_Comment_textChanged(const QString& text);
 
+   void on_tableWidget_Receivers_itemChanged(QTableWidgetItem* item);
+
+   void on_pushButton_ValueTable_Add_clicked();
+   void on_pushButton_ValueTable_Remove_clicked();
+   void on_pushButton_Receivers_Add_clicked();
+   void on_pushButton_Receivers_Remove_clicked();
+
 private:
    Ui::CanSignalCreator* ui;
    ICanNetwork* canNetwork { nullptr };
+   static constexpr int DEFINITION_TAB = 0;
+   static constexpr int VALUE_TABLE_TAB = 1;
+   static constexpr int RECEIVERS_TAB = 2;
 };

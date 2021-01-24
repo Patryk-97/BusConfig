@@ -1211,9 +1211,7 @@ void BusConfigUI::BuildCanSignalsProperties(const ICanNetwork* canNetwork)
       size_t canSignalsCount = canNetwork->GetSignalsCount();
       QStringList headerLabels;
       ranges::for_each(CanSignalManager::PROPERTIES, [&headerLabels](std::string_view property)
-      {
-         headerLabels << property.data();
-      });
+         { headerLabels << property.data(); });
 
       this->ui.tableWidget_Properties->setRowCount(canSignalsCount);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
