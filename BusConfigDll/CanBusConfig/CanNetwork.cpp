@@ -64,7 +64,8 @@ ICanNode* CanNetwork::GetNodeByIndex(size_t index) const
 
 ICanNode* CanNetwork::GetNodeByName(const char* name) const
 {
-   auto it = ranges::find_if(this->nodes, [&name](CanNode* node) { return !std::strcmp(node->GetName(), name); });
+   if (!name) return nullptr;
+   auto it = ranges::find_if(this->nodes, [&name] (CanNode* node) { return !std::strcmp(node->GetName(), name); });
    return (it != this->nodes.end() ? *it : nullptr);
 }
 
