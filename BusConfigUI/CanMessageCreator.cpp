@@ -76,7 +76,7 @@ void CanMessageCreator::on_buttonBox_clicked(QAbstractButton* button)
             return;
          }
 
-         if (this->canNetwork->MessageExists(name.toUtf8()))
+         if (this->canNetwork->MessageExists(static_cast<const char*>(name.toUtf8())))
          {
             QMessageBox::warning(this, "CanMessageCreator", "Message already exists");
             return;

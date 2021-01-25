@@ -188,6 +188,7 @@
     <ClInclude Include="..\Interfaces\ICanMessageBuilder.h" />
     <ClInclude Include="..\Interfaces\ICanNetwork.h" />
     <ClInclude Include="..\Interfaces\ICanNode.h" />
+    <ClInclude Include="..\Interfaces\ICanNodeBuilder.h" />
     <ClInclude Include="..\Interfaces\ICanSignal.h" />
     <ClInclude Include="..\Interfaces\ICanSignalBuilder.h" />
     <ClInclude Include="..\Interfaces\ICanStringAttribute.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="CanBusConfig\CanMessageBuilder.h" />
     <ClInclude Include="CanBusConfig\CanNetwork.h" />
     <ClInclude Include="CanBusConfig\CanNode.h" />
+    <ClInclude Include="CanBusConfig\CanNodeBuilder.h" />
     <ClInclude Include="CanBusConfig\CanSignal.h" />
     <ClInclude Include="CanBusConfig\CanSignalBuilder.h" />
     <ClInclude Include="CanBusConfig\CanStringAttribute.h" />
@@ -252,6 +254,7 @@
     <ClCompile Include="CanBusConfig\CanMessageBuilder.cpp" />
     <ClCompile Include="CanBusConfig\CanNetwork.cpp" />
     <ClCompile Include="CanBusConfig\CanNode.cpp" />
+    <ClCompile Include="CanBusConfig\CanNodeBuilder.cpp" />
     <ClCompile Include="CanBusConfig\CanSignal.cpp" />
     <ClCompile Include="CanBusConfig\CanSignalBuilder.cpp" />
     <ClCompile Include="CanBusConfig\CanStringAttribute.cpp" />

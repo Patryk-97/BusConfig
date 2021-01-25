@@ -240,6 +240,12 @@
     <ClInclude Include="CanBusConfig\CanMessageBuilder.h">
       <Filter>Pliki nagłówkowe\Builders</Filter>
     </ClInclude>
+    <ClInclude Include="..\Interfaces\ICanNodeBuilder.h">
+      <Filter>Interfaces\Builders</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanNodeBuilder.h">
+      <Filter>Pliki nagłówkowe\Builders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -339,6 +345,9 @@
       <Filter>Pliki źródłowe\Builders</Filter>
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanMessageBuilder.cpp">
+      <Filter>Pliki źródłowe\Builders</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanNodeBuilder.cpp">
       <Filter>Pliki źródłowe\Builders</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,7 +1,10 @@
 #pragma once
 
 #include "ICanMessageBuilder.h"
-#include "CanNetwork.h"
+#include <string>
+
+class CanNetwork; // circular dependency
+class CanNode;
 
 class CanMessageBuilder : public ICanMessageBuilder
 {

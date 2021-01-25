@@ -105,6 +105,7 @@
     <ClCompile Include="AttributeDefinitions.cpp" />
     <ClCompile Include="BusConfigUI.cpp" />
     <ClCompile Include="CanEnvVarManager.cpp" />
+    <ClCompile Include="CanMessageCreator.cpp" />
     <ClCompile Include="CanMessageManager.cpp" />
     <ClCompile Include="CanMessageSimulator.cpp" />
     <ClCompile Include="CanNetworkManager.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="CanNodeManager.h" />
     <QtMoc Include="CanSignalCreator.h" />
     <ClInclude Include="CellComboDelegate.h" />
+    <QtMoc Include="CanMessageCreator.h" />
     <ClInclude Include="TableWidgetItem.h" />
     <QtMoc Include="AttributeDefinitions.h" />
     <ClInclude Include="CanEnvVarManager.h" />

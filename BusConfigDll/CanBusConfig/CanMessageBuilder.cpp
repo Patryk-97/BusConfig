@@ -1,5 +1,5 @@
 #include "CanMessageBuilder.h"
-#include "CanNode.h"
+#include "CanNetwork.h"
 
 CanMessageBuilder::~CanMessageBuilder()
 {

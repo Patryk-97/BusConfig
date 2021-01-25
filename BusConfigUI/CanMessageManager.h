@@ -61,7 +61,7 @@ public:
    public:
       TxMethod() = delete;
 
-      const static inline QMap<std::string_view, ICanMessage::TxMethod_e> MAP
+      const static inline QMap<QString, ICanMessage::TxMethod_e> MAP
       {
          { ICanMessage::TxMethod::NO_MSG_SEND_TYPE, ICanMessage::TxMethod_e::NO_MSG_SEND_TYPE },
          { ICanMessage::TxMethod::CYCLIC, ICanMessage::TxMethod_e::CYCLIC },

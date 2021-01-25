@@ -80,6 +80,9 @@
     <ClCompile Include="CanSignalCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CanMessageCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\DllLoader.h">
@@ -136,6 +139,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="CanSignalCreator.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CanMessageCreator.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
