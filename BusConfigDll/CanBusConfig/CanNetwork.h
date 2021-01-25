@@ -8,6 +8,7 @@
 #include "CanEnvVar.h"
 #include "CanSignalBuilder.h"
 #include "CanValueTableBuilder.h"
+#include "CanMessageBuilder.h"
 #include <memory>
 
 class CanNetwork : public CanAttributeOwner, public ICanNetwork
@@ -43,11 +44,14 @@ public:
    std::vector<CanMessage*> GetMessages(void);
    ICanMessage* GetMessageFront(void) const override;
    ICanMessage* GetMessageBack(void) const override;
+   bool MessageExists(const char* name) const override;
+   bool MessageExists(uint32_t id) const override;
    bool RemoveMessageByIndex(size_t index) override;
    bool RemoveMessageByName(const char* name) override;
    bool RemoveMessageById(uint32_t id) override;
    void AddMessage(CanMessage* message);
    CanMessage* CreateAndAddMessage(void);
+   ICanMessageBuilder* MessageBuilder(void) const override;
 
    size_t GetSignalsCount(void) const override;
    ICanSignal* GetSignalByIndex(size_t index) const override;
@@ -95,4 +99,5 @@ private:
    std::string comment;
    std::unique_ptr<CanSignalBuilder> signalBuilder = std::make_unique<CanSignalBuilder>(this);
    std::unique_ptr<CanValueTableBuilder> valueTableBuilder = std::make_unique<CanValueTableBuilder>();
+   std::unique_ptr<CanMessageBuilder> messageBuilder = std::make_unique<CanMessageBuilder>(this);
 };

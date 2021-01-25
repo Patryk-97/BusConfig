@@ -7,6 +7,7 @@
 #include "ICanEnvVar.h"
 #include "ICanSignalBuilder.h"
 #include "ICanValueTableBuilder.h"
+#include "ICanMessageBuilder.h"
 
 class ICanNetwork : public ICanAttributeOwner
 {
@@ -34,9 +35,12 @@ public:
    virtual ICanMessage* GetMessageByIndex(size_t index) const = 0;
    virtual ICanMessage* GetMessageFront(void) const = 0;
    virtual ICanMessage* GetMessageBack(void) const = 0;
+   virtual bool MessageExists(const char* name) const = 0;
+   virtual bool MessageExists(uint32_t id) const = 0;
    virtual bool RemoveMessageByIndex(size_t index) = 0;
    virtual bool RemoveMessageByName(const char* name) = 0;
    virtual bool RemoveMessageById(uint32_t id) = 0;
+   virtual ICanMessageBuilder* MessageBuilder(void) const = 0;
 
    virtual size_t GetSignalsCount(void) const = 0;
    virtual ICanSignal* GetSignalByIndex(size_t index) const = 0;

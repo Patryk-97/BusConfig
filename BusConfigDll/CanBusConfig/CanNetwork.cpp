@@ -166,6 +166,16 @@ ICanMessage* CanNetwork::GetMessageBack(void) const
    return (this->messages.size() > 0 ? this->messages.back() : nullptr);
 }
 
+bool CanNetwork::MessageExists(const char* name) const
+{
+   return this->GetMessageByName(name) != nullptr;
+}
+
+bool CanNetwork::MessageExists(uint32_t id) const
+{
+   return this->GetMessageById(id) != nullptr;
+}
+
 bool CanNetwork::RemoveMessageByIndex(size_t index)
 {
    if (index < this->messages.size())
@@ -234,6 +244,11 @@ bool CanNetwork::RemoveMessageById(uint32_t id)
    {
       return false;
    }
+}
+
+ICanMessageBuilder* CanNetwork::MessageBuilder(void) const
+{
+   return this->messageBuilder.get();
 }
 
 size_t CanNetwork::GetSignalsCount(void) const

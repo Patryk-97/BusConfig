@@ -47,12 +47,12 @@ public:
 
       constexpr static std::string_view DEFAULT = STANDARD_CAN;
 
-      const static inline QMap<std::string_view, ICanMessage::IdFormat_e> MAP
+      const static inline QMap<QString, ICanMessage::IdFormat_e> MAP
       {
-         { STANDARD_CAN, ICanMessage::IdFormat_e::STANDARD_CAN },
-         { EXTENDED_CAN, ICanMessage::IdFormat_e::EXTENDED_CAN },
-         { STANDARD_CAN_FD, ICanMessage::IdFormat_e::STANDARD_CAN_FD },
-         { EXTENDED_CAN_FD, ICanMessage::IdFormat_e::EXTENDED_CAN_FD },
+         { STANDARD_CAN.data(), ICanMessage::IdFormat_e::STANDARD_CAN },
+         { EXTENDED_CAN.data(), ICanMessage::IdFormat_e::EXTENDED_CAN },
+         { STANDARD_CAN_FD.data(), ICanMessage::IdFormat_e::STANDARD_CAN_FD },
+         { EXTENDED_CAN_FD.data(), ICanMessage::IdFormat_e::EXTENDED_CAN_FD },
       };
    };
 
