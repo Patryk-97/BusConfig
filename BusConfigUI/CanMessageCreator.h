@@ -3,6 +3,7 @@
 #include "ICanNetwork.h"
 #include <QDialog>
 #include <qabstractbutton.h>
+#include <functional>
 
 namespace Ui
 {
@@ -13,7 +14,7 @@ class CanMessageCreator : public QDialog
 {
    Q_OBJECT
 public:
-   explicit CanMessageCreator(QWidget* parent = nullptr);
+   explicit CanMessageCreator(QWidget* parent = nullptr, std::function<void()> OnUpdate = nullptr);
    ~CanMessageCreator();
 
    bool Create(ICanNetwork* canNetwork);
@@ -33,5 +34,6 @@ private slots:
 
 private:
    Ui::CanMessageCreator* ui;
-   ICanNetwork* canNetwork{ nullptr };
+   ICanNetwork* canNetwork { nullptr };
+   std::function<void()> OnUpdate { nullptr };
 };

@@ -208,7 +208,6 @@ void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
          if (canSignal)
          {
             QMessageBox::information(this, "CanSignalCreator", "Successfully created signal");
-            /* todo update tree and table */
             if (this->OnUpdate)
             {
                this->OnUpdate();

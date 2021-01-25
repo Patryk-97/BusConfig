@@ -342,188 +342,47 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
 
    if (const auto item = this->ui.tableWidget_Properties->itemAt(pos); item)
    {
-      //create right click menu item
-      QMenu* itemMenu = new QMenu{ this->ui.tableWidget_Properties };
-      auto removeMenuEntry = new QAction{ "Remove", itemMenu };
-      itemMenu->addAction(removeMenuEntry);
-
+      const auto row = item->row();
       const auto itemType = this->ui.tableWidget_Properties->whatsThis();
-      const int row = item->row();
-
-      connect(removeMenuEntry, &QAction::triggered, this, [this, &itemType, row]
+      QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
+      QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
+      if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
       {
-         QString name = this->ui.tableWidget_Properties->item(row, 0)->text();
-         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
+         //create right click menu item
+         QMenu* menu = new QMenu{ this->ui.tableWidget_Properties };
 
-         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+         this->TableWidgetRemoveMenuEntryConfig(menu, item->row(), itemType, canNetwork, name);
+
+         menu->addSeparator();
+
+         if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
          {
-            if (itemType == ItemId::CAN_MESSAGE.data())
-            {
-               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
-               this->RemoveCanMessage(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_MESSAGES.data())
-            {
-               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
-               this->RemoveCanMessage(canNetwork, row);
-            }
-            else if (itemType == ItemId::CAN_TX_MESSAGES.data())
-            {
-               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
-               this->RemoveCanMessage(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_RX_MESSAGES.data())
-            {
-               this->RemoveCanMessageFromTreeWidget(canNetwork, name);
-               this->RemoveCanMessage(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_SIGNAL.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_SIGNALS.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, row);
-            }
-            else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanSignal(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanEnvVar(canNetwork, name);
-            }
-            else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
-            {
-               this->RemoveFromTreeWidget(name);
-               this->RemoveCanEnvVar(canNetwork, row);
-            }
-
-            this->ui.tableWidget_Properties->removeRow(row);
-         }
-      });
-
-      itemMenu->addSeparator();
-
-      if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
-      {
-         const auto canMessageName = this->ui.tableWidget_Properties->item(row, 2)->text();
-         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
-
-         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
-         {
+            const auto canMessageName = this->ui.tableWidget_Properties->item(row, 2)->text();
+               
             if (const auto canMessage = canNetwork->GetMessageByName(canMessageName.toUtf8()); canMessage)
             {
-               auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", itemMenu };
-               caseSensitiveMenuEntry->setCheckable(true);
-               caseSensitiveMenuEntry->setChecked(this->caseSensitive);
-               itemMenu->addAction(caseSensitiveMenuEntry);
-               connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
-               {
-                  this->caseSensitive = caseSensitiveMenuEntry->isChecked();
-               });
-
-               auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
-               itemMenu->addAction(sortByNameMenuEntry);
-
-               connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
-               {
-                  canMessage->SortSignalsByName(this->caseSensitive);
-                  this->BuildTable();
-               });
-
-               auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", itemMenu };
-               itemMenu->addAction(sortByStartBitMenuEntry);
-
-               connect(sortByStartBitMenuEntry, &QAction::triggered, this, [this, &canMessage]
-               {
-                  canMessage->SortSignalsByStartBit();
-                  this->BuildTable();
-               });
+               this->TableWidgetCaseSensitiveMenuEntryConfig(menu);
+               this->TableWidgetSortSignalsByNameMenuEntryConfig(menu, canMessage);
+               this->TableWidgetSortSignalsByStartBitMenuEntryConfig(menu, canMessage);
             }
          }
-      }
 
-      if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
-
-         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+         if (itemType == ItemId::CAN_SIGNALS.data())
          {
-            auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", itemMenu };
-            caseSensitiveMenuEntry->setCheckable(true);
-            caseSensitiveMenuEntry->setChecked(this->caseSensitive);
-            itemMenu->addAction(caseSensitiveMenuEntry);
-            connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
-            {
-               this->caseSensitive = caseSensitiveMenuEntry->isChecked();
-            });
-
-            auto sortByNameMenuEntry = new QAction{ "Sort signals by name", itemMenu };
-            itemMenu->addAction(sortByNameMenuEntry);
-
-            connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canNetwork]
-            {
-               canNetwork->SortSignalsByName(this->caseSensitive);
-               this->BuildTable();
-            });
-
-            auto sortByMessageMenuEntry = new QAction{ "Sort signals by message", itemMenu };
-            itemMenu->addAction(sortByMessageMenuEntry);
-
-            connect(sortByMessageMenuEntry, &QAction::triggered, this, [this, &canNetwork]
-            {
-               canNetwork->SortSignalsByMessageName(this->caseSensitive);
-               this->BuildTable();
-            });
+            this->TableWidgetCaseSensitiveMenuEntryConfig(menu);
+            this->TableWidgetSortSignalsByNameMenuEntryConfig(menu, canNetwork);
+            this->TableWidgetSortSignalsByMessageMenuEntryConfig(menu, canNetwork);
          }
-      }
 
-      if (itemType == ItemId::CAN_SIGNALS.data())
-      {
-         itemMenu->addSeparator();
-
-         QString networkName = this->ui.tableWidget_Properties->item(row, 1)->text();
-
-         if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+         if (itemType == ItemId::CAN_SIGNALS.data())
          {
-            auto newSignaMenuEntry = new QAction{ "New signal", itemMenu };
-            itemMenu->addAction(newSignaMenuEntry);
+            menu->addSeparator();
 
-            connect(newSignaMenuEntry, &QAction::triggered, this, [this, &canNetwork]
-            {
-               this->canSignalCreator->Create(canNetwork);
-               this->canSignalCreator->setModal(true);
-               this->canSignalCreator->show();
-            });
+            this->TableWidgetNewSignalMenuEntryConfig(menu, canNetwork);
          }
-      }
 
-      QAction* input = itemMenu->exec(globalPos);
+         QAction* input = menu->exec(globalPos);
+      }
    }
 }
 
@@ -1767,3 +1626,174 @@ QTreeWidgetItem* BusConfigUI::GetTreeItem(const QString& ancestorItemWhatsThis, 
    }
    return nullptr;
 };
+
+void BusConfigUI::TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const QString& itemType, ICanNetwork* canNetwork, const QString& name)
+{
+   if (canNetwork && menu)
+   {
+      auto removeMenuEntry = new QAction{ "Remove", menu };
+      menu->addAction(removeMenuEntry);
+
+      connect(removeMenuEntry, &QAction::triggered, this, [this, &itemType, row, &name, &canNetwork]
+      {
+         if (itemType == ItemId::CAN_MESSAGE.data())
+         {
+            this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+            this->RemoveCanMessage(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MESSAGES.data())
+         {
+            this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+            this->RemoveCanMessage(canNetwork, row);
+         }
+         else if (itemType == ItemId::CAN_TX_MESSAGES.data())
+         {
+            this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+            this->RemoveCanMessage(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_RX_MESSAGES.data())
+         {
+            this->RemoveCanMessageFromTreeWidget(canNetwork, name);
+            this->RemoveCanMessage(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_SIGNAL.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, row);
+         }
+         else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_TX_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_TX_MESSAGE_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_RX_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MAPPED_RX_MESSAGE_SIGNALS.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanSignal(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLE.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanEnvVar(canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
+         {
+            this->RemoveFromTreeWidget(name);
+            this->RemoveCanEnvVar(canNetwork, row);
+         }
+
+         this->ui.tableWidget_Properties->removeRow(row);
+      });
+   }
+}
+
+void BusConfigUI::TableWidgetCaseSensitiveMenuEntryConfig(QMenu* menu)
+{
+   if (menu)
+   {
+      auto caseSensitiveMenuEntry = new QAction{ "Case sensitive", menu };
+      caseSensitiveMenuEntry->setCheckable(true);
+      caseSensitiveMenuEntry->setChecked(this->caseSensitive);
+      menu->addAction(caseSensitiveMenuEntry);
+      connect(caseSensitiveMenuEntry, &QAction::triggered, this, [&caseSensitiveMenuEntry, this]()
+         {
+            this->caseSensitive = caseSensitiveMenuEntry->isChecked();
+         });
+   }
+}
+
+void BusConfigUI::TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (menu && canNetwork)
+   {
+      auto sortByNameMenuEntry = new QAction{ "Sort signals by name", menu };
+      menu->addAction(sortByNameMenuEntry);
+
+      connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canNetwork]
+      {
+         canNetwork->SortSignalsByName(this->caseSensitive);
+         this->BuildTable();
+      });
+   }
+}
+
+void BusConfigUI::TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanMessage* canMessage)
+{
+   if (menu && canMessage)
+   {
+      auto sortByNameMenuEntry = new QAction{ "Sort signals by name", menu };
+      menu->addAction(sortByNameMenuEntry);
+
+      connect(sortByNameMenuEntry, &QAction::triggered, this, [this, &canMessage]
+      {
+         canMessage->SortSignalsByName(this->caseSensitive);
+         this->BuildTable();
+      });
+   }
+}
+
+void BusConfigUI::TableWidgetSortSignalsByStartBitMenuEntryConfig(QMenu* menu, ICanMessage* canMessage)
+{
+   if (menu && canMessage)
+   {
+      auto sortByStartBitMenuEntry = new QAction{ "Sort signals by start bit", menu };
+      menu->addAction(sortByStartBitMenuEntry);
+
+      connect(sortByStartBitMenuEntry, &QAction::triggered, this, [this, &canMessage]
+      {
+         canMessage->SortSignalsByStartBit();
+         this->BuildTable();
+      });
+   }
+}
+
+void BusConfigUI::TableWidgetSortSignalsByMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (menu && canNetwork)
+   {
+      auto sortByMessageMenuEntry = new QAction{ "Sort signals by message", menu };
+      menu->addAction(sortByMessageMenuEntry);
+
+      connect(sortByMessageMenuEntry, &QAction::triggered, this, [this, &canNetwork]
+      {
+         canNetwork->SortSignalsByMessageName(this->caseSensitive);
+         this->BuildTable();
+      });
+   }
+}
+
+void BusConfigUI::TableWidgetNewSignalMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (menu && canNetwork)
+   {
+      auto newSignaMenuEntry = new QAction{ "New signal", menu };
+      menu->addAction(newSignaMenuEntry);
+
+      connect(newSignaMenuEntry, &QAction::triggered, this, [this, &canNetwork]
+      {
+         this->canSignalCreator->Create(canNetwork);
+         this->canSignalCreator->setModal(true);
+         this->canSignalCreator->show();
+      });
+   }
+}

@@ -85,6 +85,14 @@ private:
    void SetComboDelegateForCanEnvVar(void);
    QTreeWidgetItem* GetTreeItem(const QString& ancestorItemWhatsThis, QTreeWidgetItem* descendantItem);
 
+   void TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const QString& itemType, ICanNetwork* canNetwork, const QString& name);
+   void TableWidgetCaseSensitiveMenuEntryConfig(QMenu* menu);
+   void TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
+   void TableWidgetSortSignalsByStartBitMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
+   void TableWidgetSortSignalsByMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void TableWidgetNewSignalMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+
    template <std::integral Integral>
    inline void RemoveCanMessage(ICanNetwork* canNetwork, const Integral& integral)
    {

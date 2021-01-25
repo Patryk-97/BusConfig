@@ -7,8 +7,8 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 
-CanMessageCreator::CanMessageCreator(QWidget* parent) :
-   QDialog(parent),
+CanMessageCreator::CanMessageCreator(QWidget* parent, std::function<void()> OnUpdate) :
+   QDialog(parent), OnUpdate { std::move(OnUpdate) },
    ui(new Ui::CanMessageCreator)
 {
    ui->setupUi(this);
@@ -124,7 +124,10 @@ void CanMessageCreator::on_buttonBox_clicked(QAbstractButton* button)
          if (canMessage)
          {
             QMessageBox::information(this, "CanMessageCreator", "Successfully created message");
-            /* todo update tree and table */
+            if (this->OnUpdate)
+            {
+               this->OnUpdate();
+            }
          }
       }
    }

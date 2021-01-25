@@ -5,8 +5,8 @@
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 
-CanNodeCreator::CanNodeCreator(QWidget* parent) :
-   QDialog(parent),
+CanNodeCreator::CanNodeCreator(QWidget* parent, std::function<void()> OnUpdate) :
+   QDialog(parent), OnUpdate { std::move(OnUpdate) },
    ui(new Ui::CanNodeCreator)
 {
    ui->setupUi(this);
@@ -81,7 +81,10 @@ void CanNodeCreator::on_buttonBox_clicked(QAbstractButton* button)
          if (canMessage)
          {
             QMessageBox::information(this, "CanNodeCreator", "Successfully created node");
-            /* todo update tree and table */
+            if (this->OnUpdate)
+            {
+               this->OnUpdate();
+            }
          }
       }
    }
