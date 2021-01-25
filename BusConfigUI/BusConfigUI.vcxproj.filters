@@ -161,6 +161,9 @@
     <QtUic Include="CanMessageCreator.ui">
       <Filter>Resource Files</Filter>
     </QtUic>
+    <QtUic Include="CanNodeCreator.ui">
+      <Filter>Resource Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BusConfigUI.rc">
