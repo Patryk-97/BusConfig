@@ -9,6 +9,7 @@
 #include "CanSignalBuilder.h"
 #include "CanValueTableBuilder.h"
 #include "CanMessageBuilder.h"
+#include "CanNodeBuilder.h"
 #include <memory>
 
 class CanNetwork : public CanAttributeOwner, public ICanNetwork
@@ -30,12 +31,14 @@ public:
    size_t GetNodesCount(void) const override;
    ICanNode* GetNodeByIndex(size_t index) const override;
    ICanNode* GetNodeByName(const char* name) const override;
+   bool NodeExists(const char* name) const override;
    std::vector<CanNode*> GetNodes(void);
    size_t GetNodeIndex(const char* name) const override;
    bool RemoveNodeByIndex(size_t index) override;
    bool RemoveNodeByName(const char* name) override;
    void AddNode(CanNode* node);
    CanNode* CreateAndAddNode(void);
+   ICanNodeBuilder* NodeBuilder(void) const override;
 
    size_t GetMessagesCount(void) const override;
    ICanMessage* GetMessageById(uint32_t id) const override;
@@ -100,4 +103,5 @@ private:
    std::unique_ptr<CanSignalBuilder> signalBuilder = std::make_unique<CanSignalBuilder>(this);
    std::unique_ptr<CanValueTableBuilder> valueTableBuilder = std::make_unique<CanValueTableBuilder>();
    std::unique_ptr<CanMessageBuilder> messageBuilder = std::make_unique<CanMessageBuilder>(this);
+   std::unique_ptr<CanNodeBuilder> nodeBuilder = std::make_unique<CanNodeBuilder>(this);
 };

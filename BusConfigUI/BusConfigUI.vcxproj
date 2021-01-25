@@ -109,6 +109,7 @@
     <ClCompile Include="CanMessageManager.cpp" />
     <ClCompile Include="CanMessageSimulator.cpp" />
     <ClCompile Include="CanNetworkManager.cpp" />
+    <ClCompile Include="CanNodeCreator.cpp" />
     <ClCompile Include="CanNodeManager.cpp" />
     <ClCompile Include="CanSignalCreator.cpp" />
     <ClCompile Include="CanSignalManager.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="..\Utils\helpers.h" />
     <QtMoc Include="CanMessageSimulator.h" />
     <ClInclude Include="CanNetworkManager.h" />
+    <QtMoc Include="CanNodeCreator.h" />
     <ClInclude Include="CanNodeManager.h" />
     <QtMoc Include="CanSignalCreator.h" />
     <ClInclude Include="CellComboDelegate.h" />

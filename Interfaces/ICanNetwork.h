@@ -8,6 +8,7 @@
 #include "ICanSignalBuilder.h"
 #include "ICanValueTableBuilder.h"
 #include "ICanMessageBuilder.h"
+#include "ICanNodeBuilder.h"
 
 class ICanNetwork : public ICanAttributeOwner
 {
@@ -25,9 +26,11 @@ public:
    virtual size_t GetNodesCount(void) const = 0;
    virtual ICanNode* GetNodeByIndex(size_t index) const = 0;
    virtual ICanNode* GetNodeByName(const char* name) const = 0;
+   virtual bool NodeExists(const char* name) const = 0;
    virtual size_t GetNodeIndex(const char* name) const = 0;
    virtual bool RemoveNodeByIndex(size_t index) = 0;
    virtual bool RemoveNodeByName(const char* name) = 0;
+   virtual ICanNodeBuilder* NodeBuilder(void) const = 0;
 
    virtual size_t GetMessagesCount(void) const = 0;
    virtual ICanMessage* GetMessageById(uint32_t id) const = 0;

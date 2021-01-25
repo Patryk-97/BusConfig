@@ -3,7 +3,6 @@
 #include "ICanNetwork.h"
 #include <QDialog>
 #include <qabstractbutton.h>
-#include <qtablewidget.h>
 
 namespace Ui
 {

@@ -69,6 +69,11 @@ ICanNode* CanNetwork::GetNodeByName(const char* name) const
    return (it != this->nodes.end() ? *it : nullptr);
 }
 
+bool CanNetwork::NodeExists(const char* name) const
+{
+   return this->GetNodeByName(name) != nullptr;
+}
+
 std::vector<CanNode*> CanNetwork::GetNodes(void)
 {
    return this->nodes;
@@ -127,6 +132,11 @@ CanNode* CanNetwork::CreateAndAddNode(void)
    CanNode* node = new CanNode{};
    this->nodes.push_back(node);
    return node;
+}
+
+ICanNodeBuilder* CanNetwork::NodeBuilder(void) const
+{
+   return this->nodeBuilder.get();
 }
 
 size_t CanNetwork::GetMessagesCount(void) const

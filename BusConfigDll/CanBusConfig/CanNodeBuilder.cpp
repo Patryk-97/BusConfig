@@ -1,4 +1,5 @@
 #include "CanNodeBuilder.h"
+#include "CanNetwork.h"
 
 CanNodeBuilder::~CanNodeBuilder()
 {

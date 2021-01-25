@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ICanNodeBuilder.h"
-#include "CanNetwork.h"
+#include <string>
+
+class CanNetwork; // circular dependency
 
 class CanNodeBuilder : public ICanNodeBuilder
 {

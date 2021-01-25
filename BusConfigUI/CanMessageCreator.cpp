@@ -3,10 +3,9 @@
 #include "ICanMessageBuilder.h"
 #include "CanMessageManager.h"
 #include "Conversions.h"
-#include "TableWidgetItem.h"
 #include "ComboDelegate.h"
-#include <qmessagebox.h>
 #include <qpushbutton.h>
+#include <qmessagebox.h>
 
 CanMessageCreator::CanMessageCreator(QWidget* parent) :
    QDialog(parent),
@@ -168,5 +167,5 @@ void CanMessageCreator::on_comboBox_MainTransmitter_currentTextChanged(const QSt
 
 void CanMessageCreator::on_lineEdit_Comment_textChanged(const QString& text)
 {
-
+   this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
 }
