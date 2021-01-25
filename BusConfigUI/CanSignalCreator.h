@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <qabstractbutton.h>
 #include <qtablewidget.h>
+#include <functional>
 
 namespace Ui
 {
@@ -14,7 +15,7 @@ class CanSignalCreator : public QDialog
 {
    Q_OBJECT
 public:
-   explicit CanSignalCreator(QWidget* parent = nullptr);
+   explicit CanSignalCreator(QWidget* parent = nullptr, std::function<void()> OnUpdate = nullptr);
    ~CanSignalCreator();
 
    bool Create(ICanNetwork* canNetwork);
@@ -47,7 +48,5 @@ private slots:
 private:
    Ui::CanSignalCreator* ui;
    ICanNetwork* canNetwork { nullptr };
-   static constexpr int DEFINITION_TAB = 0;
-   static constexpr int VALUE_TABLE_TAB = 1;
-   static constexpr int RECEIVERS_TAB = 2;
+   std::function<void()> OnUpdate { nullptr };
 };

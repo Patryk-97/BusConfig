@@ -37,15 +37,12 @@ DllLoader<ICanBusConfig> dllLoader{ "BusConfigDll", "CanBusConfigInstanceCreate"
 
 bool LoadBusConfigDll(void)
 {
-   // local variables
-   bool rV = false;
-   ICanBusConfig* busConfig = nullptr;
+   // locals
+   bool rV { false };
 
    if (dllLoader.Load())
    {
-      busConfig = dllLoader.pfCreate();
-
-      if (busConfig != nullptr)
+      if (auto busConfig = dllLoader.pfCreate(); busConfig)
       {
          rV = true;
          dllLoader.pfDelete(busConfig);
@@ -591,6 +588,7 @@ void BusConfigUI::AddLog(const QString& log)
 
 void BusConfigUI::BuildTree(void)
 {
+   this->ui.treeWidget_MainView->clear();
    auto networksTreeItem = new QTreeWidgetItem{ this->ui.treeWidget_MainView };
    this->ui.treeWidget_MainView->addTopLevelItem(networksTreeItem);
    networksTreeItem->setText(0, ItemId::NETWORKS.data());

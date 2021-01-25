@@ -142,7 +142,7 @@ private:
     CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
     AttributeDefinitions* attributeDefinitions { new AttributeDefinitions {} };
     CanMessageSimulator* canMessageSimulator { new CanMessageSimulator {} };
-    CanSignalCreator* canSignalCreator { new CanSignalCreator {} };
+    CanSignalCreator* canSignalCreator { new CanSignalCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
     bool isTableWidgetFilled { false };
     QTreeWidgetItem* currentTreeWidgetItem { nullptr };
     bool caseSensitive { false };
