@@ -10,7 +10,7 @@
 #include "CanMessageCreator.h"
 #include "CanNodeCreator.h"
 #include <qmap.h>
-#include <qset.h>
+#include <unordered_set>
 #include <QCloseEvent>
 
 class BusConfigUI : public QMainWindow
@@ -37,6 +37,10 @@ private slots:
    void on_tableWidget_Properties_cellChanged(int row, int column);
    void ShowMenuForTableWidgetItem(const QPoint& pos);
    void ShowMenuForTreeWidgetItem(const QPoint& pos);
+   void on_pushButton_Find_clicked();
+   void on_checkBox_FullMatch_stateChanged(int state);
+   void on_checkBox_CaseSensitive_stateChanged(int state);
+   void on_lineEdit_Find_textChanged(const QString& text);
 
 private:
 
@@ -183,7 +187,8 @@ private:
     bool isTableWidgetFilled { false };
     QTreeWidgetItem* currentTreeWidgetItem { nullptr };
     bool caseSensitive { false };
-    QSet<QTreeWidgetItem*> findResults;
+    std::unordered_set<QTreeWidgetItem*> findResults;
+    size_t findResultsIndex {};
 
     enum class Icon_e
     {

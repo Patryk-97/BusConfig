@@ -430,6 +430,54 @@ void BusConfigUI::ShowMenuForTreeWidgetItem(const QPoint& pos)
    }
 }
 
+void BusConfigUI::on_pushButton_Find_clicked()
+{
+   if (this->findResults.size() == 0)
+   {
+      this->PrepareFindResults();
+   }
+
+   if (this->findResults.size() > 0)
+   {
+      this->ui.lineEdit_Find->setStyleSheet("");
+      if (this->findResultsIndex >= this->findResults.size())
+      {
+         this->findResultsIndex = 0;
+      }
+
+      if (this->ui.treeWidget_MainView->topLevelItemCount() > 0)
+      {
+         auto findResult = *std::next(this->findResults.begin(), this->findResultsIndex);
+         this->ui.treeWidget_MainView->setCurrentItem(findResult);
+         findResult->setSelected(true);
+         this->ui.treeWidget_MainView->setFocus();
+         this->findResultsIndex++;
+      }
+   }
+   else
+   {
+      this->ui.lineEdit_Find->setStyleSheet("border: 1px solid red");
+   }
+}
+
+void BusConfigUI::on_checkBox_FullMatch_stateChanged(int state)
+{
+   this->findResults.clear();
+   this->findResultsIndex = 0;
+}
+
+void BusConfigUI::on_checkBox_CaseSensitive_stateChanged(int state)
+{
+   this->findResults.clear();
+   this->findResultsIndex = 0;
+}
+
+void BusConfigUI::on_lineEdit_Find_textChanged(const QString& text)
+{
+   this->findResults.clear();
+   this->findResultsIndex = 0;
+}
+
 void BusConfigUI::closeEvent(QCloseEvent* closeEvent)
 {
    const auto buttonResult = QMessageBox::question(this, "BusConfigUI", tr("Are you sure to close application?\n"), QMessageBox::No | QMessageBox::Yes, QMessageBox::Yes);
@@ -879,6 +927,8 @@ void BusConfigUI::Clear(void)
    this->canBusConfig->Clear();
    this->ui.treeWidget_MainView->clear();
    this->ClearTableWidget();
+   this->findResults.clear();
+   this->findResultsIndex = 0;
 }
 
 void BusConfigUI::ClearTableWidget(void)

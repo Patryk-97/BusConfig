@@ -49,12 +49,21 @@
         <property name="text">
          <string>Full Match</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="tristate">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_CaseSensitive">
         <property name="text">
          <string>Case Sensitive</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
