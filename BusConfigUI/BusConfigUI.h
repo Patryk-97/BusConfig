@@ -7,6 +7,8 @@
 #include "AttributeDefinitions.h"
 #include "CanMessageSimulator.h"
 #include "CanSignalCreator.h"
+#include "CanMessageCreator.h"
+#include "CanNodeCreator.h"
 #include <qmap.h>
 #include <QCloseEvent>
 
@@ -93,6 +95,18 @@ private:
    void TableWidgetSortSignalsByMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
    void TableWidgetNewSignalMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
 
+   void TableWidgetSortMessagesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void TableWidgetSortMessagesByIdMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void TableWidgetNewMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+
+   void TableWidgetSortNodesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void TableWidgetNewNodeMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+
+   void ShowMenuForCanSignalsTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanMessageSignalsTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanMessagesTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanNodesTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
+
    template <std::integral Integral>
    inline void RemoveCanMessage(ICanNetwork* canNetwork, const Integral& integral)
    {
@@ -151,6 +165,8 @@ private:
     AttributeDefinitions* attributeDefinitions { new AttributeDefinitions {} };
     CanMessageSimulator* canMessageSimulator { new CanMessageSimulator {} };
     CanSignalCreator* canSignalCreator { new CanSignalCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
+    CanMessageCreator* canMessageCreator { new CanMessageCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
+    CanNodeCreator* canNodeCreator { new CanNodeCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
     bool isTableWidgetFilled { false };
     QTreeWidgetItem* currentTreeWidgetItem { nullptr };
     bool caseSensitive { false };

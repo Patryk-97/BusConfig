@@ -30,6 +30,7 @@ public:
    virtual size_t GetNodeIndex(const char* name) const = 0;
    virtual bool RemoveNodeByIndex(size_t index) = 0;
    virtual bool RemoveNodeByName(const char* name) = 0;
+   virtual void SortNodesByName(bool caseSensitive = false) = 0;
    virtual ICanNodeBuilder* NodeBuilder(void) const = 0;
 
    virtual size_t GetMessagesCount(void) const = 0;
@@ -43,6 +44,8 @@ public:
    virtual bool RemoveMessageByIndex(size_t index) = 0;
    virtual bool RemoveMessageByName(const char* name) = 0;
    virtual bool RemoveMessageById(uint32_t id) = 0;
+   virtual void SortMessagesByName(bool caseSensitive = false) = 0;
+   virtual void SortMessagesById(void) = 0;
    virtual ICanMessageBuilder* MessageBuilder(void) const = 0;
 
    virtual size_t GetSignalsCount(void) const = 0;

@@ -36,6 +36,7 @@ public:
    size_t GetNodeIndex(const char* name) const override;
    bool RemoveNodeByIndex(size_t index) override;
    bool RemoveNodeByName(const char* name) override;
+   void SortNodesByName(bool caseSensitive = false) override;
    void AddNode(CanNode* node);
    CanNode* CreateAndAddNode(void);
    ICanNodeBuilder* NodeBuilder(void) const override;
@@ -52,6 +53,8 @@ public:
    bool RemoveMessageByIndex(size_t index) override;
    bool RemoveMessageByName(const char* name) override;
    bool RemoveMessageById(uint32_t id) override;
+   void SortMessagesByName(bool caseSensitive = false) override;
+   void SortMessagesById(void) override;
    void AddMessage(CanMessage* message);
    CanMessage* CreateAndAddMessage(void);
    ICanMessageBuilder* MessageBuilder(void) const override;

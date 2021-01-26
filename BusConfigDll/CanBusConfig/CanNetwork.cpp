@@ -103,9 +103,7 @@ bool CanNetwork::RemoveNodeByIndex(size_t index)
 bool CanNetwork::RemoveNodeByName(const char* name)
 {
    auto it = ranges::find_if(this->nodes, [&name](CanNode* node)
-      {
-         return !std::strcmp(node->GetName(), name);
-      });
+      { return !std::strcmp(node->GetName(), name); });
 
    if (it != this->nodes.end())
    {
@@ -117,6 +115,14 @@ bool CanNetwork::RemoveNodeByName(const char* name)
    {
       return false;
    }
+}
+
+void CanNetwork::SortNodesByName(bool caseSensitive)
+{
+   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
+      { return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2); };
+   ranges::sort(this->nodes, [&comparator] (CanNode* node1, CanNode* node2)
+      { return comparator(node1->GetName(), node2->GetName()); });
 }
 
 void CanNetwork::AddNode(CanNode* node)
@@ -256,6 +262,20 @@ bool CanNetwork::RemoveMessageById(uint32_t id)
    }
 }
 
+void CanNetwork::SortMessagesByName(bool caseSensitive)
+{
+   auto comparator = [&caseSensitive] (const std::string& name1, const std::string& name2)
+      { return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2); };
+   ranges::sort(this->messages, [&comparator] (CanMessage* message1, CanMessage* message2)
+      { return comparator(message1->GetName(), message2->GetName()); });
+}
+
+void CanNetwork::SortMessagesById(void)
+{
+   ranges::sort(this->messages, [] (CanMessage* message1, CanMessage* message2)
+      { return message1->GetId() < message2->GetId(); });
+}
+
 ICanMessageBuilder* CanNetwork::MessageBuilder(void) const
 {
    return this->messageBuilder.get();
@@ -321,13 +341,9 @@ bool CanNetwork::RemoveSignalByIndex(size_t index)
 void CanNetwork::SortSignalsByName(bool caseSensitive)
 {
    auto comparator = [&caseSensitive](const std::string& name1, const std::string& name2)
-   {
-      return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2);
-   };
+      { return caseSensitive ? (name1 < name2) : helpers::iless(name1, name2); };
    ranges::sort(this->signals, [&comparator](CanSignal* signal1, CanSignal* signal2)
-      {
-         return comparator(signal1->GetName(), signal2->GetName());
-      });
+      { return comparator(signal1->GetName(), signal2->GetName()); });
 }
 
 void CanNetwork::SortSignalsByMessageName(bool caseSensitive)
