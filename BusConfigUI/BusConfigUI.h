@@ -39,6 +39,7 @@ private slots:
    void ShowMenuForTableWidgetItem(const QPoint& pos);
    void ShowMenuForTreeWidgetItem(const QPoint& pos);
    void on_pushButton_Find_clicked();
+   void on_lineEdit_Find_returnPressed();
    void on_checkBox_FullMatch_stateChanged(int state);
    void on_checkBox_CaseSensitive_stateChanged(int state);
    void on_lineEdit_Find_textChanged(const QString& text);
@@ -123,6 +124,7 @@ private:
    void ShowMenuForCanNodeTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
 
    void RemoveFromTableWidget(const QString& name);
+   void FindingProcess();
    void PrepareFindResults(void);
 
    template <std::integral Integral>

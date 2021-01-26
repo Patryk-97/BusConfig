@@ -447,32 +447,12 @@ void BusConfigUI::ShowMenuForTreeWidgetItem(const QPoint& pos)
 
 void BusConfigUI::on_pushButton_Find_clicked()
 {
-   if (this->findResults.size() == 0)
-   {
-      this->PrepareFindResults();
-   }
+   this->FindingProcess();
+}
 
-   if (this->findResults.size() > 0)
-   {
-      this->ui.lineEdit_Find->setStyleSheet("");
-      if (this->findResultsIndex >= this->findResults.size())
-      {
-         this->findResultsIndex = 0;
-      }
-
-      if (this->ui.treeWidget_MainView->topLevelItemCount() > 0)
-      {
-         auto findResult = *std::next(this->findResults.begin(), this->findResultsIndex);
-         this->ui.treeWidget_MainView->setCurrentItem(findResult);
-         findResult->setSelected(true);
-         this->ui.treeWidget_MainView->setFocus();
-         this->findResultsIndex++;
-      }
-   }
-   else
-   {
-      this->ui.lineEdit_Find->setStyleSheet("border: 1px solid red");
-   }
+void BusConfigUI::on_lineEdit_Find_returnPressed()
+{
+   this->FindingProcess();
 }
 
 void BusConfigUI::on_checkBox_FullMatch_stateChanged(int state)
@@ -2141,6 +2121,36 @@ void BusConfigUI::RemoveFromTableWidget(const QString& name)
             break;
          }
       }
+   }
+}
+
+void BusConfigUI::FindingProcess()
+{
+   if (this->findResults.size() == 0)
+   {
+      this->PrepareFindResults();
+   }
+
+   if (this->findResults.size() > 0)
+   {
+      this->ui.lineEdit_Find->setStyleSheet("");
+      if (this->findResultsIndex >= this->findResults.size())
+      {
+         this->findResultsIndex = 0;
+      }
+
+      if (this->ui.treeWidget_MainView->topLevelItemCount() > 0)
+      {
+         auto findResult = *std::next(this->findResults.begin(), this->findResultsIndex);
+         this->ui.treeWidget_MainView->setCurrentItem(findResult);
+         findResult->setSelected(true);
+         this->ui.treeWidget_MainView->setFocus();
+         this->findResultsIndex++;
+      }
+   }
+   else
+   {
+      this->ui.lineEdit_Find->setStyleSheet("border: 1px solid red");
    }
 }
 
