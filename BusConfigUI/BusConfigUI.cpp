@@ -1473,7 +1473,7 @@ void BusConfigUI::BuildCanNodeRow(const ICanNode* node, int row)
 
       const auto canNetwork = node->GetNetwork();
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetwork->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetworkName });
 
       this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toHexQString(node->GetAddress()) });
       this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ node->GetComment() });
@@ -1488,14 +1488,14 @@ void BusConfigUI::BuildCanSignalRow(const ICanSignal* signal, int row)
 
       const auto canNetwork = signal->GetNetwork();
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetwork->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 1, new TableWidgetItem{ canNetworkName });
 
       const auto canMessage = signal->GetMessage();
       const QString canMessageName = canMessage ? canMessage->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ canMessage->GetName() });
+      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ canMessageName });
 
       this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem<uint32_t>{ toQString(signal->GetStartBit()) });
-      this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ toQString(signal->GetSize()) });
+      this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toQString(signal->GetSize()) });
 
       int pos = static_cast<int>(signal->GetByteOrder());
       const QString byteOrder = pos >= 0 ? CanSignalManager::BYTE_ORDERS[pos] : CanSignalManager::ByteOrder::DEFAULT.data();
@@ -1511,18 +1511,18 @@ void BusConfigUI::BuildCanSignalRow(const ICanSignal* signal, int row)
          return "";
       });
 
-      this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ byteOrder });
-      this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ valueType });
+      this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ byteOrder });
+      this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ valueType });
 
-      this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ toQString(signal->GetInitialValue()) });
-      this->ui.tableWidget_Properties->setItem(row, 8, new QTableWidgetItem{ toQString(signal->GetFactor()) });
-      this->ui.tableWidget_Properties->setItem(row, 9, new QTableWidgetItem{ toQString(signal->GetOffset()) });
-      this->ui.tableWidget_Properties->setItem(row, 10, new QTableWidgetItem{ toQString(signal->GetMinimum()) });
-      this->ui.tableWidget_Properties->setItem(row, 11, new QTableWidgetItem{ toQString(signal->GetMaximum()) });
+      this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ toQString(signal->GetInitialValue()) });
+      this->ui.tableWidget_Properties->setItem(row, 8, new TableWidgetItem{ toQString(signal->GetFactor()) });
+      this->ui.tableWidget_Properties->setItem(row, 9, new TableWidgetItem{ toQString(signal->GetOffset()) });
+      this->ui.tableWidget_Properties->setItem(row, 10, new TableWidgetItem{ toQString(signal->GetMinimum()) });
+      this->ui.tableWidget_Properties->setItem(row, 11, new TableWidgetItem{ toQString(signal->GetMaximum()) });
 
-      this->ui.tableWidget_Properties->setItem(row, 12, new QTableWidgetItem{ signal->GetUnit() });
-      this->ui.tableWidget_Properties->setItem(row, 13, new QTableWidgetItem{ valueTableName });
-      this->ui.tableWidget_Properties->setItem(row, 14, new QTableWidgetItem{ signal->GetComment() });
+      this->ui.tableWidget_Properties->setItem(row, 12, new TableWidgetItem{ signal->GetUnit() });
+      this->ui.tableWidget_Properties->setItem(row, 13, new TableWidgetItem{ valueTableName });
+      this->ui.tableWidget_Properties->setItem(row, 14, new TableWidgetItem{ signal->GetComment() });
    }
 }
 
@@ -1534,20 +1534,20 @@ void BusConfigUI::BuildCanMessageRow(const ICanMessage* canMessage, int row)
       
       const auto canNetwork = canMessage->GetNetwork();
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetworkName });
+      this->ui.tableWidget_Properties->setItem(row, 1, new TableWidgetItem{ canNetworkName });
       
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toQString(canMessage->GetId()) });
+      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ toQString(canMessage->GetId()) });
 
       int pos = static_cast<int>(canMessage->GetIdFormat());
       const QString idFormat = pos >= 0 ? CanMessageManager::ID_FORMATS[pos] : CanMessageManager::IdFormat::DEFAULT.data();
       pos = static_cast<int>(canMessage->GetTxMethod());
       const QString txMethod = pos >= 0 ? CanMessageManager::TX_METHODS[pos] : ICanMessage::TxMethod::DEFAULT;
 
-      this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ idFormat });
-      this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ toQString(canMessage->GetSize()) });
-      this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ txMethod });
-      this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ toQString(canMessage->GetCycleTime()) });
-      this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ canMessage->GetComment() });
+      this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem{ idFormat });
+      this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toQString(canMessage->GetSize()) });
+      this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ txMethod });
+      this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ toQString(canMessage->GetCycleTime()) });
+      this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ canMessage->GetComment() });
    }
 }
 
@@ -1590,7 +1590,7 @@ void BusConfigUI::BuildCanEnvVarRow(const ICanEnvVar* envVar, int row)
 
       const auto canNetwork = envVar->GetNetwork();
       const QString canNetworkName = (canNetwork ? canNetwork->GetName() : "");
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetworkName });
+      this->ui.tableWidget_Properties->setItem(row, 1, new TableWidgetItem{ canNetworkName });
 
       int pos = static_cast<int>(envVar->GetType());
       const QString type = pos >= 0 ? CanEnvVarManager::TYPES[pos] : CanEnvVarManager::Type::DEFAULT.data();
@@ -1606,38 +1606,38 @@ void BusConfigUI::BuildCanEnvVarRow(const ICanEnvVar* envVar, int row)
          return "";
       });
 
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ type });
-      this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ envVar->GetUnit() });
+      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ type });
+      this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem{ envVar->GetUnit() });
 
       std::visit([this, &row](auto&& arg)
       {
          using T = std::decay_t<decltype(arg)>;
          if constexpr (std::is_same_v<T, const ICanIntEnvVar*> || std::is_same_v<T, const ICanFloatEnvVar*>)
          {
-            this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ toQString(arg->GetMinimum()) });
-            this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ toQString(arg->GetMaximum()) });
-            this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ toQString(arg->GetInitialValue()) });
-            this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toQString(arg->GetMinimum()) });
+            this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ toQString(arg->GetMaximum()) });
+            this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ toQString(arg->GetInitialValue()) });
+            this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ "-" });
          }
          else if constexpr (std::is_same_v<T, const ICanDataEnvVar*>)
          {
-            this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ toQString(arg->GetLength()) });
+            this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ toQString(arg->GetLength()) });
          }
          else
          {
-            this->ui.tableWidget_Properties->setItem(row, 4, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 5, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 6, new QTableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 7, new QTableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ "-" });
+            this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ "-" });
          }
       }, vCanEnvVar);
 
-      this->ui.tableWidget_Properties->setItem(row, 8, new QTableWidgetItem{ accessType });
-      this->ui.tableWidget_Properties->setItem(row, 9, new QTableWidgetItem{ valueTableName });
-      this->ui.tableWidget_Properties->setItem(row, 10, new QTableWidgetItem{ envVar->GetComment() });
+      this->ui.tableWidget_Properties->setItem(row, 8, new TableWidgetItem{ accessType });
+      this->ui.tableWidget_Properties->setItem(row, 9, new TableWidgetItem{ valueTableName });
+      this->ui.tableWidget_Properties->setItem(row, 10, new TableWidgetItem{ envVar->GetComment() });
    }
 }
 
