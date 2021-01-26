@@ -151,7 +151,22 @@ void BusConfigUI::on_actionOpen_triggered()
    QFileDialog dlgOpen { this };
    dlgOpen.setWindowTitle("Open bus configuration file");
    dlgOpen.setFileMode(QFileDialog::ExistingFile);
-   dlgOpen.setNameFilter(trUtf8("Bus configuration files (*.dbc *.ldf)"));
+   dlgOpen.setNameFilter(trUtf8("Bus configuration files (*.dbc)"));
+   QStringList fileName;
+   if (dlgOpen.exec())
+   {
+      this->Clear();
+      fileName = dlgOpen.selectedFiles();
+      this->LoadFile(fileName[0]);
+   }
+}
+
+void BusConfigUI::on_actionAdd_triggered()
+{
+   QFileDialog dlgOpen{ this };
+   dlgOpen.setWindowTitle("Open bus configuration file");
+   dlgOpen.setFileMode(QFileDialog::ExistingFile);
+   dlgOpen.setNameFilter(trUtf8("Bus configuration files (*.dbc)"));
    QStringList fileName;
    if (dlgOpen.exec())
    {
