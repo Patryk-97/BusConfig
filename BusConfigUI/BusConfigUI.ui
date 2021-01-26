@@ -44,6 +44,20 @@
       <item>
        <widget class="QLineEdit" name="lineEdit_Find"/>
       </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_FullMatch">
+        <property name="text">
+         <string>Full Match</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_CaseSensitive">
+        <property name="text">
+         <string>Case Sensitive</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="1" column="0" colspan="2">

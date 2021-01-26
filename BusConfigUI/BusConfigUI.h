@@ -10,6 +10,7 @@
 #include "CanMessageCreator.h"
 #include "CanNodeCreator.h"
 #include <qmap.h>
+#include <qset.h>
 #include <QCloseEvent>
 
 class BusConfigUI : public QMainWindow
@@ -117,6 +118,7 @@ private:
    void ShowMenuForCanNodeTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
 
    void RemoveFromTableWidget(const QString& name);
+   void PrepareFindResults(void);
 
    template <std::integral Integral>
    inline void RemoveCanMessage(ICanNetwork* canNetwork, const Integral& integral)
@@ -181,6 +183,7 @@ private:
     bool isTableWidgetFilled { false };
     QTreeWidgetItem* currentTreeWidgetItem { nullptr };
     bool caseSensitive { false };
+    QSet<QTreeWidgetItem*> findResults;
 
     enum class Icon_e
     {

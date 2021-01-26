@@ -2074,3 +2074,31 @@ void BusConfigUI::RemoveFromTableWidget(const QString& name)
       }
    }
 }
+
+void BusConfigUI::PrepareFindResults(void)
+{
+   if (!this->ui.lineEdit_Find->text().isEmpty())
+   {
+      QString textToFind = this->ui.lineEdit_Find->text();
+
+      Qt::MatchFlags findFlags = Qt::MatchRecursive;
+      if (this->ui.checkBox_CaseSensitive->isChecked())
+      {
+         findFlags |= Qt::MatchCaseSensitive;
+      }
+      if (!this->ui.checkBox_FullMatch->isChecked())
+      {
+         findFlags |= Qt::MatchContains;
+      }
+      QList<QTreeWidgetItem*> foundTreeItems = this->ui.treeWidget_MainView->findItems(textToFind, findFlags, 0);
+      ranges::for_each(foundTreeItems, [this](QTreeWidgetItem* findResult) { this->findResults.insert(findResult); });
+
+      QString str = "Found " + QString::number(this->findResults.size()) + " items containing \"";
+      str += textToFind + "\" phrase";
+      this->ui.statusBar->showMessage(str);
+   }
+   else
+   {
+      this->ui.statusBar->showMessage("Enter some text to find");
+   }
+}
