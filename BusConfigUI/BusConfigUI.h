@@ -35,6 +35,7 @@ private slots:
    void on_tableWidget_Properties_itemChanged(QTableWidgetItem* item);
    void on_tableWidget_Properties_cellChanged(int row, int column);
    void ShowMenuForTableWidgetItem(const QPoint& pos);
+   void ShowMenuForTreeWidgetItem(const QPoint& pos);
 
 private:
 
@@ -87,7 +88,7 @@ private:
    void SetComboDelegateForCanEnvVar(void);
    QTreeWidgetItem* GetTreeItem(const QString& ancestorItemWhatsThis, QTreeWidgetItem* descendantItem);
 
-   void TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const QString& itemType, ICanNetwork* canNetwork, const QString& name);
+   void TableWidgetRemoveMenuEntryConfig(QMenu* menu, const QString& itemType, ICanNetwork* canNetwork, const QString& name);
    void TableWidgetCaseSensitiveMenuEntryConfig(QMenu* menu);
    void TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
    void TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
@@ -102,10 +103,20 @@ private:
    void TableWidgetSortNodesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
    void TableWidgetNewNodeMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
 
-   void ShowMenuForCanSignalsTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
-   void ShowMenuForCanMessageSignalsTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
-   void ShowMenuForCanMessagesTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
-   void ShowMenuForCanNodesTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanMessagesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanNodesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+
+   void ShowMenuForCanSignalsTreeItem(QMenu* menu, ICanNetwork* canNetwork);
+   void ShowMenuForCanSignalTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanMessageSignalsTreeItem(QMenu* menu, ICanNetwork* canNetwork);
+   void ShowMenuForCanMessagesTreeItem(QMenu* menu, ICanNetwork* canNetwork);
+   void ShowMenuForCanMessageTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanNodesTreeItem(QMenu* menu, ICanNetwork* canNetwork);
+   void ShowMenuForCanNodeTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+
+   void RemoveFromTableWidget(const QString& name);
 
    template <std::integral Integral>
    inline void RemoveCanMessage(ICanNetwork* canNetwork, const Integral& integral)

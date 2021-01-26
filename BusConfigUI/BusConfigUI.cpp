@@ -105,6 +105,10 @@ BusConfigUI::BusConfigUI(QWidget *parent)
        this->ui.tableWidget_Properties->setContextMenuPolicy(Qt::CustomContextMenu);
        connect(this->ui.tableWidget_Properties, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowMenuForTableWidgetItem(const QPoint&)));
 
+       // add menu for right click for tree widget
+       this->ui.treeWidget_MainView->setContextMenuPolicy(Qt::CustomContextMenu);
+       connect(this->ui.treeWidget_MainView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowMenuForTreeWidgetItem(const QPoint&)));
+
        this->ui.tableWidget_Properties->setStyleSheet("QTableWidget::item { padding: 0px 10px; border: 0; }");
        this->ui.tableWidget_Properties->horizontalHeader()->setStyleSheet(
          "QHeaderView::section { padding: 0 10px; border: 0; }");
@@ -357,24 +361,68 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
 
          if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
          {
-            const auto canMessageName = this->ui.tableWidget_Properties->item(row, 2)->text();
-
-            this->ShowMenuForCanMessageSignalsTable(menu, row, canNetwork, canMessageName);
+            this->ShowMenuForCanMessageSignalsTableItem(menu, canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_SIGNALS.data())
+         {
+            this->ShowMenuForCanSignalsTableItem(menu, canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MESSAGES.data())
+         {
+            this->ShowMenuForCanMessagesTableItem(menu, canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_NETWORK_NODES.data())
+         {
+            this->ShowMenuForCanNodesTableItem(menu, canNetwork, name);
          }
 
-         if (itemType == ItemId::CAN_SIGNALS.data())
-         {
-            this->ShowMenuForCanSignalsTable(menu, row, canNetwork, name);
-         }
+         QAction* input = menu->exec(globalPos);
+      }
+   }
+}
 
-         if (itemType == ItemId::CAN_MESSAGES.data())
-         {
-            this->ShowMenuForCanMessagesTable(menu, row, canNetwork, name);
-         }
+void BusConfigUI::ShowMenuForTreeWidgetItem(const QPoint& pos)
+{
+   QPoint globalPos = this->ui.treeWidget_MainView->mapToGlobal(pos);
 
-         if (itemType == ItemId::CAN_NETWORK_NODES.data())
+   if (const auto item = this->ui.treeWidget_MainView->itemAt(pos); item)
+   {
+      const auto itemType = item->whatsThis(0);
+      auto networkItem = GetTreeItem(ItemId::NETWORK.data(), item);
+      QString networkName = networkItem ? networkItem->text(0) : "";
+      QString name = item->text(0);
+      if (auto canNetwork = this->canBusConfig->GetNetworkByName(networkName.toUtf8()); canNetwork)
+      {
+         //create right click menu item
+         QMenu* menu = new QMenu { this->ui.treeWidget_MainView };
+
+         if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
          {
-            this->ShowMenuForCanNodesTable(menu, row, canNetwork, name);
+            this->ShowMenuForCanMessageSignalsTreeItem(menu, canNetwork);
+         }
+         else if (itemType == ItemId::CAN_SIGNALS.data())
+         {
+            this->ShowMenuForCanSignalsTreeItem(menu, canNetwork);
+         }
+         else if (itemType == ItemId::CAN_SIGNAL.data())
+         {
+            this->ShowMenuForCanSignalTreeItem(menu, canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MESSAGES.data())
+         {
+            this->ShowMenuForCanMessagesTreeItem(menu, canNetwork);
+         }
+         else if (itemType == ItemId::CAN_MESSAGE.data())
+         {
+            this->ShowMenuForCanMessageTreeItem(menu, canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_NETWORK_NODES.data())
+         {
+            this->ShowMenuForCanNodesTreeItem(menu, canNetwork);
+         }
+         else if (itemType == ItemId::CAN_NETWORK_NODE.data())
+         {
+            this->ShowMenuForCanNodeTreeItem(menu, canNetwork, name);
          }
 
          QAction* input = menu->exec(globalPos);
@@ -1623,14 +1671,14 @@ QTreeWidgetItem* BusConfigUI::GetTreeItem(const QString& ancestorItemWhatsThis, 
    return nullptr;
 };
 
-void BusConfigUI::TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const QString& itemType, ICanNetwork* canNetwork, const QString& name)
+void BusConfigUI::TableWidgetRemoveMenuEntryConfig(QMenu* menu, const QString& itemType, ICanNetwork* canNetwork, const QString& name)
 {
    if (menu && canNetwork)
    {
       auto removeMenuEntry = new QAction{ "Remove", menu };
       menu->addAction(removeMenuEntry);
 
-      connect(removeMenuEntry, &QAction::triggered, this, [this, &itemType, row, &name, &canNetwork]
+      connect(removeMenuEntry, &QAction::triggered, this, [this, itemType, name, canNetwork]
       {
          if (itemType == ItemId::CAN_MESSAGE.data())
          {
@@ -1640,7 +1688,7 @@ void BusConfigUI::TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const Q
          else if (itemType == ItemId::CAN_MESSAGES.data())
          {
             this->RemoveCanMessageFromTreeWidget(canNetwork, name);
-            this->RemoveCanMessage(canNetwork, row);
+            this->RemoveCanMessage(canNetwork, name);
          }
          else if (itemType == ItemId::CAN_TX_MESSAGES.data())
          {
@@ -1660,7 +1708,7 @@ void BusConfigUI::TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const Q
          else if (itemType == ItemId::CAN_SIGNALS.data())
          {
             this->RemoveFromTreeWidget(name);
-            this->RemoveCanSignal(canNetwork, row);
+            this->RemoveCanSignal(canNetwork, name);
          }
          else if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
          {
@@ -1695,10 +1743,11 @@ void BusConfigUI::TableWidgetRemoveMenuEntryConfig(QMenu* menu, int row, const Q
          else if (itemType == ItemId::CAN_ENVIRONMENT_VARIABLES.data())
          {
             this->RemoveFromTreeWidget(name);
-            this->RemoveCanEnvVar(canNetwork, row);
+            this->RemoveCanEnvVar(canNetwork, name);
          }
 
-         this->ui.tableWidget_Properties->removeRow(row);
+         this->RemoveFromTableWidget(name);
+         //this->ui.tableWidget_Properties->removeRow(row);
       });
    }
 }
@@ -1871,11 +1920,11 @@ void BusConfigUI::TableWidgetNewNodeMenuEntryConfig(QMenu* menu, ICanNetwork* ca
    }
 }
 
-void BusConfigUI::ShowMenuForCanSignalsTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name)
+void BusConfigUI::ShowMenuForCanSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
 {
    if (canNetwork)
    {
-      this->TableWidgetRemoveMenuEntryConfig(menu, row, ItemId::CAN_SIGNALS.data(), canNetwork, name);
+      this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_SIGNALS.data(), canNetwork, name);
 
       menu->addSeparator();
 
@@ -1889,13 +1938,13 @@ void BusConfigUI::ShowMenuForCanSignalsTable(QMenu* menu, int row, ICanNetwork* 
    }
 }
 
-void BusConfigUI::ShowMenuForCanMessageSignalsTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name)
+void BusConfigUI::ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
 {
    if (canNetwork)
    {
       if (const auto canMessage = canNetwork->GetMessageByName(name.toUtf8()); canMessage)
       {
-         this->TableWidgetRemoveMenuEntryConfig(menu, row, ItemId::CAN_SIGNALS.data(), canNetwork, name);
+         this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_SIGNALS.data(), canNetwork, name);
 
          menu->addSeparator();
 
@@ -1906,11 +1955,11 @@ void BusConfigUI::ShowMenuForCanMessageSignalsTable(QMenu* menu, int row, ICanNe
    }
 }
 
-void BusConfigUI::ShowMenuForCanMessagesTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name)
+void BusConfigUI::ShowMenuForCanMessagesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
 {
    if (canNetwork)
    {
-      this->TableWidgetRemoveMenuEntryConfig(menu, row, ItemId::CAN_MESSAGES.data(), canNetwork, name);
+      this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_MESSAGES.data(), canNetwork, name);
 
       menu->addSeparator();
 
@@ -1924,11 +1973,11 @@ void BusConfigUI::ShowMenuForCanMessagesTable(QMenu* menu, int row, ICanNetwork*
    }
 }
 
-void BusConfigUI::ShowMenuForCanNodesTable(QMenu* menu, int row, ICanNetwork* canNetwork, const QString& name)
+void BusConfigUI::ShowMenuForCanNodesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
 {
    if (canNetwork)
    {
-      this->TableWidgetRemoveMenuEntryConfig(menu, row, ItemId::CAN_NETWORK_NODES.data(), canNetwork, name);
+      this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_NETWORK_NODES.data(), canNetwork, name);
 
       menu->addSeparator();
 
@@ -1938,5 +1987,90 @@ void BusConfigUI::ShowMenuForCanNodesTable(QMenu* menu, int row, ICanNetwork* ca
       menu->addSeparator();
 
       this->TableWidgetNewNodeMenuEntryConfig(menu, canNetwork);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanSignalsTreeItem(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewSignalMenuEntryConfig(menu, canNetwork);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanSignalTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewSignalMenuEntryConfig(menu, canNetwork);
+
+      menu->addSeparator();
+
+      this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_SIGNAL.data(), canNetwork, name);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanMessageSignalsTreeItem(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewSignalMenuEntryConfig(menu, canNetwork);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanMessagesTreeItem(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewMessageMenuEntryConfig(menu, canNetwork);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanMessageTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewMessageMenuEntryConfig(menu, canNetwork);
+
+      menu->addSeparator();
+
+      this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_MESSAGE.data(), canNetwork, name);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanNodesTreeItem(QMenu* menu, ICanNetwork* canNetwork)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewNodeMenuEntryConfig(menu, canNetwork);
+   }
+}
+
+void BusConfigUI::ShowMenuForCanNodeTreeItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
+{
+   if (canNetwork)
+   {
+      this->TableWidgetNewNodeMenuEntryConfig(menu, canNetwork);
+
+      menu->addSeparator();
+
+      this->TableWidgetRemoveMenuEntryConfig(menu, ItemId::CAN_NETWORK_NODE.data(), canNetwork, name);
+   }
+}
+
+void BusConfigUI::RemoveFromTableWidget(const QString& name)
+{
+   for (size_t i = 0; i < this->ui.tableWidget_Properties->rowCount(); i++)
+   {
+      for (size_t j = 0; j < this->ui.tableWidget_Properties->columnCount(); j++)
+      {
+         const auto text = this->ui.tableWidget_Properties->item(i, j)->text();
+         if (text == name)
+         {
+            this->ui.tableWidget_Properties->removeRow(i);
+            --i;
+            break;
+         }
+      }
    }
 }
