@@ -207,17 +207,18 @@ CanMessageSimulator::~CanMessageSimulator()
    delete ui;
 }
 
-bool CanMessageSimulator::Create(ICanNetwork* canNetwork, ICanMessage* canMessage)
+bool CanMessageSimulator::Create(ICanNetwork* canNetwork, ICanMessage* canMessage, ICanSignal* canSignal)
 {
    if (canNetwork)
    {
       this->canNetwork = canNetwork;
-      if (const auto message = this->canNetwork->GetMessageByIndex(0); message)
+      const auto message = (canMessage ? canMessage : this->canNetwork->GetMessageByIndex(0));
+      const auto signal = (canSignal ? canSignal : message ? message->GetSignalByIndex(0) : nullptr);
+      if (message)
       {
          this->canMessageTableFilled = false; this->canSignalTableFilled = false;
-         this->BuildCanMessageTableWidget(message);
+         this->BuildCanMessageTableWidget(message, signal);
          QStringList messagesNames;
-         QStringList signalsNames;
          for (size_t i = 0; i < canNetwork->GetMessagesCount(); i++)
          {
             if (const auto message = canNetwork->GetMessageByIndex(i); message)
@@ -431,7 +432,7 @@ void CanMessageSimulator::CalculateDataHexResult(void)
    }
 }
 
-void CanMessageSimulator::BuildCanMessageTableWidget(const ICanMessage* canMessage)
+void CanMessageSimulator::BuildCanMessageTableWidget(const ICanMessage* canMessage, const ICanSignal* canSignal)
 {
    if (canMessage)
    {
@@ -443,10 +444,7 @@ void CanMessageSimulator::BuildCanMessageTableWidget(const ICanMessage* canMessa
          this->ui->tableWidget_CanMessage->item(i, 1)->setTextAlignment(Qt::AlignCenter);
       }
 
-      if (const auto canSignal = canMessage->GetSignalByIndex(0); canSignal)
-      {
-         this->BuildCanSignalTableWidget(canSignal);
-      }
+      this->BuildCanSignalTableWidget(canSignal);
 
       QStringList canSignalsNames;
       for (size_t i = 0; i < canMessage->GetSignalsCount(); i++)

@@ -17,7 +17,7 @@ public:
    explicit CanMessageSimulator(QWidget* parent = nullptr);
    ~CanMessageSimulator();
 
-   bool Create(ICanNetwork* canNetwork, ICanMessage* canMessage = nullptr);
+   bool Create(ICanNetwork* canNetwork, ICanMessage* canMessage = nullptr, ICanSignal* canSignal = nullptr);
 
 private slots:
    void on_tableWidget_CanDataBytes_itemChanged(QTableWidgetItem* item);
@@ -29,7 +29,7 @@ private:
    void UpdatedCanDataBytesBin(QTableWidgetItem* item);
    void UpdatedCanDataBytesBitDataBytes(QTableWidgetItem* item);
    void CalculateDataHexResult(void);
-   void BuildCanMessageTableWidget(const ICanMessage* canMessage);
+   void BuildCanMessageTableWidget(const ICanMessage* canMessage, const ICanSignal* canSignal = nullptr);
    void BuildCanSignalTableWidget(const ICanSignal* canSignal);
    void ResetSignalMaskBinAndHexTableWidget(void);
 
@@ -38,5 +38,5 @@ private:
    bool canDataBytesTableFilled { false };
    bool canMessageTableFilled = { false };
    bool canSignalTableFilled = { false };
-   ICanNetwork* canNetwork{ nullptr };
+   ICanNetwork* canNetwork { nullptr };
 };

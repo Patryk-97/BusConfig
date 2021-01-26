@@ -95,20 +95,22 @@ private:
    void SetComboDelegateForCanEnvVar(void);
    QTreeWidgetItem* GetTreeItem(const QString& ancestorItemWhatsThis, QTreeWidgetItem* descendantItem);
 
-   void TableWidgetRemoveMenuEntryConfig(QMenu* menu, const QString& itemType, ICanNetwork* canNetwork, const QString& name);
-   void TableWidgetCaseSensitiveMenuEntryConfig(QMenu* menu);
-   void TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
-   void TableWidgetSortSignalsByNameMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
-   void TableWidgetSortSignalsByStartBitMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
-   void TableWidgetSortSignalsByMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
-   void TableWidgetNewSignalMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void RemoveMenuEntryConfig(QMenu* menu, const QString& itemType, ICanNetwork* canNetwork, const QString& name);
+   void CaseSensitiveMenuEntryConfig(QMenu* menu);
+   void SortSignalsByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void SortSignalsByNameMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
+   void SortSignalsByStartBitMenuEntryConfig(QMenu* menu, ICanMessage* canMessage);
+   void SortSignalsByMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void NewSignalMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
 
-   void TableWidgetSortMessagesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
-   void TableWidgetSortMessagesByIdMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
-   void TableWidgetNewMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void SortMessagesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void SortMessagesByIdMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void NewMessageMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
 
-   void TableWidgetSortNodesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
-   void TableWidgetNewNodeMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void SortNodesByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+   void NewNodeMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
+
+   void GoToSimulatorMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork, ICanMessage* canMessage, ICanSignal* canSignal = nullptr);
 
    void ShowMenuForCanSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
    void ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
