@@ -942,8 +942,12 @@ void BusConfigUI::Clear(void)
    this->canBusConfig->Clear();
    this->ui.treeWidget_MainView->clear();
    this->ClearTableWidget();
+
    this->findResults.clear();
    this->findResultsIndex = 0;
+   this->ui.lineEdit_Find->setText("");
+
+   this->ui.statusBar->showMessage("");
 }
 
 void BusConfigUI::ClearTableWidget(void)
