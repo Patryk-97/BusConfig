@@ -1011,9 +1011,7 @@ void BusConfigUI::BuildCanNodeProperties(const ICanNetwork* canNetwork, const QS
    {
       QStringList headerLabels;
       ranges::for_each(CanNodeManager::PROPERTIES, [&headerLabels] (const std::string_view property)
-      {
-         headerLabels << property.data();
-      });
+         { headerLabels << property.data(); });
 
       this->ui.tableWidget_Properties->setRowCount(1);
       this->ui.tableWidget_Properties->setColumnCount(headerLabels.size());
@@ -1482,10 +1480,10 @@ void BusConfigUI::BuildCanNodeRow(const ICanNode* node, int row)
 
       const auto canNetwork = node->GetNetwork();
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
-      this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetworkName });
+      this->ui.tableWidget_Properties->setItem(row, 1, new TableWidgetItem{ canNetworkName });
 
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toIntQString(node->GetAddress(), true) });
-      this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ node->GetComment() });
+      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ toIntQString(node->GetAddress(), this->IsHexBase()) });
+      this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem{ node->GetComment() });
    }
 }
 
