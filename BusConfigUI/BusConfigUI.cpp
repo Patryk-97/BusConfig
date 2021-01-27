@@ -382,9 +382,17 @@ void BusConfigUI::ShowMenuForTableWidgetItem(const QPoint& pos)
          {
             this->ShowMenuForCanSignalsTableItem(menu, canNetwork, name);
          }
+         else if (itemType == ItemId::CAN_SIGNAL.data())
+         {
+            this->ShowMenuForCanSignalTableItem(menu, canNetwork, name);
+         }
          else if (itemType == ItemId::CAN_MESSAGES.data())
          {
             this->ShowMenuForCanMessagesTableItem(menu, canNetwork, name);
+         }
+         else if (itemType == ItemId::CAN_MESSAGE.data())
+         {
+            this->ShowMenuForCanMessageTableItem(menu, canNetwork, name);
          }
          else if (itemType == ItemId::CAN_NETWORK_NODES.data())
          {
@@ -1999,14 +2007,29 @@ void BusConfigUI::ShowMenuForCanSignalsTableItem(QMenu* menu, ICanNetwork* canNe
       menu->addSeparator();
 
       this->NewSignalMenuEntryConfig(menu, canNetwork);
+
+      menu->addSeparator();
+
+      auto canSignal = canNetwork->GetSignalByName(name.toUtf8());
+      auto canMessage = (canSignal ? canSignal->GetMessage() : nullptr);
+      this->GoToSimulatorMenuEntryConfig(menu, canNetwork, canMessage, canSignal);
    }
+}
+
+void BusConfigUI::ShowMenuForCanSignalTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
+{
+   auto canSignal = canNetwork->GetSignalByName(name.toUtf8());
+   auto canMessage = (canSignal ? canSignal->GetMessage() : nullptr);
+   this->GoToSimulatorMenuEntryConfig(menu, canNetwork, canMessage, canSignal);
 }
 
 void BusConfigUI::ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
 {
    if (canNetwork)
    {
-      if (const auto canMessage = canNetwork->GetMessageByName(name.toUtf8()); canMessage)
+      const auto canSignal = canNetwork->GetSignalByName(name.toUtf8());
+      const auto canMessage = (canSignal ? canSignal->GetMessage() : nullptr);
+      if (canMessage)
       {
          this->RemoveMenuEntryConfig(menu, ItemId::CAN_SIGNALS.data(), canNetwork, name);
 
@@ -2015,6 +2038,14 @@ void BusConfigUI::ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICanNetwork
          this->CaseSensitiveMenuEntryConfig(menu);
          this->SortSignalsByNameMenuEntryConfig(menu, canMessage);
          this->SortSignalsByStartBitMenuEntryConfig(menu, canMessage);
+
+         menu->addSeparator();
+
+         this->NewMessageMenuEntryConfig(menu, canNetwork);
+
+         menu->addSeparator();
+
+         this->GoToSimulatorMenuEntryConfig(menu, canNetwork, canNetwork->GetMessageByName(name.toUtf8()));
       }
    }
 }
@@ -2034,7 +2065,16 @@ void BusConfigUI::ShowMenuForCanMessagesTableItem(QMenu* menu, ICanNetwork* canN
       menu->addSeparator();
 
       this->NewMessageMenuEntryConfig(menu, canNetwork);
+
+      menu->addSeparator();
+
+      this->GoToSimulatorMenuEntryConfig(menu, canNetwork, canNetwork->GetMessageByName(name.toUtf8()));
    }
+}
+
+void BusConfigUI::ShowMenuForCanMessageTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)
+{
+   this->GoToSimulatorMenuEntryConfig(menu, canNetwork, canNetwork->GetMessageByName(name.toUtf8()));
 }
 
 void BusConfigUI::ShowMenuForCanNodesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name)

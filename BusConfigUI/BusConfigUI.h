@@ -113,8 +113,10 @@ private:
    void GoToSimulatorMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork, ICanMessage* canMessage, ICanSignal* canSignal = nullptr);
 
    void ShowMenuForCanSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanSignalTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
    void ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
    void ShowMenuForCanMessagesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
+   void ShowMenuForCanMessageTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
    void ShowMenuForCanNodesTableItem(QMenu* menu, ICanNetwork* canNetwork, const QString& name);
 
    void ShowMenuForCanSignalsTreeItem(QMenu* menu, ICanNetwork* canNetwork);
