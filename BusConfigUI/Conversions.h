@@ -9,14 +9,15 @@ inline QString toQString(const T& parameter)
 }
 
 template <std::integral T>
-inline QString toHexQString(const T& hexNumber)
+inline QString toIntQString(const T& number, bool hex = false)
 {
+   if (!hex) return QString::number(number);
    QString rV = "0x";
 
-   if (hexNumber <= 0xF || (hexNumber > 0xFF && hexNumber <= 0xFFF))
+   if (number <= 0xF || (number > 0xFF && number <= 0xFFF))
    {
       rV += "0";
    }
 
-   return rV + QString::number(hexNumber, 16);
+   return rV + QString::number(number, 16);
 }

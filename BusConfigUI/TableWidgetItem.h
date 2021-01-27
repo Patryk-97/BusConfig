@@ -50,7 +50,7 @@ public:
       }
       else
       {
-         QTableWidgetItem::operator<(other);
+         return QTableWidgetItem::operator<(other);
       }
    }
 };

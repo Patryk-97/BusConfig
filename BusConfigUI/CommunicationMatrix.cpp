@@ -1,6 +1,7 @@
 #include "CommunicationMatrix.h"
 #include "ui_CommunicationMatrix.h"
 #include "ICanManager.h"
+#include "TableWidgetItem.h"
 #include <QtWidgets/qabstractbutton.h>
 #include <qlabel.h>
 
@@ -81,7 +82,7 @@ bool CommunicationMatrix::Create(ICanNetwork* canNetwork)
                   const auto mappedTxMessage = mappedTxSignal->GetMessage();
                   if (signalIndex != ICanNetwork::INVALID_INDEX && mappedTxMessage)
                   {
-                     auto item = new QTableWidgetItem{ QString { "<Tx> " } + mappedTxMessage->GetName() };
+                     auto item = new TableWidgetItem{ QString { "<Tx> " } + mappedTxMessage->GetName() };
                      item->setForeground(QBrush { QColor { 0, 0, 255 }});
                      this->ui->tableWidget->setItem(signalIndex, i, item);
                   }
@@ -96,7 +97,8 @@ bool CommunicationMatrix::Create(ICanNetwork* canNetwork)
                   const auto mappedRxMessage = mappedRxSignal->GetMessage();
                   if (signalIndex != ICanNetwork::INVALID_INDEX && mappedRxMessage)
                   {
-                     auto item = new QTableWidgetItem{ mappedRxMessage->GetName() };
+                     auto item = new TableWidgetItem{ QString { "<Rx> " } + mappedRxMessage->GetName() };
+                     item->setForeground(QBrush{ QColor { 134, 67, 67 } });
                      this->ui->tableWidget->setItem(signalIndex, i, item);
                   }
                }

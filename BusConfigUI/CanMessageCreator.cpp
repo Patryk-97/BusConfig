@@ -45,7 +45,7 @@ bool CanMessageCreator::Create(ICanNetwork* canNetwork)
 void CanMessageCreator::Clear(void)
 {
    this->ui->lineEdit_Name->setText("");
-   this->ui->lineEdit_Id->setText(toHexQString(0x00));
+   this->ui->lineEdit_Id->setText(toIntQString(0x00, true));
    this->ui->comboBox_IdFormat->setCurrentIndex(0);
    this->ui->lineEdit_Size->setText("1");
    this->ui->comboBox_TxMethod->setCurrentIndex(0);

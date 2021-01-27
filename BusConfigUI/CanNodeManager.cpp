@@ -103,7 +103,7 @@ QString CanNodeManager::GetData(ICanNetwork* canNetwork, const QString& name, ui
                }
                case ADDRESS_POS:
                {
-                  previousData = toHexQString(canNode->GetAddress());
+                  previousData = toIntQString(canNode->GetAddress(), true);
                   break;
                }
                case COMMENT_POS:

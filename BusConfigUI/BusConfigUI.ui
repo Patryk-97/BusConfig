@@ -24,6 +24,9 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>12</number>
+      </property>
       <item>
        <widget class="QPushButton" name="pushButton_Find">
         <property name="mouseTracking">
@@ -267,6 +270,10 @@
    </property>
   </action>
   <action name="actionCommunication_matrix">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/communication-matrix.png</normaloff>:/BusConfigUI/Icons/communication-matrix.png</iconset>
+   </property>
    <property name="text">
     <string>Communication matrix</string>
    </property>
@@ -290,11 +297,19 @@
    </property>
   </action>
   <action name="actionAttribute_definitions">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/attributes-list.png</normaloff>:/BusConfigUI/Icons/attributes-list.png</iconset>
+   </property>
    <property name="text">
     <string>Attribute definitions</string>
    </property>
   </action>
   <action name="actionCan_message_simulator">
+   <property name="icon">
+    <iconset resource="BusConfigUI.qrc">
+     <normaloff>:/BusConfigUI/Icons/can-message-simulator.png</normaloff>:/BusConfigUI/Icons/can-message-simulator.png</iconset>
+   </property>
    <property name="text">
     <string>Can message simulator</string>
    </property>

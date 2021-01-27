@@ -131,6 +131,9 @@ private:
    void FindingProcess();
    void PrepareFindResults(void);
 
+   inline bool IsDecBase(void) { return this->base == Base_e::DEC; };
+   inline bool IsHexBase(void) { return this->base == Base_e::HEX; };
+
    template <std::integral Integral>
    inline void RemoveCanMessage(ICanNetwork* canNetwork, const Integral& integral)
    {

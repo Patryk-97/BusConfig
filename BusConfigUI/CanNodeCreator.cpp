@@ -36,7 +36,7 @@ bool CanNodeCreator::Create(ICanNetwork* canNetwork)
 void CanNodeCreator::Clear(void)
 {
    this->ui->lineEdit_Name->setText("");
-   this->ui->lineEdit_Address->setText(toHexQString(0x00));
+   this->ui->lineEdit_Address->setText(toIntQString(0x00, true));
    this->ui->lineEdit_Comment->setText("");
    this->ui->buttonBox->button(QDialogButtonBox::Apply)->setEnabled(true);
 }

@@ -98,13 +98,13 @@ bool AttributeDefinitions::Create(ICanNetwork* canNetwork)
                },
                [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanHexAttribute* hexAttribute)
                {
-                  tableWidget->setItem(i, 3, new TableWidgetItem<int32_t, false> { toHexQString(hexAttribute->GetMinimum()) });
-                  tableWidget->setItem(i, 4, new TableWidgetItem<int32_t, false> { toHexQString(hexAttribute->GetMaximum()) });
+                  tableWidget->setItem(i, 3, new TableWidgetItem<int32_t, false> { toIntQString(hexAttribute->GetMinimum(), true) });
+                  tableWidget->setItem(i, 4, new TableWidgetItem<int32_t, false> { toIntQString(hexAttribute->GetMaximum(), true) });
 
                   enumaratorsDelegate->addItems(QStringList{});
 
                   tableWidget->setItem(i, 5, new TableWidgetItem<QString, false> { "-" });
-                  tableWidget->setItem(i, 6, new TableWidgetItem<int32_t, false> { toHexQString(hexAttribute->GetDefaultValue()) });
+                  tableWidget->setItem(i, 6, new TableWidgetItem<int32_t, false> { toIntQString(hexAttribute->GetDefaultValue(), true) });
                },
                [&tableWidget = this->ui->tableWidget, &i, &enumaratorsDelegate] (const ICanFloatAttribute* floatAttribute)
                {

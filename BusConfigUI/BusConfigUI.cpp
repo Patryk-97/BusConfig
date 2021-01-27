@@ -87,17 +87,17 @@ BusConfigUI::BusConfigUI(QWidget *parent)
           if (button->text() == "Communication matrix")
           {
              button->setText("");
-             button->setIcon(this->icons[Icon_e::COMMUNICATION_MATRIX]);
+             //button->setIcon(this->icons[Icon_e::COMMUNICATION_MATRIX]);
           }
           if (button->text() == "Attribute definitions")
           {
              button->setText("");
-             button->setIcon(this->icons[Icon_e::ATTRIBUTES]);
+             //button->setIcon(this->icons[Icon_e::ATTRIBUTES]);
           }
           if (button->text() == "Can message simulator")
           {
              button->setText("");
-             button->setIcon(this->icons[Icon_e::CAN_MESSAGE_SIMULATOR]);
+             //button->setIcon(this->icons[Icon_e::CAN_MESSAGE_SIMULATOR]);
           }
        }
 
@@ -209,6 +209,7 @@ void BusConfigUI::on_actionBase_triggered()
          toolButton->setText("");
       }
    }
+   this->BuildTable();
 }
 
 void BusConfigUI::on_actionAttribute_definitions_triggered()
@@ -1483,7 +1484,7 @@ void BusConfigUI::BuildCanNodeRow(const ICanNode* node, int row)
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
       this->ui.tableWidget_Properties->setItem(row, 1, new QTableWidgetItem{ canNetworkName });
 
-      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toHexQString(node->GetAddress()) });
+      this->ui.tableWidget_Properties->setItem(row, 2, new QTableWidgetItem{ toIntQString(node->GetAddress(), true) });
       this->ui.tableWidget_Properties->setItem(row, 3, new QTableWidgetItem{ node->GetComment() });
    }
 }
@@ -1502,8 +1503,8 @@ void BusConfigUI::BuildCanSignalRow(const ICanSignal* signal, int row)
       const QString canMessageName = canMessage ? canMessage->GetName() : "";
       this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ canMessageName });
 
-      this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem<uint32_t>{ toQString(signal->GetStartBit()) });
-      this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toQString(signal->GetSize()) });
+      this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem<uint32_t>{ toIntQString(signal->GetStartBit(), this->IsHexBase()) });
+      this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toIntQString(signal->GetSize(), this->IsHexBase()) });
 
       int pos = static_cast<int>(signal->GetByteOrder());
       const QString byteOrder = pos >= 0 ? CanSignalManager::BYTE_ORDERS[pos] : CanSignalManager::ByteOrder::DEFAULT.data();
@@ -1544,7 +1545,7 @@ void BusConfigUI::BuildCanMessageRow(const ICanMessage* canMessage, int row)
       const QString canNetworkName = canNetwork ? canNetwork->GetName() : "";
       this->ui.tableWidget_Properties->setItem(row, 1, new TableWidgetItem{ canNetworkName });
       
-      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ toQString(canMessage->GetId()) });
+      this->ui.tableWidget_Properties->setItem(row, 2, new TableWidgetItem{ toIntQString(canMessage->GetId(), this->IsHexBase()) });
 
       int pos = static_cast<int>(canMessage->GetIdFormat());
       const QString idFormat = pos >= 0 ? CanMessageManager::ID_FORMATS[pos] : CanMessageManager::IdFormat::DEFAULT.data();
@@ -1552,9 +1553,9 @@ void BusConfigUI::BuildCanMessageRow(const ICanMessage* canMessage, int row)
       const QString txMethod = pos >= 0 ? CanMessageManager::TX_METHODS[pos] : ICanMessage::TxMethod::DEFAULT;
 
       this->ui.tableWidget_Properties->setItem(row, 3, new TableWidgetItem{ idFormat });
-      this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toQString(canMessage->GetSize()) });
+      this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toIntQString(canMessage->GetSize(), this->IsHexBase()) });
       this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ txMethod });
-      this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ toQString(canMessage->GetCycleTime()) });
+      this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ toIntQString(canMessage->GetCycleTime(), this->IsHexBase()) });
       this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ canMessage->GetComment() });
    }
 }
@@ -1620,7 +1621,14 @@ void BusConfigUI::BuildCanEnvVarRow(const ICanEnvVar* envVar, int row)
       std::visit([this, &row](auto&& arg)
       {
          using T = std::decay_t<decltype(arg)>;
-         if constexpr (std::is_same_v<T, const ICanIntEnvVar*> || std::is_same_v<T, const ICanFloatEnvVar*>)
+         if constexpr (std::is_same_v<T, const ICanIntEnvVar*>)
+         {
+            this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toIntQString(arg->GetMinimum(), this->IsHexBase()) });
+            this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ toIntQString(arg->GetMaximum(), this->IsHexBase()) });
+            this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ toIntQString(arg->GetInitialValue(), this->IsHexBase()) });
+            this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ "-" });
+         }
+         else if constexpr (std::is_same_v<T, const ICanFloatEnvVar*>)
          {
             this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ toQString(arg->GetMinimum()) });
             this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ toQString(arg->GetMaximum()) });
@@ -1632,7 +1640,7 @@ void BusConfigUI::BuildCanEnvVarRow(const ICanEnvVar* envVar, int row)
             this->ui.tableWidget_Properties->setItem(row, 4, new TableWidgetItem{ "-" });
             this->ui.tableWidget_Properties->setItem(row, 5, new TableWidgetItem{ "-" });
             this->ui.tableWidget_Properties->setItem(row, 6, new TableWidgetItem{ "-" });
-            this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ toQString(arg->GetLength()) });
+            this->ui.tableWidget_Properties->setItem(row, 7, new TableWidgetItem{ toIntQString(arg->GetLength(), this->IsHexBase()) });
          }
          else
          {

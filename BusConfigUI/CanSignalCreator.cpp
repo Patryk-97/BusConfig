@@ -285,7 +285,7 @@ void CanSignalCreator::on_tableWidget_Receivers_itemChanged(QTableWidgetItem* it
    {
       if (const auto canNode = this->canNetwork->GetNodeByName(receiver.toUtf8()); canNode)
       {
-         this->ui->tableWidget_Receivers->item(row, 1)->setText(toHexQString(canNode->GetAddress()));
+         this->ui->tableWidget_Receivers->item(row, 1)->setText(toIntQString(canNode->GetAddress(), true));
       }
    }
 }
@@ -305,8 +305,8 @@ void CanSignalCreator::on_pushButton_ValueTable_Add_clicked()
          return static_cast<uint32_t>(0);
       }
    });
-   this->ui->tableWidget_ValueTable->setItem(rowCount, 0, new TableWidgetItem<uint32_t> { toHexQString(newValue) });
-   this->ui->tableWidget_ValueTable->setItem(rowCount, 1, new TableWidgetItem<QString> { "Description for value: " + toHexQString(newValue) });
+   this->ui->tableWidget_ValueTable->setItem(rowCount, 0, new TableWidgetItem<uint32_t> { toIntQString(newValue, true) });
+   this->ui->tableWidget_ValueTable->setItem(rowCount, 1, new TableWidgetItem<QString> { "Description for value: " + toIntQString(newValue, true) });
 
 }
 
