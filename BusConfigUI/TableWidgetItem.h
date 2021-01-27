@@ -6,10 +6,10 @@ template <typename T = QString, bool editable = true>
 class TableWidgetItem : public QTableWidgetItem
 {
 public:
-   TableWidgetItem(const QString& text, Qt::AlignmentFlag textAlignment = Qt::AlignmentFlag::AlignCenter) :
+   TableWidgetItem(const QString& text) :
       QTableWidgetItem(text, 0)
    {
-      this->setTextAlignment(textAlignment);
+      this->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
       if constexpr (editable)
       {
          this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);

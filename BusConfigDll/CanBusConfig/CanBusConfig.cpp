@@ -2049,7 +2049,16 @@ bool CanBusConfig::WriteMessageDefinition(std::string& lineStr) const
          lineStr += std::to_string(message->GetId()) + " ";
          lineStr += message->GetName() + ": "s;
          lineStr += std::to_string(message->GetSize()) + " ";
-         lineStr += message->GetMainTransmitterName() + "\n"s;
+         if (message->GetMainTransmitter())
+         {
+            lineStr += message->GetMainTransmitterName();
+         }
+         else
+         {
+            lineStr += ICanNode::PSEUDO_NODE_NAME;
+         }
+
+         lineStr += "\n"s;
 
          WriteSignalDefinition(message, lineStr);
       }
