@@ -420,6 +420,8 @@ void BusConfigUI::ShowMenuForTreeWidgetItem(const QPoint& pos)
          //create right click menu item
          QMenu* menu = new QMenu { this->ui.treeWidget_MainView };
 
+         this->FindHereMenuEntryConfig(menu, item);
+
          if (itemType == ItemId::CAN_MESSAGE_SIGNALS.data())
          {
             this->ShowMenuForCanMessageSignalsTreeItem(menu, canNetwork);
@@ -466,20 +468,17 @@ void BusConfigUI::on_lineEdit_Find_returnPressed()
 
 void BusConfigUI::on_checkBox_FullMatch_stateChanged(int state)
 {
-   this->findResults.clear();
-   this->findResultsIndex = 0;
+   this->ClearFindResults();
 }
 
 void BusConfigUI::on_checkBox_CaseSensitive_stateChanged(int state)
 {
-   this->findResults.clear();
-   this->findResultsIndex = 0;
+   this->ClearFindResults();
 }
 
 void BusConfigUI::on_lineEdit_Find_textChanged(const QString& text)
 {
-   this->findResults.clear();
-   this->findResultsIndex = 0;
+   this->ClearFindResults();
 }
 
 void BusConfigUI::closeEvent(QCloseEvent* closeEvent)
@@ -932,8 +931,8 @@ void BusConfigUI::Clear(void)
    this->ui.treeWidget_MainView->clear();
    this->ClearTableWidget();
 
-   this->findResults.clear();
-   this->findResultsIndex = 0;
+   this->findRoot = nullptr;
+   this->ClearFindResults();
    this->ui.lineEdit_Find->setText("");
 
    this->ui.statusBar->showMessage("");
@@ -948,6 +947,12 @@ void BusConfigUI::ClearTableWidget(void)
    this->ui.tableWidget_Properties->clear();
    this->ui.tableWidget_Properties->setRowCount(0);
    this->ui.tableWidget_Properties->setColumnCount(0);
+}
+
+void BusConfigUI::ClearFindResults(void)
+{
+   this->findResults.clear();
+   this->findResultsIndex = 0;
 }
 
 void BusConfigUI::AttachAttributesToTree(QTreeWidgetItem* parent)
@@ -1734,6 +1739,27 @@ QTreeWidgetItem* BusConfigUI::GetTreeItem(const QString& ancestorItemWhatsThis, 
    return nullptr;
 };
 
+void BusConfigUI::FindHereMenuEntryConfig(QMenu* menu, QTreeWidgetItem* item)
+{
+   auto findHereMenuEntry = new QAction{ "Find here", menu };
+   findHereMenuEntry->setCheckable(true);
+   findHereMenuEntry->setChecked(this->findRoot == item);
+   menu->addAction(findHereMenuEntry);
+   connect(findHereMenuEntry, &QAction::triggered, this, [&item, this, findHereMenuEntry]
+   {
+      if (item == this->findRoot)
+      {
+         this->findRoot = nullptr;
+      }
+      else
+      {
+         this->findRoot = item;
+      }
+      this->ClearFindResults();
+   });
+   menu->addSeparator();
+}
+
 void BusConfigUI::RemoveMenuEntryConfig(QMenu* menu, const QString& itemType, ICanNetwork* canNetwork, const QString& name)
 {
    if (menu && canNetwork)
@@ -2239,8 +2265,39 @@ void BusConfigUI::PrepareFindResults(void)
       {
          findFlags |= Qt::MatchContains;
       }
+
+      auto ifAncestor = [&] (const auto& rootTreeItem, const auto& treeItem)
+      {
+         auto ifAncestorImpl = [&] (const auto& ifAncestorImpl, const auto& rootTreeItem, const auto& treeItem) -> bool
+         {
+            if (treeItem != nullptr && rootTreeItem != nullptr)
+            {
+               auto parent = treeItem->parent();
+               if (parent == rootTreeItem)
+               {
+                  return true;
+               }
+               return ifAncestorImpl(ifAncestorImpl, rootTreeItem, parent);
+            }
+            return false;
+         };
+         return ifAncestorImpl(ifAncestorImpl, rootTreeItem, treeItem);
+      };
+
       QList<QTreeWidgetItem*> foundTreeItems = this->ui.treeWidget_MainView->findItems(textToFind, findFlags, 0);
-      ranges::for_each(foundTreeItems, [this](QTreeWidgetItem* findResult) { this->findResults.insert(findResult); });
+      ranges::for_each(foundTreeItems, [this] (QTreeWidgetItem* findResult) { this->findResults.insert(findResult); });
+
+      if (this->findRoot)
+      {
+         for (size_t i = 0; i < this->findResults.size(); i++)
+         {
+            if (!ifAncestor(this->findRoot, *std::next(this->findResults.begin(), i)))
+            {
+               this->findResults.erase(std::next(this->findResults.begin(), i));
+               i--;
+            }
+         }
+      }
 
       QString str = "Found " + QString::number(this->findResults.size()) + " items containing \"";
       str += textToFind + "\" phrase";

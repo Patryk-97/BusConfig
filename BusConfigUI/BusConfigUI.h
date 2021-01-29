@@ -54,6 +54,7 @@ private:
    void BuildTable(void);
    void Clear(void);
    void ClearTableWidget(void);
+   void ClearFindResults(void);
    
    void AttachAttributesToTree(QTreeWidgetItem* parent);
    void AttachValueTableToTree(QTreeWidgetItem* parent);
@@ -95,6 +96,7 @@ private:
    void SetComboDelegateForCanEnvVar(void);
    QTreeWidgetItem* GetTreeItem(const QString& ancestorItemWhatsThis, QTreeWidgetItem* descendantItem);
 
+   void FindHereMenuEntryConfig(QMenu* menu, QTreeWidgetItem* item);
    void RemoveMenuEntryConfig(QMenu* menu, const QString& itemType, ICanNetwork* canNetwork, const QString& name);
    void CaseSensitiveMenuEntryConfig(QMenu* menu);
    void SortSignalsByNameMenuEntryConfig(QMenu* menu, ICanNetwork* canNetwork);
@@ -199,6 +201,7 @@ private:
     bool caseSensitive { false };
     std::unordered_set<QTreeWidgetItem*> findResults;
     size_t findResultsIndex {};
+    QTreeWidgetItem* findRoot { nullptr };
 
     enum class Icon_e
     {
