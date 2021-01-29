@@ -22,6 +22,7 @@ OutputBaseFilename=setup
 SetupIconFile=D:\projects\studying\Praca Dyplomowa\BusConfig\CanBusConfigurator\database.ico
 Compression=lzma
 SolidCompression=yes
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
