@@ -1,0 +1,23 @@
+<RCC>
+  <qresource prefix="CanBusConfigurator">
+    <file>Icons/can-message-simulator.png</file>
+    <file>Icons/value-table.png</file>
+    <file>Icons/attributes-list.png</file>
+    <file>Icons/export.png</file>
+    <file>Icons/save.png</file>
+    <file>Icons/environment-variable.png</file>
+    <file>Icons/communication-matrix.png</file>
+    <file>Icons/signal.png</file>
+    <file>Icons/database.png</file>
+    <file>Icons/dec.ico</file>
+    <file>Icons/hex.ico</file>
+    <file>Icons/network.png</file>
+    <file>Icons/network-node.png</file>
+    <file>Icons/message.png</file>
+    <file>Icons/add.png</file>
+    <file>Icons/clear.png</file>
+    <file>Icons/exit.png</file>
+    <file>Icons/find.png</file>
+    <file>Icons/open.png</file>
+  </qresource>
+</RCC>

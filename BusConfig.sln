@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigDll", "BusConfigDll\BusConfigDll.vcxproj", "{7EBA0119-D3D3-4273-9B7C-346D1458C34E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigUI", "BusConfigUI\BusConfigUI.vcxproj", "{150FBD63-4F45-4707-B346-62C321CCAB62}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CanBusConfigurator", "CanBusConfigurator\CanBusConfigurator.vcxproj", "{150FBD63-4F45-4707-B346-62C321CCAB62}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BusConfigConsole", "BusConfigConsole\BusConfigConsole.vcxproj", "{16614571-4E8E-4FB2-A763-63D35D7241A7}"
 EndProject
