@@ -144,6 +144,7 @@ ICanSignal* CanSignalBuilder::Build(void)
    signal->SetMaximum(this->maximum);
    signal->SetUnit(this->unit.c_str());
    signal->SetComment(this->comment.c_str());
+   signal->SetValueTable(this->valueTable);
 
    signal->SetMessage(this->message);
    this->message->AddSignal(signal);
@@ -153,6 +154,7 @@ ICanSignal* CanSignalBuilder::Build(void)
 
    for (auto& receiver : this->receivers)
    {
+      signal->AddReceiver(receiver);
       receiver->AddMappedRxSignal(signal);
       receiver->AddRxMessage(this->message);
 
