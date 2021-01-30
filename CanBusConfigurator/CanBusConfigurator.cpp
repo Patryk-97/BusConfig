@@ -2073,7 +2073,7 @@ void CanBusConfigurator::ShowMenuForCanMessageSignalsTableItem(QMenu* menu, ICan
 
          menu->addSeparator();
 
-         this->NewMessageMenuEntryConfig(menu, canNetwork);
+         this->NewSignalMenuEntryConfig(menu, canNetwork);
 
          menu->addSeparator();
 
