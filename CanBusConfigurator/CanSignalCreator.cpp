@@ -208,7 +208,7 @@ void CanSignalCreator::on_buttonBox_clicked(QAbstractButton* button)
          if (canSignal)
          {
             QMessageBox::information(this, "CanSignalCreator", "Successfully created signal");
-            if (this->OnUpdate)
+            if (this->OnUpdate != nullptr)
             {
                this->OnUpdate();
             }

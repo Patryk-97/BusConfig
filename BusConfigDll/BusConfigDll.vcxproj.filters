@@ -213,9 +213,6 @@
     <ClInclude Include="CanBusConfig\CanAttributeValue.h">
       <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Interfaces\CanAttributeValueFactory.h">
-      <Filter>Interfaces\CanAttributes</Filter>
-    </ClInclude>
     <ClInclude Include="..\Interfaces\ICanNetwork.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -245,6 +242,9 @@
     </ClInclude>
     <ClInclude Include="CanBusConfig\CanNodeBuilder.h">
       <Filter>Pliki nagłówkowe\Builders</Filter>
+    </ClInclude>
+    <ClInclude Include="CanBusConfig\CanAttributeValueFactory.h">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -332,9 +332,6 @@
     <ClCompile Include="CanBusConfig\CanAttributeValue.cpp">
       <Filter>Pliki źródłowe\CanAttributes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Interfaces\CanAttributeValueFactory.cpp">
-      <Filter>Interfaces\CanAttributes</Filter>
-    </ClCompile>
     <ClCompile Include="CanBusConfig\CanNetwork.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
@@ -349,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="CanBusConfig\CanNodeBuilder.cpp">
       <Filter>Pliki źródłowe\Builders</Filter>
+    </ClCompile>
+    <ClCompile Include="CanBusConfig\CanAttributeValueFactory.cpp">
+      <Filter>Pliki nagłówkowe\CanAttributes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

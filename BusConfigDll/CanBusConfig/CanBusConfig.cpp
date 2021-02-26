@@ -34,8 +34,9 @@
 #endif
 
 using boost_escaped_separator = boost::escaped_list_separator<char>;
-using boost_char_separator = boost::char_separator<char>;
 using boost_escaped_separator_tokenizer = boost::tokenizer<boost_escaped_separator>;
+
+using boost_char_separator = boost::char_separator<char>;
 using boost_char_separator_tokenizer = boost::tokenizer<boost_char_separator>;
 
 namespace ranges = std::ranges;

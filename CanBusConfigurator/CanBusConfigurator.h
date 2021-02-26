@@ -20,8 +20,6 @@ public:
     CanBusConfigurator(QWidget *parent = Q_NULLPTR);
     ~CanBusConfigurator();
 
-    friend CommunicationMatrix;
-
 private slots:
    void on_actionClear_triggered();
    void on_actionOpen_triggered();
@@ -190,18 +188,20 @@ private:
    // member variables
     Ui::CanBusConfiguratorClass ui;
     ICanBusConfig* canBusConfig { nullptr };
+
+    // Window dialogs objects
     CommunicationMatrix* communicationMatrix { new CommunicationMatrix {} };
     AttributeDefinitions* attributeDefinitions { new AttributeDefinitions {} };
     CanMessageSimulator* canMessageSimulator { new CanMessageSimulator {} };
-    CanSignalCreator* canSignalCreator { new CanSignalCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
-    CanMessageCreator* canMessageCreator { new CanMessageCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
-    CanNodeCreator* canNodeCreator { new CanNodeCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } } };
-    bool isTableWidgetFilled { false };
-    QTreeWidgetItem* currentTreeWidgetItem { nullptr };
-    bool caseSensitive { false };
-    std::unordered_set<QTreeWidgetItem*> findResults;
-    size_t findResultsIndex {};
-    QTreeWidgetItem* findRoot { nullptr };
+    CanSignalCreator* canSignalCreator {
+      new CanSignalCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } }
+    };
+    CanMessageCreator* canMessageCreator {
+      new CanMessageCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } }
+    };
+    CanNodeCreator* canNodeCreator {
+      new CanNodeCreator { nullptr, [this] { this->BuildTree(); this->BuildTable(); } }
+    };
 
     enum class Icon_e
     {
@@ -224,6 +224,13 @@ private:
        HEX = 1
     };
 
+    // Properties
+    bool isTableWidgetFilled{ false };
+    QTreeWidgetItem* currentTreeWidgetItem{ nullptr };
+    bool caseSensitive{ false };
+    std::unordered_set<QTreeWidgetItem*> findResults;
+    size_t findResultsIndex{};
+    QTreeWidgetItem* findRoot{ nullptr };
     QMap<Icon_e, QIcon> icons;
     Base_e base { Base_e::DEC };
 
