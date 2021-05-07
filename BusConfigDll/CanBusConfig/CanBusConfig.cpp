@@ -15,14 +15,13 @@
 #include "CanFloatEnvVar.h"
 #include "CanStringEnvVar.h"
 #include "CanDataEnvVar.h"
+#include "CanIntAttributeValue.h"
+#include "CanHexAttributeValue.h"
+#include "CanFloatAttributeValue.h"
+#include "CanStringAttributeValue.h"
+#include "CanEnumAttributeValue.h"
 #include <fstream>
-#include <iostream>
 #include <algorithm>
-#include "CanIntAttributeValue.h";
-#include "CanHexAttributeValue.h";
-#include "CanFloatAttributeValue.h";
-#include "CanStringAttributeValue.h";
-#include "CanEnumAttributeValue.h";
 #include <variant>
 
 #ifndef line
