@@ -2273,7 +2273,7 @@ void CanBusConfigurator::PrepareFindResults(void)
       {
          std::erase_if(this->findResults, [this] (auto findResult)
             {
-               return !IfAncestor(this->findRoot, findResult);
+               return !CheckIfTreeItemAncestor(this->findRoot, findResult);
             });
       }
 
@@ -2287,12 +2287,12 @@ void CanBusConfigurator::PrepareFindResults(void)
    }
 }
 
-bool CanBusConfigurator::IfAncestor(const QTreeWidgetItem* rootTreeItem, const QTreeWidgetItem* treeItem)
+bool CanBusConfigurator::CheckIfTreeItemAncestor(const QTreeWidgetItem* rootTreeItem, const QTreeWidgetItem* treeItem)
 {
    if (treeItem != nullptr && rootTreeItem != nullptr)
    {
       auto parent = treeItem->parent();
-      return (parent == rootTreeItem) ? true : IfAncestor(rootTreeItem, parent);
+      return (parent == rootTreeItem) ? true : CheckIfTreeItemAncestor(rootTreeItem, parent);
    }
    return false;
 }
