@@ -2266,37 +2266,15 @@ void CanBusConfigurator::PrepareFindResults(void)
          findFlags |= Qt::MatchContains;
       }
 
-      auto ifAncestor = [&] (const auto& rootTreeItem, const auto& treeItem)
-      {
-         auto ifAncestorImpl = [&] (const auto& ifAncestorImpl, const auto& rootTreeItem, const auto& treeItem) -> bool
-         {
-            if (treeItem != nullptr && rootTreeItem != nullptr)
-            {
-               auto parent = treeItem->parent();
-               if (parent == rootTreeItem)
-               {
-                  return true;
-               }
-               return ifAncestorImpl(ifAncestorImpl, rootTreeItem, parent);
-            }
-            return false;
-         };
-         return ifAncestorImpl(ifAncestorImpl, rootTreeItem, treeItem);
-      };
-
-      QList<QTreeWidgetItem*> foundTreeItems = this->ui.treeWidget_MainView->findItems(textToFind, findFlags, 0);
-      ranges::for_each(foundTreeItems, [this] (QTreeWidgetItem* findResult) { this->findResults.insert(findResult); });
+      auto foundTreeItems = this->ui.treeWidget_MainView->findItems(textToFind, findFlags, 0);
+      ranges::for_each(foundTreeItems, [this] (auto findResult) { this->findResults.insert(findResult); });
 
       if (this->findRoot)
       {
-         for (size_t i = 0; i < this->findResults.size(); i++)
-         {
-            if (!ifAncestor(this->findRoot, *std::next(this->findResults.begin(), i)))
+         std::erase_if(this->findResults, [this] (auto findResult)
             {
-               this->findResults.erase(std::next(this->findResults.begin(), i));
-               i--;
-            }
-         }
+               return !IfAncestor(this->findRoot, findResult);
+            });
       }
 
       QString str = "Found " + QString::number(this->findResults.size()) + " items containing \"";
@@ -2307,4 +2285,14 @@ void CanBusConfigurator::PrepareFindResults(void)
    {
       this->ui.statusBar->showMessage("Enter some text to find");
    }
+}
+
+bool CanBusConfigurator::IfAncestor(const QTreeWidgetItem* rootTreeItem, const QTreeWidgetItem* treeItem)
+{
+   if (treeItem != nullptr && rootTreeItem != nullptr)
+   {
+      auto parent = treeItem->parent();
+      return (parent == rootTreeItem) ? true : IfAncestor(rootTreeItem, parent);
+   }
+   return false;
 }

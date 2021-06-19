@@ -130,6 +130,7 @@ private:
    void RemoveFromTableWidget(const QString& name);
    void FindingProcess();
    void PrepareFindResults(void);
+   static bool IfAncestor(const QTreeWidgetItem* rootTreeItem, const QTreeWidgetItem* treeItem);
 
    inline bool IsDecBase(void) { return this->base == Base_e::DEC; };
    inline bool IsHexBase(void) { return this->base == Base_e::HEX; };
